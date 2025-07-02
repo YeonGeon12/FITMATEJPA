@@ -18,10 +18,10 @@ public class UserInfoEntity {
     @Column(name = "USER_ID", nullable = false, length = 50)
     private String userId;
 
-    @Column(name = "USER_NAME", nullable = false, length = 100)
+    @Column(name = "USER_NAME", nullable = false, length = 500)
     private String userName;
 
-    @Column(name = "PASSWORD", nullable = false, length = 100)
+    @Column(name = "PASSWORD", nullable = false, length = 1)
     private String password;
 
     @Column(name = "EMAIL", nullable = false, length = 100)
