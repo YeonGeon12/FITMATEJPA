@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE - 회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/join.css}">
+</head>
+<body>
+<div class="container">
+    <img th:src="@{/img/Logo2.jpg}" alt="로고" class="logo">
+    <h2>회원가입</h2>
+    <form th:action="@{/user/join}" method="post" th:object="${user}">
+
+        <!-- ID -->
+        <div class="form-group">
+            <label for="userId">ID</label>
+            <div class="flex-row">
+                <input type="text" id="userId" th:field="*{userId}" placeholder="ID는 6~20자 이내로 입력해 주세요." required>
+                <button type="button" class="btn" id="checkUserIdBtn">중복 확인</button>
+            </div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="문자, 숫자, 특수문자 포함 6~20글자 이내로 입력해 주세요." required>
+        </div>
+
+        <!-- 비밀번호 재확인 -->
+        <div class="form-group">
+            <label for="passwordConfirm">비밀번호 재확인</label>
+            <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력해주세요." required>
+        </div>
+
+        <!-- 이름 -->
+        <div class="form-group">
+            <label for="userName">이름</label>
+            <input type="text" id="userName" th:field="*{userName}" placeholder="이름을 입력해주세요." required>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <div class="flex-row">
+                <input type="email" id="email" th:field="*{email}" placeholder="이메일 주소를 입력해주세요." required>
+                <button type="button" class="btn" id="sendAuthCodeBtn">인증 메일 받기</button>
+            </div>
+        </div>
+
+        <!-- 인증번호 확인 -->
+        <div class="form-group">
+            <label for="authCode">인증번호 확인</label>
+            <div class="flex-row">
+                <input type="text" id="authCode" name="authNumber" placeholder="이메일로 온 인증번호를 입력해주세요." required>
+                <button type="button" class="btn" id="verifyAuthCodeBtn">인증 확인</button>
+            </div>
+        </div>
+
+        <!-- 회원가입 버튼 -->
+        <button type="submit" class="btn full">회원가입</button>
+
+        <!-- 로그인 이동 링크 -->
+        <div class="login-link">
+            이미 회원이신가요? <a th:href="@{/user/login}">로그인으로</a>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    // ID 중복 확인
+    document.getElementById("checkUserIdBtn").addEventListener("click", () => {
+        const userId = document.querySelector("#userId").value;
+        fetch(/*[[@{/user/checkUserId}]]*/, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'userId=' + encodeURIComponent(userId)
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert(data ? "이미 사용 중인 아이디입니다." : "사용 가능한 아이디입니다.");
+            });
+    });
+
+    // 이메일 인증 요청
+    document.getElementById("sendAuthCodeBtn").addEventListener("click", () => {
+        const email = document.querySelector("#email").value;
+        fetch(/*[[@{/user/send-auth-code}]]*/, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'email=' + encodeURIComponent(email)
+        })
+            .then(res => res.text())
+            .then(() => {
+                alert("인증번호가 발송되었습니다.");
+            });
+    });
+
+    // 인증번호 확인
+    document.getElementById("verifyAuthCodeBtn").addEventListener("click", () => {
+        const authCode = document.querySelector("#authCode").value;
+        fetch(/*[[@{/user/verify-auth-code}]]*/, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'authCode=' + encodeURIComponent(authCode)
+        })
+            .then(res => res.json())
+            .then(valid => {
+                alert(valid ? "인증이 완료되었습니다." : "인증번호가 올바르지 않습니다.");
+            });
+    });
+
+    // 입력값 확인 (공백, 비번 일치)
+    document.querySelector("form").addEventListener("submit", (e) => {
+        const requiredFields = ["userId", "password", "passwordConfirm", "userName", "email", "authCode"];
+        for (const id of requiredFields) {
+            const val = document.getElementById(id).value.trim();
+            if (!val) {
+                e.preventDefault();
+                alert("모든 입력칸을 채워주세요.");
+                return;
+            }
+        }
+
+        const pw = document.getElementById("password").value;
+        const pw2 = document.getElementById("passwordConfirm").value;
+        if (pw !== pw2) {
+            e.preventDefault();
+            alert("비밀번호가 일치하지 않습니다.");
+        }
+    });
+</script>
+</body>
+</html>
