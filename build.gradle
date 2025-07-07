@@ -24,16 +24,36 @@ repositories {
 }
 
 dependencies {
+
+    // Spring Data JPA (RDB - MariaDB 연동용)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Spring Data MongoDB (NoSQL용, 예: 운동/식단 정보 저장)
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mariadb'
+
+    // Thymeleaf (HTML 템플릿 엔진)
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Spring Web (MVC 및 REST API용)
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 이메일 전송용 (JavaMailSender)
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // 입력값 유효성 검사용 (JSR-303, @Valid 등)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // 마리아DB 드라이버 (JPA + MariaDB 연동 시 필요)
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // 롬복 (Getter/Setter/Builder 자동 생성)
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // 개발 시 핫리로드 지원
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // 테스트 관련 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
