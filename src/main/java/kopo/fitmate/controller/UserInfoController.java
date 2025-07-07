@@ -1,9 +1,11 @@
 package kopo.fitmate.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kopo.fitmate.dto.user.UserJoinDTO;
 import kopo.fitmate.dto.user.UserLoginDTO;
 import kopo.fitmate.service.IUserInfoService;
+import kopo.fitmate.service.IMailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserInfoController {
 
     private final IUserInfoService userInfoService;
+    private final IMailService mailService;
 
     /**
-     * 아이디 중복 체크 - (AJAX or Form)
+     * 아이디 중복 체크
      */
     @PostMapping("/checkUserId")
     @ResponseBody
@@ -28,12 +31,12 @@ public class UserInfoController {
     }
 
     /**
-     * 회원가입 폼 페이지 이동
+     * 회원가입 폼
      */
     @GetMapping("/join")
     public String userJoin(Model model) {
         model.addAttribute("user", new UserJoinDTO());
-        return "user/join";  // templates/user/join.html
+        return "user/join";
     }
 
     /**
@@ -52,12 +55,12 @@ public class UserInfoController {
     }
 
     /**
-     * 로그인 폼 페이지
+     * 로그인 폼
      */
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("user", new UserLoginDTO());
-        return "user/login";  // templates/user/loginForm.html
+        return "user/login";
     }
 
     /**
@@ -73,6 +76,25 @@ public class UserInfoController {
             return "user/login";
         }
 
-        return "redirect:/index"; // 로그인 성공 시 메인 페이지 이동
+        return "redirect:/index";
+    }
+
+    /**
+     * 인증번호 이메일 발송
+     */
+    @PostMapping("/send-auth-code")
+    @ResponseBody
+    public int sendEmailAuthCode(@RequestParam("email") String email, HttpSession session) throws Exception {
+        return mailService.sendAuthCode(email, session);
+    }
+
+    /**
+     * 인증번호 확인 처리
+     */
+    @PostMapping("/verify-auth-code")
+    @ResponseBody
+    public boolean verifyAuthCode(@RequestParam("authCode") String inputCode, HttpSession session) {
+        String savedCode = (String) session.getAttribute("EMAIL_AUTH_CODE");
+        return inputCode.equals(savedCode);
     }
 }
