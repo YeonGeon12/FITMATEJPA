@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kopo.fitmate.dto.user.UserJoinDTO;
 import kopo.fitmate.dto.user.UserLoginDTO;
+import kopo.fitmate.dto.user.UserEmailAuthDTO;
 import kopo.fitmate.service.IUserInfoService;
 import kopo.fitmate.service.IMailService;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,10 @@ public class UserInfoController {
      */
     @PostMapping("/send-auth-code")
     @ResponseBody
-    public int sendEmailAuthCode(@RequestParam("email") String email, HttpSession session) throws Exception {
+    public int sendEmailAuthCode(@RequestBody UserEmailAuthDTO dto,
+                                 HttpSession session) throws Exception {
+
+        String email = dto.getEmail(); // DTO에서 email 추출
         return mailService.sendAuthCode(email, session);
     }
 
@@ -93,8 +97,12 @@ public class UserInfoController {
      */
     @PostMapping("/verify-auth-code")
     @ResponseBody
-    public boolean verifyAuthCode(@RequestParam("authCode") String inputCode, HttpSession session) {
+    public boolean verifyAuthCode(@RequestBody UserEmailAuthDTO dto,
+                                  HttpSession session) {
+
+        String inputCode = dto.getAuthCode(); // DTO에서 인증번호 추출
         String savedCode = (String) session.getAttribute("EMAIL_AUTH_CODE");
+
         return inputCode.equals(savedCode);
     }
 }

@@ -19,5 +19,5 @@ public class UserEmailAuthDTO {
     // 이메일 인증번호 (6자리)
     @NotBlank(message = "인증번호를 입력하세요.")
     @Size(min = 6, max = 6, message = "인증번호는 6자리여야 합니다.")
-    private String authNumber;
+    private String authCode;
 }

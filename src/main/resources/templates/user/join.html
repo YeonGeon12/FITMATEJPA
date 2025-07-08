@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FITMATE - 회원가입</title>
+    <link rel="icon" href="/img/favicon_multi.ico" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/join.css}">
 </head>
 <body>
@@ -67,12 +68,12 @@
 </div>
 
 <script th:inline="javascript">
-    // ID 중복 확인
+    // ID 중복 확인 (그대로 유지)
     document.getElementById("checkUserIdBtn").addEventListener("click", () => {
         const userId = document.querySelector("#userId").value;
         fetch(/*[[@{/user/checkUserId}]]*/, {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'userId=' + encodeURIComponent(userId)
         })
             .then(res => res.json())
@@ -81,13 +82,13 @@
             });
     });
 
-    // 이메일 인증 요청
+    // 이메일 인증 요청 (변경됨)
     document.getElementById("sendAuthCodeBtn").addEventListener("click", () => {
         const email = document.querySelector("#email").value;
         fetch(/*[[@{/user/send-auth-code}]]*/, {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'email=' + encodeURIComponent(email)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
         })
             .then(res => res.text())
             .then(() => {
@@ -95,13 +96,14 @@
             });
     });
 
-    // 인증번호 확인
+    // 인증번호 확인 (변경됨)
     document.getElementById("verifyAuthCodeBtn").addEventListener("click", () => {
+        const email = document.querySelector("#email").value;
         const authCode = document.querySelector("#authCode").value;
         fetch(/*[[@{/user/verify-auth-code}]]*/, {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'authCode=' + encodeURIComponent(authCode)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, authCode: authCode })
         })
             .then(res => res.json())
             .then(valid => {
