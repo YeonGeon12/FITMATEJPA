@@ -1,6 +1,8 @@
 package kopo.fitmate.service.impl;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import kopo.fitmate.dto.user.UserFindIdDTO;
 import kopo.fitmate.dto.user.UserJoinDTO;
 import kopo.fitmate.dto.user.UserLoginDTO;
 import kopo.fitmate.repository.UserInfoRepository;
@@ -9,9 +11,16 @@ import kopo.fitmate.service.IUserInfoService;
 import kopo.fitmate.util.CmmUtil;
 import kopo.fitmate.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -78,5 +87,19 @@ public class UserInfoService implements IUserInfoService {
 
         Optional<UserInfoEntity> userOpt = userInfoRepository.findByUserId(userId);
         return userOpt.map(user -> user.getPassword().equals(inputPassword)).orElse(false);
+    }
+
+    /**
+     * 사용자 이름과 이메일로 DB에서 사용자 정보를 조회
+     *
+     * @param dto 이름과 이메일 정보
+     * @return 사용자 정보가 있을 경우 Optional로 반환
+     * @throws Exception 암호화 처리 중 예외 발생 시
+     */
+    @Override
+    public Optional<UserInfoEntity> findUserIdByNameAndEmail(UserFindIdDTO dto) throws Exception {
+        String userName = CmmUtil.nvl(dto.getUserName());
+        String email = EncryptUtil.encAES128CBC(CmmUtil.nvl(dto.getEmail())); // 이메일은 암호화되어 저장되므로 암호화 후 비교
+        return userInfoRepository.findByUserNameAndEmail(userName, email);
     }
 }

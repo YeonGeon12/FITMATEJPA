@@ -1,7 +1,11 @@
 package kopo.fitmate.service;
 
+import kopo.fitmate.dto.user.UserFindIdDTO;
 import kopo.fitmate.dto.user.UserJoinDTO;
 import kopo.fitmate.dto.user.UserLoginDTO;
+import kopo.fitmate.repository.impl.UserInfoEntity;
+
+import java.util.Optional;
 
 /**
  * 사용자 정보 관련 서비스 인터페이스
@@ -33,4 +37,14 @@ public interface IUserInfoService {
      * @throws Exception 암호화 또는 조회 중 예외 발생 가능
      */
     boolean loginUser(UserLoginDTO dto) throws Exception;
+
+    /**
+     * 사용자 이름과 이메일을 통해 사용자 정보를 조회하여 아이디를 찾는 메서드
+     *
+     * @param dto 이름과 이메일 정보를 담은 DTO
+     * @return 사용자 정보 (Optional로 감싸서 null 방지)
+     * @throws Exception 예외 발생 시
+     */
+    Optional<UserInfoEntity> findUserIdByNameAndEmail(UserFindIdDTO dto) throws Exception;
+
 }

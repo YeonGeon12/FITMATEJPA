@@ -2,16 +2,25 @@ package kopo.fitmate.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import kopo.fitmate.dto.user.UserFindIdDTO;
 import kopo.fitmate.dto.user.UserJoinDTO;
 import kopo.fitmate.dto.user.UserLoginDTO;
 import kopo.fitmate.dto.user.UserEmailAuthDTO;
+import kopo.fitmate.repository.impl.UserInfoEntity;
 import kopo.fitmate.service.IUserInfoService;
 import kopo.fitmate.service.IMailService;
+import kopo.fitmate.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -104,5 +113,88 @@ public class UserInfoController {
         String savedCode = (String) session.getAttribute("EMAIL_AUTH_CODE");
 
         return inputCode.equals(savedCode);
+    }
+
+    /**
+     * 이름과 이메일로 아이디 찾기 요청 처리
+     *
+     * @param dto 사용자 이름과 이메일 정보를 담은 DTO
+     * @return 성공 시 아이디, 이름, 복호화된 이메일 정보 반환 / 실패 시 404 에러 응답
+     */
+    @PostMapping("/find-id")
+    @ResponseBody
+    public ResponseEntity<?> findUserId(@RequestBody @Valid UserFindIdDTO dto) throws Exception {
+        Optional<UserInfoEntity> userOpt = userInfoService.findUserIdByNameAndEmail(dto);
+
+        if (userOpt.isPresent()) {
+            UserInfoEntity user = userOpt.get();
+
+            Map<String, String> result = new HashMap<>();
+            result.put("userId", user.getUserId());
+            result.put("userName", user.getUserName());
+            result.put("email", EncryptUtil.decAES128CBC(user.getEmail())); // 복호화된 이메일 반환
+
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 정보로 가입된 사용자가 없습니다.");
+        }
+    }
+
+    /**
+     * 사용자가 입력한 인증번호를 세션의 값과 비교하여 인증 여부를 확인
+     *
+     * @param authCode 사용자가 입력한 인증번호
+     * @param session 세션에 저장된 인증번호 비교용
+     * @return 인증 성공 여부 (true / false)
+     */
+    @PostMapping("/find-id/verify-auth-code")
+    @ResponseBody
+    public boolean verifyFindIdAuthCode(@RequestParam("authCode") String authCode, HttpSession session) {
+
+        // 세션에 저장된 인증번호 불러오기
+        String sessionCode = (String) session.getAttribute("EMAIL_AUTH_CODE");
+
+        // 비교 후 결과 반환
+        return authCode != null && authCode.equals(sessionCode);
+    }
+
+    /**
+     * 세션에 저장된 이름과 이메일 정보를 기반으로 사용자 아이디 조회
+     *
+     * @param session 인증 성공 후 저장된 이름 + 이메일 정보
+     * @return 사용자 ID, 이름, 복호화된 이메일 정보를 JSON으로 반환
+     */
+    @GetMapping("/find-id/result")
+    @ResponseBody
+    public ResponseEntity<?> getUserIdFromSession(HttpSession session) throws Exception {
+
+        // 1. 세션에서 이름과 이메일 정보 가져오기
+        String userName = (String) session.getAttribute("FIND_ID_NAME");
+        String email = (String) session.getAttribute("FIND_ID_EMAIL");
+
+        // 2. 값이 비어 있으면 잘못된 접근
+        if (userName == null || email == null) {
+            return ResponseEntity.badRequest().body("인증 세션이 만료되었습니다.");
+        }
+
+        // 3. 사용자 조회
+        UserFindIdDTO dto = new UserFindIdDTO();
+        dto.setUserName(userName);
+        dto.setEmail(email);
+
+        Optional<UserInfoEntity> userOpt = userInfoService.findUserIdByNameAndEmail(dto);
+
+        if (userOpt.isPresent()) {
+            UserInfoEntity user = userOpt.get();
+
+            Map<String, String> result = new HashMap<>();
+            result.put("userId", user.getUserId());
+            result.put("userName", user.getUserName());
+            result.put("email", EncryptUtil.decAES128CBC(user.getEmail())); // 복호화된 이메일
+
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+        }
     }
 }
