@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE - 로그인</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="icon" href="/img/favicon_multi.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <img src="/img/Logo2.jpg" alt="로고" class="logo">
+    <h2>로그인</h2>
+
+    <form th:action="@{/user/login}" method="post" th:object="${user}">
+
+        <!-- 오류 메시지 출력 -->
+        <div th:if="${error}" style="color: red; text-align: center; margin-bottom: 10px;">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- 아이디 -->
+        <div class="form-group">
+            <label for="userId">아이디:</label>
+            <input type="text" id="userId" th:field="*{userId}" placeholder="아이디를 입력하세요." required>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요." required>
+        </div>
+
+        <!-- 로그인 버튼 -->
+        <button type="submit" class="btn full">로그인</button>
+
+        <!-- 회원가입 버튼 (a 대신 button으로 통일) -->
+        <button type="button" class="btn full secondary" onclick="location.href='/user/join'">
+            회원가입
+        </button>
+
+        <!-- 하단 링크 -->
+        <div class="login-link">
+            <p>아이디와 비밀번호가 기억나지 않으신가요?</p>
+            <a href="/user/find-id" style="margin-right: 10px;">아이디 찾기</a>
+            <a href="/user/find-password">비밀번호 찾기</a>
+            <br><br>
+            <a href="/" style="display: inline-block;">← 돌아가기</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
