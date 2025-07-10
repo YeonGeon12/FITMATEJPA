@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE - 아이디 찾기</title>
+    <link rel="stylesheet" href="/css/findId.css">
+</head>
+<body>
+<div class="container">
+    <img src="/img/Logo2.jpg" alt="로고" class="logo">
+    <h2>아이디 찾기</h2>
+
+    <form id="findIdForm">
+
+        <!-- 이름 입력 -->
+        <div class="form-group">
+            <label for="userName">이름</label>
+            <input type="text" id="userName" placeholder="이름을 입력하세요" required>
+        </div>
+
+        <!-- 이메일 입력 -->
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="email" id="email" placeholder="이메일 주소를 입력하세요" required>
+        </div>
+
+        <!-- 인증 메일 요청 버튼 -->
+        <button type="button" class="btn" id="sendAuthBtn">인증 메일 받기</button>
+
+        <!-- 인증번호 입력 -->
+        <div class="form-group">
+            <label for="authCode">인증번호</label>
+            <input type="text" id="authCode" placeholder="인증번호를 입력하세요" required>
+        </div>
+
+        <!-- 인증 확인 버튼 -->
+        <button type="button" class="btn" id="verifyAuthBtn">인증 확인</button>
+
+    </form>
+
+    <!-- 인증 성공 시 결과 페이지 이동 -->
+    <div id="result" class="result-box" style="display: none;"></div>
+
+</div>
+
+<script th:inline="javascript">
+    // 인증 메일 요청
+    document.getElementById("sendAuthBtn").addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        const name = document.getElementById("userName").value;
+
+        if (!email || !name) {
+            alert("이름과 이메일을 모두 입력하세요.");
+            return;
+        }
+
+        // 인증 코드 전송 요청
+        fetch("/user/send-auth-code", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: "email=" + encodeURIComponent(email)
+        })
+            .then(res => res.text())
+            .then(() => {
+                alert("인증번호가 발송되었습니다.");
+                // 이름과 이메일을 세션에 저장하는 요청은 서버 쪽에 있어야 함
+                fetch("/user/store-find-id-session", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: "userName=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email)
+                });
+            });
+    });
+
+    // 인증번호 확인
+    document.getElementById("verifyAuthBtn").addEventListener("click", () => {
+        const code = document.getElementById("authCode").value;
+        fetch("/user/find-id/verify-auth-code", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: "authCode=" + encodeURIComponent(code)
+        })
+            .then(res => res.json())
+            .then(success => {
+                if (success) {
+                    // 인증 성공 → 결과페이지로 이동
+                    window.location.href = "/user/find-id/show-result";
+                } else {
+                    alert("인증번호가 일치하지 않습니다.");
+                }
+            });
+    });
+</script>
+</body>
+</html>

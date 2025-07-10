@@ -116,6 +116,16 @@ public class UserInfoController {
     }
 
     /**
+     * 아이디 찾기 화면 출력
+     */
+    @GetMapping("/find-id")
+    public String showFindIdForm(Model model) {
+        model.addAttribute("user", new UserFindIdDTO());
+        return "user/find-id"; // templates/user/find-id.html
+    }
+
+
+    /**
      * 이름과 이메일로 아이디 찾기 요청 처리
      *
      * @param dto 사용자 이름과 이메일 정보를 담은 DTO
@@ -197,4 +207,17 @@ public class UserInfoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
         }
     }
+
+    /**
+     * 아이디 찾기용 이름 + 이메일을 세션에 저장
+     */
+    @PostMapping("/store-find-id-session")
+    @ResponseBody
+    public void storeFindIdSession(@RequestParam("userName") String userName,
+                                   @RequestParam("email") String email,
+                                   HttpSession session) {
+        session.setAttribute("FIND_ID_NAME", userName);
+        session.setAttribute("FIND_ID_EMAIL", email);
+    }
+
 }
