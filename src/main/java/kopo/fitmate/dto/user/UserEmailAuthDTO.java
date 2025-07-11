@@ -20,4 +20,10 @@ public class UserEmailAuthDTO {
     @NotBlank(message = "인증번호를 입력하세요.")
     @Size(min = 6, max = 6, message = "인증번호는 6자리여야 합니다.")
     private String authCode;
+
+    @NotBlank(message = "인증 목적을 지정하세요.")
+    private String purpose; // signup / findId / findPw
+
+    private String userName; // findId, findPw 용
+
 }
