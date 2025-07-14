@@ -54,42 +54,56 @@
             return;
         }
 
-        // 인증 코드 전송 요청
-        fetch("/user/send-auth-code", {
+        // 인증 코드 전송 요청 - 목적 포함
+        fetch("/send-auth-code", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: "email=" + encodeURIComponent(email)
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                email: email,
+                purpose: "findId"
+            })
         })
-            .then(res => res.text())
-            .then(() => {
-                alert("인증번호가 발송되었습니다.");
-                // 이름과 이메일을 세션에 저장하는 요청은 서버 쪽에 있어야 함
-                fetch("/user/store-find-id-session", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: "userName=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email)
-                });
+            .then(res => res.json())
+            .then(result => {
+                if (result === 1) {
+                    alert("인증번호가 발송되었습니다.");
+                } else {
+                    alert("인증번호 발송에 실패했습니다.");
+                }
             });
     });
 
     // 인증번호 확인
     document.getElementById("verifyAuthBtn").addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        const name = document.getElementById("userName").value;
         const code = document.getElementById("authCode").value;
-        fetch("/user/find-id/verify-auth-code", {
+
+        if (!email || !name || !code) {
+            alert("이름, 이메일, 인증번호를 모두 입력하세요.");
+            return;
+        }
+
+        fetch("/verify-auth-code", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: "authCode=" + encodeURIComponent(code)
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                email: email,
+                authCode: code,
+                userName: name,
+                purpose: "findId"
+            })
         })
             .then(res => res.json())
             .then(success => {
                 if (success) {
-                    // 인증 성공 → 결과페이지로 이동
-                    window.location.href = "/user/find-id/show-result";
+                    window.location.href = "/find-id/result";
                 } else {
-                    alert("인증번호가 일치하지 않습니다.");
+                    alert("인증번호가 일치하지 않거나 정보가 정확하지 않습니다.");
                 }
             });
     });
 </script>
+
 </body>
 </html>

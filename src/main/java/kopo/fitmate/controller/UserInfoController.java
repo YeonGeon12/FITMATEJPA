@@ -98,21 +98,46 @@ public class UserInfoController {
                                  HttpSession session) throws Exception {
 
         String email = dto.getEmail(); // DTO에서 email 추출
-        return mailService.sendAuthCode(email, session);
+        // 통합 구조라 purpose는 여기선 아직 필요 없음
+        return mailService.sendAuthCode(email, session); // 인증번호는 EMAIL_AUTH_CODE에 저장
     }
 
     /**
-     * 인증번호 확인 처리
+     * 인증번호 확인 및 목적별 세션 저장 처리
      */
     @PostMapping("/verify-auth-code")
     @ResponseBody
     public boolean verifyAuthCode(@RequestBody UserEmailAuthDTO dto,
                                   HttpSession session) {
 
-        String inputCode = dto.getAuthCode(); // DTO에서 인증번호 추출
-        String savedCode = (String) session.getAttribute("EMAIL_AUTH_CODE");
+        String inputCode = dto.getAuthCode(); // 사용자가 입력한 인증번호
+        String savedCode = (String) session.getAttribute("EMAIL_AUTH_CODE"); // 세션에 저장된 인증번호
 
-        return inputCode.equals(savedCode);
+        if (inputCode != null && inputCode.equals(savedCode)) {
+
+            switch (dto.getPurpose()) {
+                case "signup":
+                    session.setAttribute("EMAIL_AUTH_SIGNUP", true);
+                    break;
+
+                case "findId":
+                    session.setAttribute("FIND_ID_NAME", dto.getUserName());
+                    session.setAttribute("FIND_ID_EMAIL", dto.getEmail());
+                    break;
+
+                case "findPw":
+                    session.setAttribute("FIND_PW_NAME", dto.getUserName());
+                    session.setAttribute("FIND_PW_EMAIL", dto.getEmail());
+                    break;
+
+                default:
+                    return false; // 예상하지 못한 purpose가 들어온 경우
+            }
+
+            return true; // 인증 성공 및 세션 저장 완료
+        }
+
+        return false; // 인증 실패
     }
 
     /**
