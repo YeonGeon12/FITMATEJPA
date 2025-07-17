@@ -245,4 +245,38 @@ public class UserInfoController {
         session.setAttribute("FIND_ID_EMAIL", email);
     }
 
+    @PostMapping("/user/send-auth-code")
+    public String sendAuthCode(@RequestParam String email) {
+        String code = MailUtil.sendAuthCode(email);
+        session.setAttribute("authCode", code);
+        return "ok";
+    }
+
+    @PostMapping("/user/store-find-id-session")
+    public String storeFindIdInfo(@RequestParam String userName, @RequestParam String email) {
+        session.setAttribute("findIdName", userName);
+        session.setAttribute("findIdEmail", email);
+        return "ok";
+    }
+
+    @PostMapping("/user/verify-auth-code")
+    public String verifyAuthCode(@RequestParam String authCode) {
+        String sessionCode = (String) session.getAttribute("authCode");
+        if (authCode.equals(sessionCode)) {
+            return "redirect:/user/find-id-result";
+        } else {
+            model.addAttribute("error", "invalid_code");
+            return "verify-id-code";
+        }
+    }
+
+    @GetMapping("/user/find-id-result")
+    public String findIdResult(Model model) {
+        String name = (String) session.getAttribute("findIdName");
+        String email = (String) session.getAttribute("findIdEmail");
+        Optional<UserEntity> user = userRepository.findByNameAndEmail(name, email);
+        user.ifPresent(u -> model.addAttribute("userId", u.getUserId()));
+        return "find-id-result";
+    }
+
 }
