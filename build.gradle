@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'kopo'
+version = '0.0.1-SNAPSHOT'
+description = 'FITMATE'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ============================= Web & Template Engine =============================
+    implementation 'org.springframework.boot:spring-boot-starter-web'          // Spring Web MVC, RESTful API 개발을 위한 핵심 의존성 (내장 톰캣 포함)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'    // 서버 사이드 렌더링을 위한 템플릿 엔진
+
+    // ============================= Database & Data Access =============================
+    // JPA (RDBMS)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA(Java Persistence API)를 사용한 데이터베이스 접근을 위한 의존성 (하이버네이트 포함)
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                      // MariaDB 데이터베이스 연결을 위한 JDBC 드라이버
+
+    // NoSQL (MongoDB)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
+
+    // In-Memory (Redis)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'   // Redis 데이터베이스 연동을 위한 의존성
+    implementation 'org.springframework.session:spring-session-data-redis' // Spring Session을 Redis를 통해 관리하여 세션 클러스터링 지원
+
+    // ============================= Microservice Communication =============================
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // 선언적 REST 클라이언트, 마이크로서비스 간 통신을 간편하게 구현
+
+    // ============================= Monitoring =============================
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'  // 애플리케이션 모니터링 및 관리를 위한 기능 제공 (헬스 체크, 메트릭 등)
+
+    // ============================= Developer Tools =============================
+    compileOnly 'org.projectlombok:lombok'                                  // Getter, Setter, 생성자 등 반복적인 코드를 어노테이션으로 자동 생성
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'         // 빠른 애플리케이션 재시작, 라이브 리로드 등 개발 편의 기능 제공
+    annotationProcessor 'org.projectlombok:lombok'                          // Lombok 어노테이션을 처리하기 위한 프로세서
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사 지원
+
+    // ============================= Testing =============================
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'   // Spring Boot 애플리케이션 테스트를 위한 핵심 의존성 (JUnit, Mockito 등 포함)
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'            // 테스트 실행을 위한 JUnit 플랫폼 런처
+}
+
+// OpenFeign 사용을 위한 dependencyManagement 설정 추가
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
