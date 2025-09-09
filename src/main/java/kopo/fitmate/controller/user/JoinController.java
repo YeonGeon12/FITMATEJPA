@@ -1,8 +1,8 @@
-package kopo.fitmate.controller;
+package kopo.fitmate.controller.user;
 
 import jakarta.validation.Valid;
-import kopo.fitmate.dto.UserDTO;
-import kopo.fitmate.service.IUserService;
+import kopo.fitmate.dto.JoinDTO;
+import kopo.fitmate.service.IJoinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class JoinController {
 
-    private final IUserService userService;
+    private final IJoinService userService;
 
     // 회원가입 페이지 이동
     @GetMapping("/userRegForm")
     public String userRegForm(Model model) {
         log.info(this.getClass().getName() + ".userRegForm !");
         // DTO 객체를 모델에 추가하여 Thymeleaf에서 사용
-        model.addAttribute("userDTO", new UserDTO());
+        model.addAttribute("userDTO", new JoinDTO());
         return "user/userRegForm"; // templates/user/userRegForm.html
     }
 
     // 회원가입 로직 처리
     @PostMapping("/insertUserInfo")
-    public String insertUserInfo(@Valid @ModelAttribute UserDTO pDTO, BindingResult bindingResult, Model model) {
+    public String insertUserInfo(@Valid @ModelAttribute JoinDTO pDTO, BindingResult bindingResult, Model model) {
         log.info(this.getClass().getName() + ".insertUserInfo Start!");
 
         if (bindingResult.hasErrors()) {

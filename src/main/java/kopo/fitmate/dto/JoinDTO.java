@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
+public class JoinDTO {
 
     // USERS 테이블의 Column ID와 매칭
     private Long userNo;
@@ -28,4 +28,5 @@ public class UserDTO {
     private String userName;
 
     private String createAt;
+
 }

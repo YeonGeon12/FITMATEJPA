@@ -14,7 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "USERS")
 @DynamicInsert
 @DynamicUpdate
-public class UserEntity {
+public class JoinEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class UserEntity {
     private String createAt;
 
     @Builder
-    public UserEntity(Long userNo, String email, String password, String userName, String createAt) {
+    public JoinEntity(Long userNo, String email, String password, String userName, String createAt) {
         this.userNo = userNo;
         this.email = email;
         this.password = password;

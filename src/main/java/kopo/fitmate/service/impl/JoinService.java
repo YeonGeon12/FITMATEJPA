@@ -1,10 +1,10 @@
 package kopo.fitmate.service.impl;
 
 import jakarta.transaction.Transactional;
-import kopo.fitmate.dto.UserDTO;
-import kopo.fitmate.repository.UserRepository;
-import kopo.fitmate.repository.entity.UserEntity;
-import kopo.fitmate.service.IUserService;
+import kopo.fitmate.dto.JoinDTO;
+import kopo.fitmate.repository.JoinRepository;
+import kopo.fitmate.repository.entity.JoinEntity;
+import kopo.fitmate.service.IJoinService;
 import kopo.fitmate.util.CmmUtil;
 import kopo.fitmate.util.DateUtil;
 import kopo.fitmate.util.EncryptUtil;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserService implements IUserService {
+public class JoinService implements IJoinService {
 
-    private final UserRepository userRepository;
+    private final JoinRepository userRepository;
 
     @Override
     @Transactional
-    public void insertUserInfo(UserDTO pDTO) throws Exception {
+    public void insertUserInfo(JoinDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".insertUserInfo Start!");
 
@@ -49,14 +49,14 @@ public class UserService implements IUserService {
         String createAt = DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss");
 
         // DTO를 Entity로 변환하여 저장
-        UserEntity userEntity = UserEntity.builder()
+        JoinEntity joinEntity = JoinEntity.builder()
                 .email(email)
                 .password(encryptedPassword) // 암호화된 비밀번호 저장
                 .userName(userName)
                 .createAt(createAt) // 현재 시간 저장
                 .build();
 
-        userRepository.save(userEntity);
+        userRepository.save(joinEntity);
 
         log.info(this.getClass().getName() + ".insertUserInfo End!");
     }
