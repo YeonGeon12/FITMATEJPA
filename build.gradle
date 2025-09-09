@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.5'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.2.5' // Spring Boot 버전을 최신 안정 버전으로 수정
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'kopo'
@@ -35,11 +35,11 @@ dependencies {
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                      // MariaDB 데이터베이스 연결을 위한 JDBC 드라이버
 
     // NoSQL (MongoDB)
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
+    //implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
 
     // In-Memory (Redis)
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'   // Redis 데이터베이스 연동을 위한 의존성
-    implementation 'org.springframework.session:spring-session-data-redis' // Spring Session을 Redis를 통해 관리하여 세션 클러스터링 지원
+    //implementation 'org.springframework.boot:spring-boot-starter-data-redis'   // Redis 데이터베이스 연동을 위한 의존성
+    //implementation 'org.springframework.session:spring-session-data-redis' // Spring Session을 Redis를 통해 관리하여 세션 클러스터링 지원
 
     // ============================= Microservice Communication =============================
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // 선언적 REST 클라이언트, 마이크로서비스 간 통신을 간편하게 구현
@@ -52,6 +52,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'         // 빠른 애플리케이션 재시작, 라이브 리로드 등 개발 편의 기능 제공
     annotationProcessor 'org.projectlombok:lombok'                          // Lombok 어노테이션을 처리하기 위한 프로세서
     implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사 지원
+    implementation 'org.springframework.boot:spring-boot-starter-security'  // 스프링 시큐리티 의존성 지원
 
     // ============================= Testing =============================
     testImplementation 'org.springframework.boot:spring-boot-starter-test'   // Spring Boot 애플리케이션 테스트를 위한 핵심 의존성 (JUnit, Mockito 등 포함)
@@ -67,4 +68,10 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// 'src/main/resources' 폴더의 내용을 처리하는 규칙 정의
+// 중복된 파일이 있을 경우, 기존 파일을 덮어쓰는(포함하는) 전략을 사용
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
