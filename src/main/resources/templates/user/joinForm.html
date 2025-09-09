@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE 회원가입</title>
+    <link rel="stylesheet" href="/css/joinForm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+<!-- 회원가입 성공 시 보일 토스트 메시지 (평소에는 숨겨져 있음) -->
+<div id="toast" class="toast"></div>
+
+<div class="join-container">
+    <img src="/img/Logo2.jpg" alt="FITMATE 로고" class="logo">
+    <h1>회원가입</h1>
+
+    <form id="joinForm">
+
+        <!-- 이메일 입력 그룹 -->
+        <div class="input-group">
+            <label for="email">ID (Email 주소)</label>
+            <input type="email" id="email" name="email" placeholder="example@email.com">
+            <div class="validation-message" id="email-msg"></div>
+        </div>
+
+        <!-- 비밀번호 입력 그룹 -->
+        <div class="input-group">
+            <label for="password">비밀번호 (Password)</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" placeholder="영문, 숫자 포함 6~20자">
+                <i class="fas fa-eye-slash password-toggle" id="toggle-password"></i>
+            </div>
+            <div class="validation-message" id="password-msg"></div>
+        </div>
+
+        <!-- 비밀번호 확인 입력 그룹 -->
+        <div class="input-group">
+            <label for="passwordCheck">비밀번호 (Re-enter password)</label>
+            <div class="password-wrapper">
+                <input type="password" id="passwordCheck" name="passwordCheck" placeholder="비밀번호를 다시 한번 입력해주세요">
+                <i class="fas fa-eye-slash password-toggle" id="toggle-password-check"></i>
+            </div>
+            <div class="validation-message" id="passwordCheck-msg"></div>
+        </div>
+
+        <!-- 이름 입력 그룹 -->
+        <div class="input-group">
+            <label for="userName">이름 (Name)</label>
+            <input type="text" id="userName" name="userName" placeholder="이름을 입력해주세요">
+            <div class="validation-message" id="userName-msg"></div>
+        </div>
+
+        <!-- 회원가입 버튼 -->
+        <button type="submit" id="joinBtn" class="join-btn">
+            <span class="btn-text">회원가입</span>
+            <div class="spinner"></div>
+        </button>
+    </form>
+
+    <div class="login-link">
+        <span>이미 FITMATE 회원이신가요?</span>
+        <a th:href="@{/user/loginForm}">로그인</a>
+    </div>
+</div>
+
+<script>
+    // ⭐ [수정됨] 스크립트 최상단에서 HTML 요소들을 미리 찾아 변수에 할당합니다.
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordCheckInput = document.getElementById('passwordCheck');
+    const userNameInput = document.getElementById('userName');
+    const joinForm = document.getElementById('joinForm'); // 'joinForm' ID를 가진 form 요소를 찾습니다.
+    const joinBtn = document.getElementById('joinBtn');
+
+    // 메시지 표시를 위한 헬퍼 함수
+    function showMessage(elementId, message, isError) {
+        const msgElement = document.getElementById(elementId);
+        const inputElement = document.getElementById(elementId.replace('-msg', ''));
+        msgElement.textContent = message;
+        msgElement.className = 'validation-message ' + (isError ? 'error' : 'success');
+        if (inputElement) {
+            isError ? inputElement.classList.add('error') : inputElement.classList.remove('error');
+        }
+    }
+
+    // 1. 이메일 실시간 중복 및 형식 검사
+    emailInput.addEventListener('blur', async () => {
+        const email = emailInput.value;
+        if (!email) {
+            showMessage('email-msg', '이메일을 입력해주세요.', true);
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showMessage('email-msg', '올바른 이메일 형식이 아닙니다.', true);
+            return;
+        }
+        try {
+            const response = await fetch(`/api/user/check-email?email=${email}`);
+            const data = await response.json(); // MsgDTO
+            showMessage('email-msg', data.msg, data.result !== 1);
+        } catch (error) {
+            showMessage('email-msg', '서버와 통신 중 오류가 발생했습니다.', true);
+        }
+    });
+
+    // 2. 비밀번호 형식 실시간 검사
+    passwordInput.addEventListener('blur', () => {
+        const password = passwordInput.value;
+        if (!password) {
+            showMessage('password-msg', '비밀번호를 입력해주세요.', true);
+        } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/.test(password)) {
+            showMessage('password-msg', '비밀번호는 영문, 숫자를 포함하여 6~20자여야 합니다.', true);
+        } else {
+            showMessage('password-msg', '사용 가능한 비밀번호입니다.', false);
+        }
+    });
+
+    // 3. 비밀번호 일치 실시간 검사
+    passwordCheckInput.addEventListener('blur', () => {
+        const password = passwordInput.value;
+        const passwordCheck = passwordCheckInput.value;
+        if (!passwordCheck) {
+            showMessage('passwordCheck-msg', '비밀번호를 다시 한번 입력해주세요.', true);
+        } else if (password !== passwordCheck) {
+            showMessage('passwordCheck-msg', '비밀번호가 일치하지 않습니다.', true);
+        } else {
+            showMessage('passwordCheck-msg', '비밀번호가 일치합니다.', false);
+        }
+    });
+
+    // 4. 이름 실시간 검사
+    userNameInput.addEventListener('blur', () => {
+        if (!userNameInput.value) {
+            showMessage('userName-msg', '이름을 입력해주세요.', true);
+        } else {
+            showMessage('userName-msg', '', false); // 에러 없으면 메시지 지우기
+        }
+    });
+
+    // 5. 최종 폼 제출 (AJAX)
+    // 'joinForm' 변수가 선언된 이후에 사용되므로 더 이상 에러가 발생하지 않습니다.
+    joinForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const hasError = document.querySelector('.validation-message.error');
+        const hasEmptyField = !emailInput.value || !passwordInput.value || !passwordCheckInput.value || !userNameInput.value;
+
+        if (hasError || hasEmptyField) {
+            showToast('입력 내용을 다시 확인해주세요.', true);
+            return;
+        }
+
+        joinBtn.classList.add('loading');
+
+        const formData = {
+            email: emailInput.value,
+            password: passwordInput.value,
+            passwordCheck: passwordCheckInput.value,
+            userName: userNameInput.value,
+        };
+
+        try {
+            const response = await fetch('/api/user/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            const data = await response.json();
+
+            if (data.result === 1) {
+                showToast(data.msg, false);
+                setTimeout(() => {
+                    window.location.href = '/user/loginForm';
+                }, 2000);
+            } else {
+                showToast(data.msg, true);
+            }
+        } catch (error) {
+            showToast('회원가입 중 오류가 발생했습니다.', true);
+        } finally {
+            joinBtn.classList.remove('loading');
+        }
+    });
+
+    // 토스트 메시지 함수
+    function showToast(message, isError) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast show ' + (isError ? 'error' : 'success');
+        setTimeout(() => {
+            toast.className = toast.className.replace('show', '');
+        }, 3000);
+    }
+
+    // 비밀번호 보기/숨기기 기능
+    function setupPasswordToggle(toggleId, passwordId) {
+        const toggle = document.getElementById(toggleId);
+        const password = document.getElementById(passwordId);
+        if(toggle && password) {
+            toggle.addEventListener('click', () => {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                toggle.classList.toggle('fa-eye');
+                toggle.classList.toggle('fa-eye-slash');
+            });
+        }
+    }
+    setupPasswordToggle('toggle-password', 'password');
+    setupPasswordToggle('toggle-password-check', 'passwordCheck');
+</script>
+</body>
+</html>

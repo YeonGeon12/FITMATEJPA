@@ -1,0 +1,199 @@
+/* Google Fonts에서 'Noto Sans KR' 폰트 임포트 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+/* 전체 페이지 기본 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* 회원가입 폼을 감싸는 컨테이너 */
+.join-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+/* 로고 이미지 스타일 */
+.logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+/* '회원가입' 제목 스타일 */
+.join-container h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+/* 각 입력 필드를 그룹화하는 div */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* 'ID(Email 주소)'와 같은 라벨 스타일 */
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* 입력창(input) 기본 스타일 */
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+    transition: border-color 0.3s;
+}
+
+/* 입력창 포커스 시 테두리 색상 변경 */
+.input-group input:focus {
+    outline: none;
+    border-color: #e53e3e;
+}
+
+/* 비밀번호 입력창과 아이콘을 묶는 컨테이너 */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 비밀번호 보기/숨기기 아이콘 */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: #888;
+}
+
+/* 유효성 검증 메시지 (인라인 메시지) 스타일 */
+.validation-message {
+    font-size: 12px;
+    margin-top: 5px;
+    display: none; /* 평소에는 숨김 */
+}
+
+/* 성공 메시지 (초록색) */
+.validation-message.success {
+    color: #28a745;
+    display: block;
+}
+
+/* 에러 메시지 (빨간색) */
+.validation-message.error {
+    color: #dc3545;
+    display: block;
+}
+
+/* 에러 발생 시 입력창 테두리 색상 변경 */
+.input-group input.error {
+    border-color: #dc3545;
+}
+
+/* 회원가입 버튼 스타일 */
+.join-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 버튼 위에 마우스 올렸을 때 색상 변경 */
+.join-btn:hover {
+    background-color: #c53030;
+}
+
+/* 버튼 비활성화 시 스타일 */
+.join-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 로딩 스피너 스타일 */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    display: none; /* 평소에는 숨김 */
+}
+.join-btn.loading .btn-text {
+    display: none;
+}
+.join-btn.loading .spinner {
+    display: block;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 하단 로그인 링크 스타일 */
+.login-link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #e53e3e;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* 토스트 메시지 스타일 */
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s, visibility 0.5s;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}

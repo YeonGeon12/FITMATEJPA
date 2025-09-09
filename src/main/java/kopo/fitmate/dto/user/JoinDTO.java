@@ -1,4 +1,4 @@
-package kopo.fitmate.dto;
+package kopo.fitmate.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
