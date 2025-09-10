@@ -123,11 +123,14 @@ body {
     margin-top: 20px;
     font-size: 14px;
     color: #555;
-    /* Flexbox를 사용하여 내부 요소들을 완벽하게 중앙 정렬합니다. */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px; /* 링크와 구분선(|) 사이의 간격 */
+    /* 제안해주신 대로 text-align을 사용하여 중앙 정렬합니다. */
+    width: 100%;
+    text-align: center;
+}
+
+.extra-links a, .extra-links span {
+    /* 각 요소 사이에 약간의 여백을 줍니다. */
+    margin: 0 5px;
 }
 
 .extra-links a {

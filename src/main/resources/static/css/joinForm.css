@@ -157,19 +157,24 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* 하단 로그인 링크 스타일 */
-.login-link {
+/* ⭐ [수정됨] login-link -> extra-links 클래스 이름 변경 및 중앙 정렬 적용 */
+.extra-links {
     margin-top: 20px;
     font-size: 14px;
+    color: #555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* 텍스트 사이의 간격 */
 }
 
-.login-link a {
+.extra-links a {
     color: #e53e3e;
     text-decoration: none;
     font-weight: 500;
 }
 
-.login-link a:hover {
+.extra-links a:hover {
     text-decoration: underline;
 }
 
