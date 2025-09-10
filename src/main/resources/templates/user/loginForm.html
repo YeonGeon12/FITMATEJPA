@@ -11,17 +11,12 @@
     <img src="/img/Logo2.jpg" alt="FITMATE 로고" class="logo">
     <h1>로그인</h1>
 
-    <!--
-      - [수정됨] th:action을 사용하여 폼 제출 시 /user/loginProc으로 데이터를 보냅니다.
-      - Spring Security가 이 요청을 가로채서 로그인 처리를 자동으로 수행합니다.
-    -->
     <form th:action="@{/user/loginProc}" method="post">
-
-        <!-- 로그인 실패 시, SecurityConfig가 ?error=true 파라미터를 붙여서 리다이렉트합니다. -->
+        <!-- 로그인 실패 메시지 표시 영역 -->
         <div th:if="${param.error}" class="error-message">
             아이디(이메일) 또는 비밀번호가 올바르지 않습니다.
         </div>
-        <!-- 회원가입 성공 후 JoinController에서 Flash Attribute로 보낸 메시지를 표시합니다. -->
+        <!-- 회원가입 성공 메시지 표시 영역 -->
         <div th:if="${successMsg}" class="success-message">
             <p th:text="${successMsg}"></p>
         </div>
@@ -29,14 +24,12 @@
         <!-- 이메일 입력 그룹 -->
         <div class="input-group">
             <label for="email">ID (Email 주소)</label>
-            <!-- name="email" : SecurityConfig의 usernameParameter와 일치해야 합니다. -->
             <input type="email" id="email" name="email" placeholder="example@email.com" required autocomplete="username">
         </div>
 
         <!-- 비밀번호 입력 그룹 -->
         <div class="input-group">
             <label for="password">비밀번호 (Password)</label>
-            <!-- name="password" : SecurityConfig의 passwordParameter와 일치해야 합니다. -->
             <input type="password" id="password" name="password" required autocomplete="current-password">
         </div>
 
@@ -50,6 +43,6 @@
         <a th:href="@{/user/joinForm}">회원가입</a>
     </div>
 </div>
-<!-- [수정됨] 복잡한 AJAX 스크립트를 모두 제거하여 안정성을 높입니다. -->
+<!-- [수정됨] 페이지 이동을 방해하던 모든 <script> 태그를 제거했습니다. -->
 </body>
 </html>
