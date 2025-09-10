@@ -53,6 +53,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'                          // Lombok 어노테이션을 처리하기 위한 프로세서
     implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사 지원
     implementation 'org.springframework.boot:spring-boot-starter-security'  // 스프링 시큐리티 의존성 지원
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'  // Thymeleaf가 Spring Security의 인증 정보를 사용할 수 있도록 돕는 라이브러리
 
     // ============================= Testing =============================
     testImplementation 'org.springframework.boot:spring-boot-starter-test'   // Spring Boot 애플리케이션 테스트를 위한 핵심 의존성 (JUnit, Mockito 등 포함)
