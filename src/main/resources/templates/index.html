@@ -1,10 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | Main</title>
+    <!-- 메인 페이지 전용 CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- Font Awesome 아이콘 (햄버거 메뉴 등) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css' rel='stylesheet' />
 </head>
 <body>
-<h1>Hello World</h1>
+<div class="main-container">
+    <!-- 상단 헤더 -->
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="/img/Logo2.jpg" alt="FITMATE 로고" class="header-logo">
+            <span class="logo-text">FITMATE</span>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#"><i class="fa-solid fa-dumbbell"></i><span>운동 추천 받기</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-file-pen"></i><span>내 기록 보기</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-utensils"></i><span>식단 추천 받기</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i><span>신체 분석</span></a></li>
+            </ul>
+        </nav>
+        <div class="user-menu">
+            <!--
+              sec:authorize="isAuthenticated()" : 로그인한 사용자에게만 보이는 영역
+              sec:authentication="principal.userName" : 로그인한 사용자의 이름(userName)을 가져옴
+            -->
+            <span sec:authorize="isAuthenticated()" class="user-name" th:text="|${#authentication.principal.userName}님 환영합니다!|"></span>
+            <button id="menu-toggle" class="menu-toggle-btn">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <!-- 드롭다운 메뉴 (평소에는 숨겨져 있음) -->
+            <div id="dropdown-menu" class="dropdown-menu">
+                <a href="#"><i class="fa-solid fa-user"></i> 마이페이지</a>
+                <a href="#"><i class="fa-solid fa-book-open"></i> 운동 사전</a>
+                <a href="#"><i class="fa-solid fa-apple-whole"></i> 영양 사전</a>
+                <!-- 로그아웃은 POST 방식으로 요청해야 안전합니다. -->
+                <form th:action="@{/user/logout}" method="post" style="margin: 0;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="main-content">
+        <!-- 왼쪽 사이드 콘텐츠 -->
+        <aside class="side-content">
+            <div class="action-card">
+                <h2>운동 추천 받기</h2>
+                <p>AI가 맞춤형 운동 루틴을 추천해 드립니다.</p>
+                <button>시작하기</button>
+            </div>
+            <div class="action-card">
+                <h2>식단 추천 받기</h2>
+                <p>목표에 맞는 건강한 식단을 받아보세요.</p>
+                <button>시작하기</button>
+            </div>
+        </aside>
+        <!-- 오른쪽 캘린더 콘텐츠 -->
+        <section class="calendar-section">
+            <h2>운동 일정</h2>
+            <!-- FullCalendar가 렌더링될 div -->
+            <div id='calendar'></div>
+        </section>
+    </main>
+</div>
+
+<!-- FullCalendar JavaScript -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 메뉴 토글 버튼 기능
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', function(event) {
+                event.stopPropagation(); // 이벤트 버블링 방지
+                dropdownMenu.classList.toggle('show');
+            });
+        }
+        // 페이지의 다른 곳을 클릭하면 메뉴가 닫히도록 설정
+        window.addEventListener('click', function(event) {
+            if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
+        // FullCalendar 초기화
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // 기본 월간 보기
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            // 여기에 서버에서 가져온 운동/식단 이벤트를 추가할 수 있습니다.
+            events: [
+                {
+                    title: '가슴 운동',
+                    start: '2025-09-10'
+                },
+                {
+                    title: '등 운동',
+                    start: '2025-09-12'
+                }
+            ]
+        });
+        calendar.render();
+    });
+</script>
 </body>
 </html>
+
