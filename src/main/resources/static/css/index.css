@@ -3,257 +3,294 @@
 
 /* 전체 페이지 기본 스타일 */
 body {
-    font-family: 'Noto Sans KR', sans-serif;
-    margin: 0;
-    background-color: #f4f7f6;
-    color: #333;
+    font-family: 'Noto Sans KR', sans-serif; /* 기본 글꼴을 'Noto Sans KR'로 설정 */
+    margin: 0; /* body의 기본 마진 제거 */
+    background-color: #f4f7f6; /* 페이지 전체 배경색 설정 */
+    color: #333; /* 기본 글자색 설정 */
 }
 
+/* 전체 콘텐츠를 감싸는 wrapper 스타일 */
 .wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 0 50px; /* 좌우 여백 추가 */
-    box-sizing: border-box;
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    flex-direction: column; /* 자식 요소들을 세로로 정렬 */
+    min-height: 100vh; /* 최소 높이를 화면 전체 높이로 설정 */
+    padding: 0 50px; /* 좌우에 50px의 여백 추가 */
+    box-sizing: border-box; /* padding과 border를 width, height 계산에 포함 */
 }
 
 /* 상단 헤더 스타일 */
 .main-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f3f4f6;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    height: 90px;
-    flex-shrink: 0;
-    padding: 0 20px;
-    border-radius: 12px;
-    margin-top: 20px; /* 헤더 위쪽 여백 */
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    align-items: center; /* 자식 요소들을 세로 중앙으로 정렬 */
+    justify-content: space-between; /* 자식 요소들 사이에 동일한 간격을 배분 */
+    background-color: #f3f4f6; /* 헤더 배경색 설정 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 헤더에 그림자 효과 추가 */
+    height: 90px; /* 헤더의 높이 고정 */
+    flex-shrink: 0; /* 창 크기가 줄어들 때 헤더 크기가 줄어들지 않도록 설정 */
+    padding: 0 20px; /* 헤더 내부 좌우 여백 추가 */
+    border-radius: 12px; /* 헤더의 모서리를 둥글게 처리 */
+    margin-top: 20px; /* 헤더 위쪽에 20px의 여백 추가 */
 }
 
+/* 로고와 텍스트를 감싸는 컨테이너 스타일 */
 .logo-container {
-    display: flex;
-    align-items: center;
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    align-items: center; /* 자식 요소들을 세로 중앙으로 정렬 */
 }
 
+/* 헤더 로고 이미지 스타일 */
 .header-logo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 15px;
+    width: 50px; /* 로고 너비 설정 */
+    height: 50px; /* 로고 높이 설정 */
+    border-radius: 50%; /* 로고를 원형으로 만듦 */
+    margin-right: 15px; /* 로고 오른쪽에 15px 여백 추가 */
 }
 
+/* 로고 텍스트 스타일 */
 .logo-text {
-    font-weight: 700;
-    font-size: 22px;
+    font-weight: 700; /* 글자 두께를 굵게 설정 */
+    font-size: 22px; /* 글자 크기 설정 */
 }
 
+/* 메인 네비게이션 메뉴 목록 스타일 */
 .main-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 25px;
+    list-style: none; /* 목록의 기본 점(bullet) 제거 */
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    gap: 25px; /* 메뉴 항목들 사이에 25px 간격 추가 */
 }
 
+/* 메인 네비게이션 메뉴 링크 스타일 */
 .main-nav a {
-    text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 8px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
+    text-decoration: none; /* 링크의 밑줄 제거 */
+    color: #555; /* 링크 글자색 설정 */
+    font-weight: 500; /* 글자 두께 설정 */
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    flex-direction: column; /* 아이콘과 텍스트를 세로로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    gap: 6px; /* 아이콘과 텍스트 사이 간격 추가 */
+    padding: 8px; /* 내부 여백 추가 */
+    border-radius: 8px; /* 모서리를 둥글게 처리 */
+    transition: background-color 0.2s; /* 배경색 변경 시 0.2초 동안 부드러운 효과 적용 */
 }
 
+/* 네비게이션 링크에 마우스를 올렸을 때 스타일 */
 .main-nav a:hover {
-    background-color: #e5e7eb;
+    background-color: #e5e7eb; /* 배경색 변경 */
 }
 
+/* 네비게이션 아이콘 스타일 */
 .main-nav a i {
-    font-size: 22px;
+    font-size: 22px; /* 아이콘 크기 설정 */
 }
+
+/* 네비게이션 텍스트 스타일 */
 .main-nav a span {
-    font-size: 13px;
+    font-size: 13px; /* 글자 크기 설정 */
 }
 
+/* 사용자 메뉴 영역 스타일 */
 .user-menu {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.menu-toggle-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    width: 200px;
-    overflow: hidden;
-    z-index: 1000;
-}
-
-.dropdown-menu.show {
-    display: block;
-}
-
-.dropdown-menu a, .dropdown-menu .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background-color 0.2s;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.dropdown-menu a:hover, .dropdown-menu .logout-btn:hover {
-    background-color: #f5f5f5;
-}
-
-.logout-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'Noto Sans KR', sans-serif;
-}
-.logout-btn i {
-    width: 20px;
-}
-
-.header-login-btn {
-    text-decoration: none;
-    color: #fff;
-    background-color: #e53e3e;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.header-login-btn:hover {
-    background-color: #c53030;
-}
-
-.main-content {
-    display: flex;
-    flex-grow: 1;
-    justify-content: center;
+    position: relative; /* 드롭다운 메뉴의 기준점이 됨 */
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
     align-items: center; /* 세로 중앙 정렬 */
-    gap: 50px;
-    padding: 20px 0;
+    gap: 15px; /* 자식 요소들 사이 간격 추가 */
 }
 
+/* 메뉴 토글 버튼 스타일 */
+.menu-toggle-btn {
+    background: none; /* 배경 제거 */
+    border: none; /* 테두리 제거 */
+    font-size: 24px; /* 아이콘 크기 설정 */
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+}
+
+/* 드롭다운 메뉴 기본 스타일 */
+.dropdown-menu {
+    display: none; /* 기본적으로 숨김 처리 */
+    position: absolute; /* .user-menu를 기준으로 위치 설정 */
+    top: 50px; /* 상단에서 50px 떨어진 위치 */
+    right: 0; /* 오른쪽 정렬 */
+    background-color: white; /* 배경색 설정 */
+    border-radius: 8px; /* 모서리를 둥글게 처리 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 그림자 효과 추가 */
+    width: 200px; /* 너비 설정 */
+    overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+    z-index: 1000; /* 다른 요소들 위에 표시되도록 z-index 설정 */
+}
+
+/* 드롭다운 메뉴가 활성화되었을 때 스타일 */
+.dropdown-menu.show {
+    display: block; /* 메뉴를 보이게 함 */
+}
+
+/* 드롭다운 메뉴 내부 링크와 버튼 공통 스타일 */
+.dropdown-menu a, .dropdown-menu .logout-btn {
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 10px; /* 아이콘과 텍스트 사이 간격 추가 */
+    padding: 12px 16px; /* 내부 여백 설정 */
+    color: #333; /* 글자색 설정 */
+    text-decoration: none; /* 링크 밑줄 제거 */
+    font-size: 16px; /* 글자 크기 설정 */
+    transition: background-color 0.2s; /* 배경색 변경 시 부드러운 효과 적용 */
+    width: 100%; /* 너비를 부모 요소에 꽉 채움 */
+    box-sizing: border-box; /* padding과 border를 width 계산에 포함 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+/* 드롭다운 메뉴 항목에 마우스를 올렸을 때 스타일 */
+.dropdown-menu a:hover, .dropdown-menu .logout-btn:hover {
+    background-color: #f5f5f5; /* 배경색 변경 */
+}
+
+/* 로그아웃 버튼 스타일 */
+.logout-btn {
+    background: none; /* 배경 제거 */
+    border: none; /* 테두리 제거 */
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+    font-family: 'Noto Sans KR', sans-serif; /* body와 동일한 폰트 적용 */
+}
+
+/* 로그아웃 버튼 아이콘 너비 조절 */
+.logout-btn i {
+    width: 20px; /* 아이콘이 차지하는 너비 고정 (텍스트 정렬을 위해) */
+}
+
+/* 헤더 로그인 버튼 스타일 */
+.header-login-btn {
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: #fff; /* 글자색을 흰색으로 설정 */
+    background-color: #e53e3e; /* 배경색 설정 */
+    padding: 8px 16px; /* 내부 여백 설정 */
+    border-radius: 8px; /* 모서리를 둥글게 처리 */
+    font-weight: 500; /* 글자 두께 설정 */
+    transition: background-color 0.2s; /* 배경색 변경 시 부드러운 효과 적용 */
+}
+
+/* 헤더 로그인 버튼에 마우스를 올렸을 때 스타일 */
+.header-login-btn:hover {
+    background-color: #c53030; /* 배경색을 더 어둡게 변경 */
+}
+
+/* 메인 콘텐츠 영역 스타일 */
+.main-content {
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    flex-grow: 1; /* wrapper의 남은 공간을 모두 차지하도록 설정 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 50px; /* 자식 요소들 사이 간격 추가 */
+    padding: 20px 0; /* 상하 여백 추가 */
+}
+
+/* 사이드 콘텐츠 영역 스타일 */
 .side-content {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    width: 350px;
-    flex-shrink: 0;
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    flex-direction: column; /* 자식 요소들을 세로로 정렬 */
+    gap: 30px; /* 자식 요소들 사이 간격 추가 */
+    width: 350px; /* 너비 고정 */
+    flex-shrink: 0; /* 창 크기가 줄어들 때 크기가 줄어들지 않도록 설정 */
 }
 
+/* 액션 카드(바로가기) 스타일 */
 .action-card {
-    padding: 20px;
-    border-radius: 12px;
-    height: 240px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-    background-color: white; /* [수정됨] 평소에는 흰색 배경 */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: all 0.2s ease-in-out;
+    padding: 20px; /* 내부 여백 설정 */
+    border-radius: 12px; /* 모서리를 둥글게 처리 */
+    height: 240px; /* 높이 고정 */
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    flex-direction: column; /* 자식 요소들을 세로로 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: #333; /* 기본 글자색 설정 */
+    background-color: white; /* 평소에는 흰색 배경 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* 그림자 효과 추가 */
+    transition: all 0.2s ease-in-out; /* 모든 속성 변경에 0.2초 동안 부드러운 효과 적용 */
 }
 
+/* 액션 카드에 마우스를 올렸을 때 스타일 */
 .action-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    background-color: #e53e3e; /* [수정됨] 마우스를 올렸을 때만 빨간색으로 변경 */
-    color: white; /* [수정됨] 마우스를 올렸을 때만 글씨를 흰색으로 변경 */
+    transform: translateY(-5px); /* 위로 5px 이동하는 효과 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12); /* 그림자를 더 진하게 변경 */
+    background-color: #e53e3e; /* 마우스를 올렸을 때 빨간색으로 변경 */
+    color: white; /* 마우스를 올렸을 때 글씨를 흰색으로 변경 */
 }
 
-/* [추가됨] 호버 시 p 태그 글씨색도 변경 */
+/* [추가됨] 마우스를 올렸을 때 p 태그 글씨색도 변경 */
 .action-card:hover p {
-    color: #f0f0f0;
+    color: #f0f0f0; /* p 태그의 글씨색을 밝은 회색으로 변경 */
 }
 
-
+/* 액션 카드 제목 스타일 */
 .action-card h2 {
-    margin: 0 0 10px 0;
-    text-align: center;
-    font-size: 20px;
+    margin: 0 0 10px 0; /* 아래쪽에만 10px 마진 추가 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    font-size: 20px; /* 글자 크기 설정 */
 }
+
+/* 액션 카드 설명 텍스트 스타일 */
 .action-card p {
-    margin: 0;
-    font-size: 15px;
-    color: #666;
-    text-align: center;
+    margin: 0; /* 기본 마진 제거 */
+    font-size: 15px; /* 글자 크기 설정 */
+    color: #666; /* 글자색 설정 */
+    text-align: center; /* 텍스트 중앙 정렬 */
     transition: color 0.2s ease-in-out; /* [추가됨] 글씨색 변경에 부드러운 효과 추가 */
 }
 
+/* 캘린더 섹션 스타일 */
 .calendar-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 700px;
-    flex-shrink: 0;
+    background-color: white; /* 배경색 설정 */
+    padding: 20px; /* 내부 여백 설정 */
+    border-radius: 12px; /* 모서리를 둥글게 처리 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* 그림자 효과 추가 */
+    width: 700px; /* 너비 고정 */
+    flex-shrink: 0; /* 창 크기가 줄어들 때 크기가 줄어들지 않도록 설정 */
 }
 
+/* 캘린더 헤더 스타일 */
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    justify-content: space-between; /* 자식 요소들 사이에 동일한 간격을 배분 */
+    align-items: center; /* 세로 중앙 정렬 */
+    margin-bottom: 15px; /* 아래쪽에 15px 마진 추가 */
 }
+
+/* 캘린더 헤더 제목(요일) 스타일 */
 .calendar-header h2 {
-    font-size: 20px;
-    margin: 0;
+    font-size: 20px; /* 글자 크기 설정 */
+    margin: 0; /* 기본 마진 제거 */
 }
+
+/* 캘린더 헤더 부제목(날짜) 스타일 */
 .calendar-header h3 {
-    font-size: 20px;
-    font-weight: 500;
-    margin: 0;
+    font-size: 20px; /* 글자 크기 설정 */
+    font-weight: 500; /* 글자 두께 설정 */
+    margin: 0; /* 기본 마진 제거 */
 }
 
+/* 캘린더 컨트롤 버튼 그룹 스타일 */
 .calendar-controls {
-    display: flex;
-    gap: 8px;
+    display: flex; /* 내부 요소들을 flexbox로 배치 */
+    gap: 8px; /* 버튼들 사이 간격 추가 */
 }
 
+/* 캘린더 컨트롤 버튼 스타일 */
 .calendar-controls button {
-    background: none;
-    border: 1px solid #ccc;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    background: none; /* 배경 제거 */
+    border: 1px solid #ccc; /* 테두리 설정 */
+    padding: 6px 10px; /* 내부 여백 설정 */
+    border-radius: 6px; /* 모서리를 둥글게 처리 */
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+    transition: background-color 0.2s; /* 배경색 변경 시 부드러운 효과 적용 */
 }
+
+/* 캘린더 컨트롤 버튼에 마우스를 올렸을 때 스타일 */
 .calendar-controls button:hover {
-    background-color: #f0f0f0;
+    background-color: #f0f0f0; /* 배경색 변경 */
 }
 
+/* 캘린더 전체 폰트 크기 조절 */
 #calendar {
-    font-size: 14px;
+    font-size: 14px; /* 캘린더 내부 글자 크기 설정 */
 }
-
