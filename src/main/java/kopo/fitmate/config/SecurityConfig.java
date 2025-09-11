@@ -88,14 +88,14 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 // 아래에 명시된 URL 패턴들은...
                 .requestMatchers(
-                        "/", // 루트 경로 허용
-                        "/user/loginForm",
+                        "/",                // 루트 경로 허용
+                        "/user/loginForm",  // 로그인 페이지 보기
                         "/user/joinForm",   // 회원가입 페이지 보기
                         "/user/join",       // 회원가입 처리 (Thymeleaf 폼 제출)
                         "/api/user/**",     // 모든 사용자 관련 API (이메일 중복 체크, API 방식 회원가입)
                         "/css/**",          // CSS 파일
-                        "/js/**",            // JavaScript 파일
-                        "/img/**"
+                        "/js/**",           // JavaScript 파일
+                        "/img/**"           // img 파일
                 ).permitAll() // ...permitAll() : 로그인 여부와 관계없이 누구나 접근을 '허용'합니다.
 
                 // 위에서 허용한 URL 외의 모든(any) 요청(request)은...
@@ -117,8 +117,8 @@ public class SecurityConfig {
                 // 로그인 폼에서 비밀번호(password)에 해당하는 input의 name 속성값을 지정합니다.
                 .passwordParameter("password")
 
-                // 로그인에 성공했을 때 기본적으로 이동할 URL을 지정합니다.
-                .defaultSuccessUrl("/main", true) // 로그인 성공 시 메인 페이지로 이동
+                // [수정됨] 로그인 성공 시 이동할 URL을 /main에서 /index로 변경
+                .defaultSuccessUrl("/index", true)
 
                 // 로그인에 실패했을 때 이동할 URL을 지정합니다.
                 .failureUrl("/user/loginForm?error=true") // 실패 시 에러 파라미터와 함께 다시 로그인 페이지로
