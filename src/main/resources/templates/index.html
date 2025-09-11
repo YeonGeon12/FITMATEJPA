@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FITMATE | Main</title>
-    <!-- 메인 페이지 전용 CSS -->
-    <link rel="stylesheet" href="/css/main.css">
-    <!-- Font Awesome 아이콘 (햄버거 메뉴 등) -->
+    <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css' rel='stylesheet' />
 </head>
 <body>
-<div class="main-container">
+
+<div class="wrapper">
     <!-- 상단 헤더 -->
     <header class="main-header">
         <div class="logo-container">
@@ -28,97 +26,92 @@
             </ul>
         </nav>
         <div class="user-menu">
-            <!--
-              sec:authorize="isAuthenticated()" : 로그인한 사용자에게만 보이는 영역
-              sec:authentication="principal.userName" : 로그인한 사용자의 이름(userName)을 가져옴
-            -->
-            <span sec:authorize="isAuthenticated()" class="user-name" th:text="|${#authentication.principal.userName}님 환영합니다!|"></span>
-            <button id="menu-toggle" class="menu-toggle-btn">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <!-- 드롭다운 메뉴 (평소에는 숨겨져 있음) -->
-            <div id="dropdown-menu" class="dropdown-menu">
-                <a href="#"><i class="fa-solid fa-user"></i> 마이페이지</a>
-                <a href="#"><i class="fa-solid fa-book-open"></i> 운동 사전</a>
-                <a href="#"><i class="fa-solid fa-apple-whole"></i> 영양 사전</a>
-                <!-- 로그아웃은 POST 방식으로 요청해야 안전합니다. -->
-                <form th:action="@{/user/logout}" method="post" style="margin: 0;">
-                    <button type="submit" class="logout-btn">
-                        <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
-                    </button>
-                </form>
+            <a th:href="@{/user/loginForm}" sec:authorize="isAnonymous()" class="header-login-btn">로그인</a>
+            <div sec:authorize="isAuthenticated()">
+                <button id="menu-toggle" class="menu-toggle-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div id="dropdown-menu" class="dropdown-menu">
+                    <a href="#"><i class="fa-solid fa-user"></i> MyPage</a>
+                    <a href="#"><i class="fa-solid fa-book-open"></i> 운동 사전</a>
+                    <a href="#"><i class="fa-solid fa-apple-whole"></i> 영양 사전</a>
+                    <form th:action="@{/user/logout}" method="post" style="margin: 0;">
+                        <button type="submit" class="logout-btn">
+                            <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- 메인 콘텐츠 영역 -->
     <main class="main-content">
-        <!-- 왼쪽 사이드 콘텐츠 -->
         <aside class="side-content">
-            <div class="action-card">
+            <!-- [수정됨] div.action-card -> a.action-card로 변경하고 버튼 제거 -->
+            <a href="#" class="action-card">
                 <h2>운동 추천 받기</h2>
                 <p>AI가 맞춤형 운동 루틴을 추천해 드립니다.</p>
-                <button>시작하기</button>
-            </div>
-            <div class="action-card">
+            </a>
+            <a href="#" class="action-card">
                 <h2>식단 추천 받기</h2>
                 <p>목표에 맞는 건강한 식단을 받아보세요.</p>
-                <button>시작하기</button>
-            </div>
+            </a>
         </aside>
-        <!-- 오른쪽 캘린더 콘텐츠 -->
+
         <section class="calendar-section">
-            <h2>운동 일정</h2>
-            <!-- FullCalendar가 렌더링될 div -->
+            <div class="calendar-header">
+                <h2>운동 일정</h2>
+                <h3 id="calendarTitle"></h3>
+                <div class="calendar-controls">
+                    <button id="prevBtn">&lt;</button>
+                    <button id="todayBtn">오늘</button>
+                    <button id="nextBtn">&gt;</button>
+                </div>
+            </div>
             <div id='calendar'></div>
         </section>
     </main>
 </div>
 
-<!-- FullCalendar JavaScript -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 메뉴 토글 버튼 기능
+        // 메뉴 토글 기능
         const menuToggle = document.getElementById('menu-toggle');
         const dropdownMenu = document.getElementById('dropdown-menu');
         if (menuToggle && dropdownMenu) {
-            menuToggle.addEventListener('click', function(event) {
-                event.stopPropagation(); // 이벤트 버블링 방지
+            menuToggle.addEventListener('click', (event) => {
+                event.stopPropagation();
                 dropdownMenu.classList.toggle('show');
             });
         }
-        // 페이지의 다른 곳을 클릭하면 메뉴가 닫히도록 설정
-        window.addEventListener('click', function(event) {
-            if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+        document.body.addEventListener('click', () => {
+            if (dropdownMenu?.classList.contains('show')) {
                 dropdownMenu.classList.remove('show');
             }
         });
 
-        // FullCalendar 초기화
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth', // 기본 월간 보기
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            // 여기에 서버에서 가져온 운동/식단 이벤트를 추가할 수 있습니다.
-            events: [
-                {
-                    title: '가슴 운동',
-                    start: '2025-09-10'
-                },
-                {
-                    title: '등 운동',
-                    start: '2025-09-12'
+        const calendarEl = document.getElementById('calendar');
+        const calendarTitleEl = document.getElementById('calendarTitle');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'ko',
+            headerToolbar: false,
+            contentHeight: 500,
+            events: [],
+            datesSet: function(info) {
+                if (calendarTitleEl) {
+                    calendarTitleEl.innerText = info.view.title;
                 }
-            ]
+            }
         });
         calendar.render();
+
+        document.getElementById('prevBtn')?.addEventListener('click', () => calendar.prev());
+        document.getElementById('todayBtn')?.addEventListener('click', () => calendar.today());
+        document.getElementById('nextBtn')?.addEventListener('click', () => calendar.next());
     });
 </script>
 </body>
 </html>
-
