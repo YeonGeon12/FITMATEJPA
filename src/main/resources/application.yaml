@@ -1,1 +1,74 @@
-spring.application.name=FITMATE
+# application.yml 중요 정보 제거 상태
+
+## Server Setting
+server:
+  port: 11000
+
+# Spring Setting
+spring:
+  application:
+    name: FITMATE
+
+  # MariaDB Setting
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://:3306/
+    username:
+    password:
+
+  # MongoDB와 Redis 설정을 하나의 'data' 키로 통합
+  data:
+    # MongoDB Setting
+    mongodb:
+      host:
+      port: 27017
+      database:
+      username:
+      password:
+
+    # Redis Setting
+    redis:
+      host:
+      port: 6379
+
+
+  # Session Setting (별도의 최상위 키로 분리)
+  session:
+    store-type: redis
+
+
+  # JPA 설정
+  jpa:
+    generate-ddl: false
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # Thymeleaf 설정
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+
+  # Mail 설정
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username:   # 여기에 이메일 주소 입력
+    password:          # 여기에 비밀번호 입력
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.naver.com
