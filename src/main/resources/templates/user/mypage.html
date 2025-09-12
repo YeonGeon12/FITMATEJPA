@@ -1,10 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | 마이 페이지</title>
+    <!-- 공통 스타일(index.css)과 마이페이지 전용 스타일(mypage.css)을 로드합니다. -->
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/mypage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
 
+<div class="wrapper">
+    <!-- th:replace를 사용해 index.html의 헤더 부분을 그대로 가져와 재사용합니다. -->
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <!-- 마이페이지 메인 콘텐츠 -->
+    <main class="mypage-main-content">
+        <div class="mypage-container">
+            <h1>마이페이지</h1>
+
+            <!-- 내 정보 섹션 -->
+            <div class="info-section">
+                <h2>내 정보</h2>
+                <div class="info-row">
+                    <span>이름</span>
+                    <!-- Controller에서 전달받은 userInfo 객체의 userName을 표시합니다. -->
+                    <span th:text="${userInfo.userName}">USER_NAME</span>
+                </div>
+                <div class="info-row">
+                    <span>이메일</span>
+                    <!-- Controller에서 전달받은 userInfo 객체의 email을 표시합니다. -->
+                    <span th:text="${userInfo.email}">example@email.com</span>
+                </div>
+            </div>
+
+            <!-- 나의 활동 섹션 -->
+            <div class="action-section">
+                <h2>나의 활동</h2>
+                <a href="#" class="action-item">저장된 루틴 또는 식단 보기</a>
+                <a href="#" class="action-item">나의 신체 정보 수정하기</a>
+            </div>
+
+            <!-- 계정 관리 섹션 -->
+            <div class="action-section">
+                <h2>계정 관리</h2>
+                <a href="#" class="action-item">비밀번호 변경하기</a>
+                <!-- 로그아웃은 POST 방식으로 처리해야 하므로 form 태그를 사용합니다. -->
+                <form th:action="@{/user/logout}" method="post" class="action-item-form">
+                    <button type="submit" class="logout-button">로그아웃</button>
+                </form>
+            </div>
+
+            <div class="bottom-links">
+                <a href="#" class="withdrawal-link">회원 탈퇴</a>
+                <!-- 홈(메인) 화면으로 돌아가는 링크입니다. -->
+                <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    // index.html의 드롭다운 메뉴 스크립트를 그대로 가져와서 헤더가 정상 동작하도록 합니다.
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+        }
+        document.body.addEventListener('click', () => {
+            if (dropdownMenu?.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    });
+</script>
 </body>
 </html>
+
