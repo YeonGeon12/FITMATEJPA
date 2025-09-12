@@ -30,6 +30,11 @@ public class UserAuthDTO implements UserDetails {
         this.userName = userEntity.getUserName();
     }
 
+    // [해결책] userName 필드에 대한 Getter를 명시적으로 추가합니다.
+    public String getUserName() {
+        return this.userName;
+    }
+
     // 사용자의 권한을 반환 (지금은 단순하게 "USER" 역할만 부여)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -42,7 +47,7 @@ public class UserAuthDTO implements UserDetails {
         return this.password;
     }
 
-    // 사용자의 아이디(이메일)를 반환
+    // 사용자의 아이디(이메일)를 반환 (UserDetails 인터페이스의 필수 메소드)
     @Override
     public String getUsername() {
         return this.email;
