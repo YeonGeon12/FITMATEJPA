@@ -1,5 +1,6 @@
 package kopo.fitmate.service;
 
+import kopo.fitmate.dto.user.ChangePasswordDTO;
 import kopo.fitmate.dto.user.JoinDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -21,5 +22,12 @@ public interface IUserService extends UserDetailsService {
      * @return 중복이면 true, 아니면 false
      */
     boolean checkEmailDuplicate(String email);
+
+    /**
+     * [새로 추가] 로그인된 사용자의 비밀번호 변경
+     * @param pDTO 변경할 비밀번호 정보가 담긴 DTO
+     * @param email 현재 로그인된 사용자의 이메일
+     */
+    void changeUserPassword(ChangePasswordDTO pDTO, String email) throws Exception;
 
 }

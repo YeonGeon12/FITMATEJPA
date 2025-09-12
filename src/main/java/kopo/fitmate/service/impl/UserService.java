@@ -1,6 +1,7 @@
 package kopo.fitmate.service.impl;
 
 import jakarta.transaction.Transactional;
+import kopo.fitmate.dto.user.ChangePasswordDTO;
 import kopo.fitmate.dto.user.JoinDTO;
 import kopo.fitmate.dto.user.UserAuthDTO;
 import kopo.fitmate.repository.UserRepository;
@@ -105,6 +106,39 @@ public class UserService implements IUserService {
         // 2. 조회된 사용자 정보를 UserAuthDTO에 담아 반환
         //    이 DTO를 받은 Spring Security가 비밀번호 비교 등을 알아서 처리해 줌
         return new UserAuthDTO(userEntity);
+    }
+
+
+    // ######################### 비밀번호 비밀번호 변경 매서드 ##########################################
+
+    /**
+     * [새로 추가] 비밀번호 변경 로직을 수행하는 메서드
+     */
+    @Override
+    @Transactional
+    public void changeUserPassword(ChangePasswordDTO pDTO, String email) throws Exception {
+        log.info(this.getClass().getName() + ".changeUserPassword Start!");
+
+        // 1. 이메일을 기준으로 DB에서 사용자 정보를 조회합니다.
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email + " not found."));
+
+        // 2. 입력받은 '현재 비밀번호'가 DB에 저장된 비밀번호와 일치하는지 확인합니다.
+        //    passwordEncoder.matches()가 암호화된 비밀번호를 안전하게 비교해줍니다.
+        if (!passwordEncoder.matches(pDTO.getCurrentPassword(), userEntity.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. '새 비밀번호'와 '새 비밀번호 확인' 값이 일치하는지 확인합니다.
+        if (!pDTO.getNewPassword().equals(pDTO.getNewPasswordCheck())) {
+            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 4. 모든 검증을 통과하면, 새 비밀번호를 암호화하여 DB에 업데이트합니다.
+        userEntity.setPassword(passwordEncoder.encode(pDTO.getNewPassword()));
+
+        // @Transactional 어노테이션 덕분에 메서드가 종료될 때 변경된 내용이 자동으로 DB에 저장(update)됩니다.
+        log.info(this.getClass().getName() + ".changeUserPassword End!");
     }
 
 }
