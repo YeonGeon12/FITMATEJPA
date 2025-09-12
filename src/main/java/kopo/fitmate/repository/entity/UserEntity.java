@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * 사용자 정보를 나타내는 엔티티 클래스.
@@ -43,5 +41,12 @@ public class UserEntity {
         this.userName = userName;
         this.createAt = createAt;
     }
-}
 
+    /**
+     * [해결책] 비밀번호 변경을 위한 Setter 메서드를 명시적으로 추가합니다.
+     * JPA가 트랜잭션 내에서 이 메서드 호출을 감지하고 DB에 update 쿼리를 실행합니다. (Dirty Checking)
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
