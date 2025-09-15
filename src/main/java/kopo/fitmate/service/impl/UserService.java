@@ -1,11 +1,11 @@
 package kopo.fitmate.service.impl;
 
 import jakarta.transaction.Transactional;
-import kopo.fitmate.dto.user.ChangePasswordDTO;
-import kopo.fitmate.dto.user.JoinDTO;
-import kopo.fitmate.dto.user.UserAuthDTO;
+import kopo.fitmate.dto.user.*;
+import kopo.fitmate.repository.UserProfileRepository;
 import kopo.fitmate.repository.UserRepository;
 import kopo.fitmate.repository.entity.UserEntity;
+import kopo.fitmate.repository.entity.UserProfileEntity;
 import kopo.fitmate.service.IUserService;
 import kopo.fitmate.util.CmmUtil;
 import kopo.fitmate.util.DateUtil;
@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException; 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service("UserService") // 서비스 이름 명시
@@ -26,6 +28,9 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    // UserProfileRepository 주입
+    private final UserProfileRepository userProfileRepository;
 
     // #################################################### 회원 가입 메서드 ##############################
 
@@ -112,7 +117,7 @@ public class UserService implements IUserService {
     // ######################### 비밀번호 비밀번호 변경 매서드 ##########################################
 
     /**
-     * [새로 추가] 비밀번호 변경 로직을 수행하는 메서드
+     * 비밀번호 변경 로직을 수행하는 메서드
      */
     @Override
     @Transactional
@@ -139,6 +144,75 @@ public class UserService implements IUserService {
 
         // @Transactional 어노테이션 덕분에 메서드가 종료될 때 변경된 내용이 자동으로 DB에 저장(update)됩니다.
         log.info(this.getClass().getName() + ".changeUserPassword End!");
+    }
+
+    // ############################### 사용자 프로필 생성 및 조회 로직 ################################################
+    /**
+     * 사용자 프로필 정보 조회 로직
+     */
+    @Override
+    public Optional<UserProfileDTO> getUserProfile(Long userNo) {
+        log.info(this.getClass().getName() + ".getUserProfile Start!");
+
+        // userNo를 기준으로 프로필 정보를 조회
+        Optional<UserProfileEntity> profileEntityOptional = userProfileRepository.findByUser_UserNo(userNo);
+
+        // 조회된 엔티티가 존재하면 DTO로 변환하여 반환
+        if (profileEntityOptional.isPresent()) {
+            UserProfileEntity profileEntity = profileEntityOptional.get();
+            UserProfileDTO dto = UserProfileDTO.builder()
+                    .height(profileEntity.getHeight())
+                    .weight(profileEntity.getWeight())
+                    .age(profileEntity.getAge())
+                    .gender(profileEntity.getGender())
+                    .activityLevel(profileEntity.getActivityLevel())
+                    .build();
+            return Optional.of(dto);
+        }
+
+        // 정보가 없으면 빈 Optional 객체 반환
+        return Optional.empty();
+    }
+
+    /**
+     * 사용자 프로필 정보 저장 또는 수정 로직
+     */
+    @Override
+    @Transactional
+    public void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception {
+        log.info(this.getClass().getName() + ".saveOrUpdateUserProfile Start!");
+
+        // 1. userNo로 UserEntity를 찾습니다. (프로필의 주인)
+        UserEntity user = userRepository.findById(userNo)
+                .orElseThrow(() -> new Exception("User not found!"));
+
+        // 2. 해당 유저의 프로필 정보가 이미 존재하는지 확인합니다.
+        Optional<UserProfileEntity> profileOptional = userProfileRepository.findByUser_UserNo(userNo);
+
+        if (profileOptional.isPresent()) {
+            // 3-1. 정보가 존재하면, 기존 엔티티를 가져와 정보를 수정합니다. (Update)
+            UserProfileEntity existingProfile = profileOptional.get();
+            existingProfile.updateProfile(
+                    pDTO.getHeight(),
+                    pDTO.getWeight(),
+                    pDTO.getAge(),
+                    pDTO.getGender(),
+                    pDTO.getActivityLevel()
+            );
+        } else {
+            // 3-2. 정보가 없으면, 새로운 엔티티를 생성합니다. (Insert)
+            UserProfileEntity newProfile = UserProfileEntity.builder()
+                    .user(user)
+                    .height(pDTO.getHeight())
+                    .weight(pDTO.getWeight())
+                    .age(pDTO.getAge())
+                    .gender(pDTO.getGender())
+                    .activityLevel(pDTO.getActivityLevel())
+                    .build();
+            userProfileRepository.save(newProfile);
+        }
+
+        log.info(this.getClass().getName() + ".saveOrUpdateUserProfile End!");
     }
 
 }

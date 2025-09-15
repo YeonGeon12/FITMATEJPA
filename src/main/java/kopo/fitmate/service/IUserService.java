@@ -2,7 +2,11 @@ package kopo.fitmate.service;
 
 import kopo.fitmate.dto.user.ChangePasswordDTO;
 import kopo.fitmate.dto.user.JoinDTO;
+import kopo.fitmate.dto.user.UpdateProfileDTO;
+import kopo.fitmate.dto.user.UserProfileDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.Optional;
 
 /**
  * 사용자 관련 비즈니스 로직을 정의하는 인터페이스.
@@ -24,10 +28,24 @@ public interface IUserService extends UserDetailsService {
     boolean checkEmailDuplicate(String email);
 
     /**
-     * [새로 추가] 로그인된 사용자의 비밀번호 변경
+     * 로그인된 사용자의 비밀번호 변경
      * @param pDTO 변경할 비밀번호 정보가 담긴 DTO
      * @param email 현재 로그인된 사용자의 이메일
      */
     void changeUserPassword(ChangePasswordDTO pDTO, String email) throws Exception;
+
+    /**
+     * 사용자 프로필 정보 조회
+     * @param userNo 현재 로그인된 사용자의 고유 번호(PK)
+     * @return 프로필 정보가 담긴 DTO (정보가 없으면 Optional.empty() 반환)
+     */
+    Optional<UserProfileDTO> getUserProfile(Long userNo);
+
+    /**
+     * 사용자 프로필 정보 저장 또는 수정
+     * @param pDTO 저장할 프로필 정보가 담긴 DTO
+     * @param userNo 현재 로그인된 사용자의 고유 번호(PK)
+     */
+    void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception;
 
 }

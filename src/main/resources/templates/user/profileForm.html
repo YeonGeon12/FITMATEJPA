@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | 나의 신체 정보</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/profileForm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="profile-main-content">
+        <div class="profile-container">
+            <h1>나의 신체 정보</h1>
+            <p class="subtitle">정확한 추천을 위해 신체 정보를 입력해주세요.</p>
+
+            <div th:if="${errorMsg}" class="server-message error" th:text="${errorMsg}"></div>
+
+            <!-- th:object를 설정하여 이 폼이 UpdateProfileDTO와 연결됨을 명시합니다. -->
+            <form th:action="@{/user/updateProfile}" th:object="${updateProfileDTO}" method="post">
+                <div class="form-grid">
+                    <!-- 키 -->
+                    <div class="input-group">
+                        <label for="height">키 (cm)</label>
+                        <input type="number" step="0.1" id="height" th:field="*{height}" placeholder="예: 175.5">
+                        <!-- [수정됨] th:if와 th:errors를 사용하여 서버로부터 받은 유효성 검사 오류 메시지를 표시합니다. -->
+                        <div class="validation-message error" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></div>
+                    </div>
+
+                    <!-- 몸무게 -->
+                    <div class="input-group">
+                        <label for="weight">몸무게 (kg)</label>
+                        <input type="number" step="0.1" id="weight" th:field="*{weight}" placeholder="예: 70.2">
+                        <div class="validation-message error" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></div>
+                    </div>
+
+                    <!-- 나이 -->
+                    <div class="input-group">
+                        <label for="age">나이</label>
+                        <input type="number" id="age" th:field="*{age}" placeholder="예: 28">
+                        <div class="validation-message error" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+                    </div>
+
+                    <!-- 성별 -->
+                    <div class="input-group">
+                        <label>성별</label>
+                        <div class="radio-group">
+                            <label><input type="radio" th:field="*{gender}" value="남자"> 남자</label>
+                            <label><input type="radio" th:field="*{gender}" value="여자"> 여자</label>
+                            <label><input type="radio" th:field="*{gender}" value="기타"> 기타</label>
+                        </div>
+                        <div class="validation-message error" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+                    </div>
+                </div>
+
+                <!-- 활동 수준 -->
+                <div class="input-group full-width">
+                    <label for="activityLevel">활동 수준</label>
+                    <select id="activityLevel" th:field="*{activityLevel}">
+                        <option value="">활동 수준을 선택해주세요</option>
+                        <option value="적음">적음 (주 1-2회 운동)</option>
+                        <option value="보통">보통 (주 3-4회 운동)</option>
+                        <option value="많음">많음 (주 5회 이상 운동)</option>
+                    </select>
+                    <div class="validation-message error" th:if="${#fields.hasErrors('activityLevel')}" th:errors="*{activityLevel}"></div>
+                </div>
+
+                <button type="submit" class="save-btn">저장하기</button>
+            </form>
+
+            <div class="bottom-links">
+                <a th:href="@{/user/mypage}" class="back-link">← 마이페이지로 돌아가기</a>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    // 헤더 드롭다운 메뉴 스크립트 (공통)
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+        }
+        document.body.addEventListener('click', () => {
+            if (dropdownMenu?.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    });
+</script>
+</body>
+</html>
