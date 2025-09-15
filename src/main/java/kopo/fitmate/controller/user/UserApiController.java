@@ -1,6 +1,7 @@
 package kopo.fitmate.controller.user; // 패키지 경로를 user로 수정
 
 import jakarta.validation.Valid;
+import kopo.fitmate.dto.user.ChangePasswordDTO;
 import kopo.fitmate.dto.user.JoinDTO;
 import kopo.fitmate.dto.user.LoginDTO;
 import kopo.fitmate.dto.MsgDTO;
@@ -127,6 +128,44 @@ public class UserApiController {
             response.setResult(0);
             response.setMsg("아이디(이메일) 또는 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    /**
+     * 비밀번호 변경 처리 API
+     * @param pDTO 클라이언트로부터 받은 비밀번호 변경 정보 (JSON)
+     * @param authentication 현재 로그인된 사용자 정보
+     * @return 처리 결과를 담은 MsgDTO
+     */
+    @PostMapping("/change-password")
+    public ResponseEntity<MsgDTO> changePassword(@Valid @RequestBody ChangePasswordDTO pDTO, Authentication authentication) {
+        log.info(this.getClass().getName() + ".changePassword API Start!");
+        MsgDTO response = new MsgDTO();
+
+        try {
+            // 현재 로그인된 사용자의 이메일(ID) 가져오기
+            String email = authentication.getName();
+
+            // 서비스에 DTO와 이메일을 전달하여 비밀번호 변경 로직 수행
+            userService.changeUserPassword(pDTO, email);
+
+            response.setResult(1);
+            response.setMsg("비밀번호가 성공적으로 변경되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            // 서비스에서 발생시킨 비즈니스 오류 (현재 비밀번호 불일치 등)
+            log.warn("Password change failed: {}", e.getMessage());
+            response.setResult(0);
+            response.setMsg(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            // 그 외 서버 오류
+            log.error("Server error during password change", e);
+            response.setResult(-1);
+            response.setMsg("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }
