@@ -1,9 +1,7 @@
 package kopo.fitmate.controller.user; // 패키지 경로를 user로 수정
 
 import jakarta.validation.Valid;
-import kopo.fitmate.dto.user.ChangePasswordDTO;
-import kopo.fitmate.dto.user.JoinDTO;
-import kopo.fitmate.dto.user.LoginDTO;
+import kopo.fitmate.dto.user.*;
 import kopo.fitmate.dto.MsgDTO;
 import kopo.fitmate.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -165,6 +164,32 @@ public class UserApiController {
             log.error("Server error during password change", e);
             response.setResult(-1);
             response.setMsg("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * [새로 추가] 사용자 프로필 정보 수정 API
+     * @param pDTO 클라이언트로부터 받은 프로필 정보 (JSON)
+     * @param user 현재 로그인된 사용자 정보
+     * @return 처리 결과를 담은 MsgDTO
+     */
+    @PostMapping("/update-profile")
+    public ResponseEntity<MsgDTO> updateProfile(@Valid @RequestBody UpdateProfileDTO pDTO,
+                                                @AuthenticationPrincipal UserAuthDTO user) {
+        log.info(this.getClass().getName() + ".updateProfile API Start!");
+        MsgDTO response = new MsgDTO();
+
+        try {
+            userService.saveOrUpdateUserProfile(pDTO, user.getUserNo());
+            response.setResult(1);
+            response.setMsg("프로필 정보가 성공적으로 저장되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Profile update failed: ", e);
+            response.setResult(-1);
+            response.setMsg("정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
