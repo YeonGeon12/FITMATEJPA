@@ -163,3 +163,28 @@
     font-size: 14px;
 }
 
+/* [추가됨] 토스트 메시지 스타일 */
+.toast {
+    visibility: hidden; /* 평소에는 숨김 */
+    min-width: 250px;
+    background-color: #333; /* 기본 배경색 */
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed; /* 화면에 고정 */
+    z-index: 100;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px; /* 화면 하단에서 30px 위 */
+    font-size: 16px;
+    opacity: 0; /* 처음엔 투명 */
+    transition: all 0.5s; /* 부드러운 등장/사라짐 효과 */
+}
+
+/* 'show' 클래스가 추가되면 토스트를 보이게 함 */
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px; /* 아래에서 위로 살짝 올라오는 효과 */
+}

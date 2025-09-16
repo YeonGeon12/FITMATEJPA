@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
-<!-- 토스트 알림을 위한 숨겨진 div -->
 <div id="toast" class="toast"></div>
 
 <div class="wrapper">
@@ -20,27 +19,23 @@
             <h1>나의 신체 정보</h1>
             <p class="subtitle">정확한 추천을 위해 신체 정보를 입력해주세요.</p>
 
-            <!-- AJAX 통신을 위해 form 태그에 id를 부여하고 th:action, method를 제거합니다. -->
-            <form id="profileForm" th:object="${updateProfileDTO}">
+            <form id="profileForm" th:object="${updateProfileDTO}" onsubmit="return false;">
                 <div class="form-grid">
                     <div class="input-group">
                         <label for="height">키 (cm)</label>
                         <input type="number" step="0.1" id="height" th:field="*{height}" placeholder="예: 175.5">
                         <div class="validation-message" id="height-msg"></div>
                     </div>
-
                     <div class="input-group">
                         <label for="weight">몸무게 (kg)</label>
                         <input type="number" step="0.1" id="weight" th:field="*{weight}" placeholder="예: 70.2">
                         <div class="validation-message" id="weight-msg"></div>
                     </div>
-
                     <div class="input-group">
                         <label for="age">나이</label>
                         <input type="number" id="age" th:field="*{age}" placeholder="예: 28">
                         <div class="validation-message" id="age-msg"></div>
                     </div>
-
                     <div class="input-group">
                         <label>성별</label>
                         <div class="radio-group" id="gender-group">
@@ -51,7 +46,6 @@
                         <div class="validation-message" id="gender-msg"></div>
                     </div>
                 </div>
-
                 <div class="input-group full-width">
                     <label for="activityLevel">활동 수준</label>
                     <select id="activityLevel" name="activityLevel" th:field="*{activityLevel}">
@@ -62,38 +56,33 @@
                     </select>
                     <div class="validation-message" id="activityLevel-msg"></div>
                 </div>
-
                 <button type="submit" class="save-btn">저장하기</button>
             </form>
-
             <div class="bottom-links">
                 <a th:href="@{/user/mypage}" class="back-link">← 마이페이지로 돌아가기</a>
             </div>
         </div>
     </main>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // HTML 요소 미리 찾아두기
         const form = document.getElementById('profileForm');
         const heightInput = document.getElementById('height');
         const weightInput = document.getElementById('weight');
         const ageInput = document.getElementById('age');
-        const genderGroup = document.getElementById('gender-group');
+        const genderRadios = form.querySelectorAll('input[name="gender"]');
         const activityLevelSelect = document.getElementById('activityLevel');
 
-        // 메시지 표시 헬퍼 함수
         function showMessage(elementId, message, isError) {
             const msgElement = document.getElementById(elementId);
-            const inputElement = document.getElementById(elementId.replace('-msg', ''));
-            if (!msgElement || !inputElement) return;
-
+            const inputContainer = msgElement.previousElementSibling;
             msgElement.textContent = message;
-            msgElement.style.display = message ? 'block' : 'none'; // 메시지가 있을 때만 보이도록
-            inputElement.classList.toggle('error', isError);
+            msgElement.className = 'validation-message ' + (isError ? 'error' : 'success');
+            msgElement.style.display = message ? 'block' : 'none';
+            inputContainer.classList.toggle('error', isError);
         }
 
-        // 각 필드의 유효성 검사를 위한 함수
         function validateField(input, msgId, message) {
             if (!input.value) {
                 showMessage(msgId, message, true);
@@ -103,11 +92,23 @@
             return true;
         }
 
-        // 폼 제출 이벤트 처리
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault(); // 기본 폼 제출 방지
+        heightInput.addEventListener('blur', () => validateField(heightInput, 'height-msg', '키를 입력해주세요.'));
+        weightInput.addEventListener('blur', () => validateField(weightInput, 'weight-msg', '몸무게를 입력해주세요.'));
+        ageInput.addEventListener('blur', () => validateField(ageInput, 'age-msg', '나이를 입력해주세요.'));
+        activityLevelSelect.addEventListener('blur', () => validateField(activityLevelSelect, 'activityLevel-msg', '활동 수준을 선택해주세요.'));
 
-            // 모든 필드 유효성 검사 실행
+        genderRadios.forEach(radio => {
+            radio.addEventListener('click', () => {
+                const selectedGender = form.querySelector('input[name="gender"]:checked');
+                if (selectedGender) {
+                    showMessage('gender-msg', '', false);
+                }
+            });
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
             const isHeightValid = validateField(heightInput, 'height-msg', '키를 입력해주세요.');
             const isWeightValid = validateField(weightInput, 'weight-msg', '몸무게를 입력해주세요.');
             const isAgeValid = validateField(ageInput, 'age-msg', '나이를 입력해주세요.');
@@ -118,11 +119,8 @@
             if (!selectedGender) {
                 showMessage('gender-msg', '성별을 선택해주세요.', true);
                 isGenderValid = false;
-            } else {
-                showMessage('gender-msg', '', false);
             }
 
-            // 하나라도 유효하지 않으면 제출 중단
             if (!isHeightValid || !isWeightValid || !isAgeValid || !isActivityValid || !isGenderValid) {
                 showToast('입력 내용을 다시 확인해주세요.', true);
                 return;
@@ -142,31 +140,34 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
-                const data = await response.json(); // MsgDTO
+                const data = await response.json();
 
                 if (response.ok) {
-                    showToast(data.msg, false); // 성공 토스트
-                    setTimeout(() => window.location.href = '/user/mypage', 1500); // 1.5초 후 마이페이지로 이동
+                    showToast(data.msg, false);
+                    setTimeout(() => window.location.href = '/user/mypage', 1500);
                 } else {
-                    showToast(data.msg, true); // 실패 토스트
+                    showToast(data.msg, true);
                 }
             } catch (error) {
                 showToast('오류가 발생했습니다. 잠시 후 다시 시도해주세요.', true);
             }
         });
 
-        // 토스트 메시지 함수
+        // [수정됨] 토스트 메시지 함수 전체 코드를 추가합니다.
         function showToast(message, isError) {
             const toast = document.getElementById('toast');
+            if (!toast) return;
             toast.textContent = message;
-            toast.className = 'toast show ' + (isError ? 'error' : '');
-            toast.style.backgroundColor = isError ? '#dc3545' : '#28a745';
+            toast.className = 'toast show'; // 'show' 클래스로 애니메이션 시작
+            toast.style.backgroundColor = isError ? '#dc3545' : '#28a745'; // 실패는 빨간색, 성공은 녹색
+
+            // 3초 후 토스트 메시지 숨기기
             setTimeout(() => {
                 toast.className = toast.className.replace('show', '');
             }, 3000);
         }
 
-        // 헤더 드롭다운 메뉴 스크립트
+        // [수정됨] 헤더 드롭다운 메뉴 스크립트 전체 코드를 추가합니다.
         const menuToggle = document.getElementById('menu-toggle');
         const dropdownMenu = document.getElementById('dropdown-menu');
         if (menuToggle && dropdownMenu) {
@@ -184,4 +185,6 @@
 </script>
 </body>
 </html>
+
+
 
