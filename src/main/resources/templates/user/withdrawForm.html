@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | 회원 탈퇴</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <!-- 탈퇴 폼을 위한 새로운 CSS 파일을 링크합니다. -->
+    <link rel="stylesheet" href="/css/withdrawForm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+<!-- 토스트 알림을 위한 숨겨진 div -->
+<div id="toast" class="toast"></div>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="withdraw-main-content">
+        <div class="withdraw-container">
+            <h1>회원 탈퇴</h1>
+
+            <!-- 경고 메시지 박스 -->
+            <div class="warning-box">
+                <p><strong>정말로 탈퇴하시겠습니까?</strong></p>
+                <p>탈퇴 시 계정과 관련된 모든 신체 정보, 운동 및 식단 기록이 영구적으로 삭제되며 복구할 수 없습니다.</p>
+            </div>
+
+            <!-- AJAX 통신을 위한 폼 -->
+            <form id="withdrawForm" onsubmit="return false;">
+                <div class="input-group">
+                    <label for="password">비밀번호 확인</label>
+                    <input type="password" id="password" name="password" placeholder="계정 비밀번호를 입력해주세요">
+                    <div class="validation-message" id="password-msg"></div>
+                </div>
+
+                <button type="submit" class="withdraw-btn">회원 탈퇴</button>
+            </form>
+
+            <div class="bottom-links">
+                <a th:href="@{/user/mypage}" class="back-link">← 마이페이지로 돌아가기</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('withdrawForm');
+        const passwordInput = document.getElementById('password');
+
+        // 메시지 표시 헬퍼 함수
+        function showMessage(elementId, message, isError) {
+            const msgElement = document.getElementById(elementId);
+            const inputElement = document.getElementById(elementId.replace('-msg', ''));
+            msgElement.textContent = message;
+            msgElement.style.display = message ? 'block' : 'none';
+            inputElement.classList.toggle('error', isError);
+        }
+
+        // 폼 제출 이벤트 처리
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 비밀번호가 비어 있는지 확인
+            if (!passwordInput.value) {
+                showMessage('password-msg', '비밀번호를 입력해주세요.', true);
+                return;
+            }
+            showMessage('password-msg', '', false); // 에러가 없으면 메시지 숨김
+
+            const formData = {
+                password: passwordInput.value
+            };
+
+            try {
+                const response = await fetch('/api/user/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json(); // MsgDTO
+
+                if (response.ok) { // 성공 시
+                    showToast(data.msg, false); // 성공 토스트
+                    // 2초 후 로그인 페이지로 이동
+                    setTimeout(() => window.location.href = '/user/loginForm', 2000);
+                } else { // 실패 시 (비밀번호 불일치 등)
+                    showToast(data.msg, true); // 실패 토스트
+                    showMessage('password-msg', data.msg, true);
+                }
+
+            } catch (error) {
+                showToast('오류가 발생했습니다. 잠시 후 다시 시도해주세요.', true);
+            }
+        });
+
+        // 토스트 알림 함수
+        function showToast(message, isError) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            toast.style.backgroundColor = isError ? '#dc3545' : '#28a745'; // 실패: 빨강, 성공: 초록
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        // (헤더 메뉴를 위한 공통 스크립트)
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+        }
+        document.body.addEventListener('click', () => {
+            if (dropdownMenu?.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    });
+</script>
+</body>
+</html>
