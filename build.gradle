@@ -35,7 +35,7 @@ dependencies {
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                      // MariaDB 데이터베이스 연결을 위한 JDBC 드라이버
 
     // NoSQL (MongoDB)
-    //implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
 
     // In-Memory (Redis)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'   // Redis 데이터베이스 연동을 위한 의존성
