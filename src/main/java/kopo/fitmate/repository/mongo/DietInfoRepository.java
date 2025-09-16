@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DietInfoRepository extends MongoRepository<DietInfoEntity, String> {
-    // userId를 기준으로 모든 문서를 삭제
+
+    /**
+     * userId를 기준으로 모든 식단 정보 문서를 삭제합니다.
+     */
     void deleteAllByUserId(Long userId);
+
 }
 
 

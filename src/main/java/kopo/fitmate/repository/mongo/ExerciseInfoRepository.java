@@ -6,7 +6,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExerciseInfoRepository extends MongoRepository<ExerciseInfoEntity, String> {
-    // userId를 기준으로 모든 문서를 삭제
+
+    /**
+     * userId를 기준으로 모든 운동 정보 문서를 삭제합니다.
+     * Spring Data MongoDB가 메서드 이름을 분석하여 쿼리를 자동 생성합니다.
+     */
     void deleteAllByUserId(Long userId);
 }
     

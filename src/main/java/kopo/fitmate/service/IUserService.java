@@ -48,4 +48,6 @@ public interface IUserService extends UserDetailsService {
      */
     void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception;
 
+
+
 }

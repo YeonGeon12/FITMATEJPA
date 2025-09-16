@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AiReportRepository extends MongoRepository<AiReportEntity, String> {
-    // userId를 기준으로 모든 문서를 삭제
+
+    /**
+     * userId를 기준으로 모든 AI 리포트 문서를 삭제합니다.
+     */
     void deleteAllByUserId(Long userId);
+
 }
 
 
