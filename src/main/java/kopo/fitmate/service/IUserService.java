@@ -48,6 +48,11 @@ public interface IUserService extends UserDetailsService {
      */
     void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception;
 
-
+    /**
+     * 회원 탈퇴 처리를 위한 메서드 명세
+     * @param userNo 탈퇴할 사용자의 고유 번호
+     * @param password 비밀번호 확인을 위한 현재 비밀번호
+     */
+    void deleteUser(Long userNo, String password) throws Exception;
 
 }

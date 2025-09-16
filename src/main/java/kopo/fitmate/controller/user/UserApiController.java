@@ -193,4 +193,42 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    /**
+     * 회원 탈퇴 API
+     * @param pDTO 비밀번호 확인을 위한 DTO
+     * @param user 현재 로그인된 사용자 정보
+     * @return 처리 결과 메시지
+     */
+    @PostMapping("/withdraw")
+    public ResponseEntity<MsgDTO> withdraw(@Valid @RequestBody WithdrawDTO pDTO,
+                                           @AuthenticationPrincipal UserAuthDTO user) {
+        log.info(this.getClass().getName() + ".withdraw API Start!");
+        MsgDTO response = new MsgDTO();
+
+        try {
+            // 1. 서비스에 탈퇴 요청
+            userService.deleteUser(user.getUserNo(), pDTO.getPassword());
+
+            // 2. 탈퇴 성공 시, 현재 세션(로그인 정보)을 강제로 만료시킴
+            SecurityContextHolder.clearContext();
+
+            // 3. 성공 메시지 반환
+            response.setResult(1);
+            response.setMsg("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) { // 비밀번호 불일치 등
+            log.warn("Withdraw failed: " + e.getMessage());
+            response.setResult(0);
+            response.setMsg(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) { // 그 외 서버 오류
+            log.error("Server error during withdraw", e);
+            response.setResult(-1);
+            response.setMsg("오류가 발생했습니다. 다시 시도해주세요.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

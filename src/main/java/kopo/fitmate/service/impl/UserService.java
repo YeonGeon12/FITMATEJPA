@@ -6,6 +6,9 @@ import kopo.fitmate.repository.maria.UserProfileRepository;
 import kopo.fitmate.repository.maria.UserRepository;
 import kopo.fitmate.repository.maria.entity.UserEntity;
 import kopo.fitmate.repository.maria.entity.UserProfileEntity;
+import kopo.fitmate.repository.mongo.AiReportRepository;
+import kopo.fitmate.repository.mongo.DietInfoRepository;
+import kopo.fitmate.repository.mongo.ExerciseInfoRepository;
 import kopo.fitmate.service.IUserService;
 import kopo.fitmate.util.CmmUtil;
 import kopo.fitmate.util.DateUtil;
@@ -24,13 +27,16 @@ import java.util.Optional;
 @Service("UserService") // 서비스 이름 명시
 public class UserService implements IUserService {
 
-    // Repository 의존성 주입 (final 키워드로 생성자 주입)
+    // JPA Repositories
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
-    // UserProfileRepository 주입
     private final UserProfileRepository userProfileRepository;
+
+
+    // MongoDB Repositories
+    private final AiReportRepository aiReportRepository;
+    private final DietInfoRepository dietInfoRepository;
+    private final ExerciseInfoRepository exerciseInfoRepository;
 
     // #################################################### 회원 가입 메서드 ##############################
 
@@ -214,5 +220,33 @@ public class UserService implements IUserService {
 
         log.info(this.getClass().getName() + ".saveOrUpdateUserProfile End!");
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userNo, String password) throws Exception {
+        log.info(this.getClass().getName() + ".deleteUser Start!");
+
+        // 1. RDBMS에서 사용자 정보 조회
+        UserEntity userEntity = userRepository.findById(userNo)
+                .orElseThrow(() -> new Exception("사용자 정보를 찾을 수 없습니다."));
+
+        // 2. 입력된 비밀번호가 맞는지 확인
+        if (!passwordEncoder.matches(password, userEntity.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. MongoDB에 저장된 모든 관련 데이터 삭제
+        exerciseInfoRepository.deleteAllByUserId(userNo);
+        dietInfoRepository.deleteAllByUserId(userNo);
+        aiReportRepository.deleteAllByUserId(userNo);
+        log.info("MongoDB data deleted for userNo: " + userNo);
+
+        // 4. RDBMS에 저장된 사용자 데이터 삭제 (UserProfile은 Cascade 설정으로 자동 삭제)
+        userRepository.delete(userEntity);
+        log.info("RDBMS data deleted for userNo: " + userNo);
+
+        log.info(this.getClass().getName() + ".deleteUser End!");
+    }
+
 
 }
