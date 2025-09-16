@@ -1,6 +1,6 @@
 package kopo.fitmate.dto.user;
 
-import kopo.fitmate.repository.entity.UserEntity;
+import kopo.fitmate.repository.maria.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

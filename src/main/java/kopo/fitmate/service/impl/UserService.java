@@ -2,10 +2,10 @@ package kopo.fitmate.service.impl;
 
 import jakarta.transaction.Transactional;
 import kopo.fitmate.dto.user.*;
-import kopo.fitmate.repository.UserProfileRepository;
-import kopo.fitmate.repository.UserRepository;
-import kopo.fitmate.repository.entity.UserEntity;
-import kopo.fitmate.repository.entity.UserProfileEntity;
+import kopo.fitmate.repository.maria.UserProfileRepository;
+import kopo.fitmate.repository.maria.UserRepository;
+import kopo.fitmate.repository.maria.entity.UserEntity;
+import kopo.fitmate.repository.maria.entity.UserProfileEntity;
 import kopo.fitmate.service.IUserService;
 import kopo.fitmate.util.CmmUtil;
 import kopo.fitmate.util.DateUtil;
