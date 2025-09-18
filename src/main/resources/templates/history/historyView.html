@@ -5,126 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FITMATE | 내 기록 보기</title>
     <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/history.css">
+    <link rel="stylesheet" href="/css/history/history.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
 
 <div class="wrapper">
-    <!-- 상단 헤더 (index.html에서 가져옴) -->
+    <!-- 상단 헤더 -->
     <header class="main-header" th:replace="~{index :: .main-header}"></header>
 
     <main class="history-main-content">
         <div class="history-container">
             <h1>내 기록 보기</h1>
-
-            <!-- 탭 네비게이션 -->
             <nav class="history-tabs">
                 <a href="#exercise" class="tab-item active">저장된 운동 루틴</a>
                 <a href="#diet" class="tab-item">저장된 식단</a>
                 <a href="#report" class="tab-item">저장된 AI 리포트</a>
             </nav>
 
-            <!-- 탭 콘텐츠 -->
             <div class="tab-content">
-                <!-- 저장된 운동 루틴 -->
+                <!-- ==================== 운동 루틴 ==================== -->
                 <div id="exercise" class="tab-pane active">
-                    <div th:if="${#lists.isEmpty(exerciseList)}" class="empty-content">
-                        <i class="fa-solid fa-file-circle-xmark"></i>
+                    <div th:if="${#lists.isEmpty(exerciseList)}" class="no-data-message">
                         <p>저장된 운동 루틴이 없습니다.</p>
                     </div>
                     <div th:unless="${#lists.isEmpty(exerciseList)}" class="history-list">
                         <div th:each="item : ${exerciseList}" class="history-item">
                             <div class="item-info">
-                                <span class="item-date" th:text="${item.createdAt}">2025.08.15</span>
-                                <span class="item-title" th:text="'[' + ${item.title} + ']'">[체력 향상, 근력 향상] 운동 루틴</span>
+                                <span class="item-date" th:text="${item.createdAt}"></span>
+                                <span class="item-title" th:text="'[' + ${item.title} + ']'"></span>
                             </div>
-                            <a href="#" class="detail-btn">상세보기</a>
+                            <div class="item-actions">
+                                <a th:href="@{/history/exercise/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
+                                <form th:action="@{/history/exercise/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 저장된 식단 -->
+                <!-- ==================== 식단 ==================== -->
                 <div id="diet" class="tab-pane">
-                    <div th:if="${#lists.isEmpty(dietList)}" class="empty-content">
-                        <i class="fa-solid fa-file-circle-xmark"></i>
+                    <div th:if="${#lists.isEmpty(dietList)}" class="no-data-message">
                         <p>저장된 식단이 없습니다.</p>
                     </div>
+                    <!-- [수정] th:each="item : ${dietList}" -->
                     <div th:unless="${#lists.isEmpty(dietList)}" class="history-list">
                         <div th:each="item : ${dietList}" class="history-item">
                             <div class="item-info">
-                                <span class="item-date" th:text="${item.createdAt}">2025.08.15</span>
-                                <span class="item-title" th:text="'[' + ${item.dietType} + ']'">[고단백 식사] 식단</span>
+                                <span class="item-date" th:text="${item.createdAt}"></span>
+                                <span class="item-title" th:text="'[' + ${item.dietType} + ']'"></span>
                             </div>
-                            <a href="#" class="detail-btn">상세보기</a>
+                            <div class="item-actions">
+                                <a th:href="@{/history/diet/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
+                                <form th:action="@{/history/diet/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 저장된 AI 리포트 -->
+                <!-- ==================== AI 리포트 ==================== -->
                 <div id="report" class="tab-pane">
-                    <div th:if="${#lists.isEmpty(reportList)}" class="empty-content">
-                        <i class="fa-solid fa-file-circle-xmark"></i>
+                    <div th:if="${#lists.isEmpty(reportList)}" class="no-data-message">
                         <p>저장된 AI 리포트가 없습니다.</p>
                     </div>
+                    <!-- [수정] th:each="item : ${reportList}" -->
                     <div th:unless="${#lists.isEmpty(reportList)}" class="history-list">
                         <div th:each="item : ${reportList}" class="history-item">
                             <div class="item-info">
-                                <span class="item-date" th:text="${item.createdAt}">2025.08.15</span>
-                                <span class="item-title" th:text="${item.reportSummary}">AI가 분석한 리포트</span>
+                                <span class="item-date" th:text="${item.createdAt}"></span>
+                                <span class="item-title" th:text="'[' + ${item.summary} + ']'"></span>
                             </div>
-                            <a href="#" class="detail-btn">상세보기</a>
+                            <div class="item-actions">
+                                <a th:href="@{/history/report/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
+                                <form th:action="@{/history/report/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="bottom-links">
-                <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+                <a th:href="@{/}" class="back-link">← 홈으로 돌아가기</a>
             </div>
         </div>
     </main>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- 탭 기능 스크립트 ---
-        const tabItems = document.querySelectorAll('.tab-item');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-
-        tabItems.forEach(tab => {
-            tab.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                // 모든 탭과 콘텐츠에서 'active' 클래스 제거
-                tabItems.forEach(item => item.classList.remove('active'));
-                tabPanes.forEach(pane => pane.classList.remove('active'));
-
-                // 클릭된 탭과 해당 콘텐츠에 'active' 클래스 추가
-                this.classList.add('active');
-                const targetPane = document.querySelector(this.getAttribute('href'));
-                if (targetPane) {
-                    targetPane.classList.add('active');
-                }
-            });
-        });
-
-        // --- 헤더 드롭다운 메뉴 스크립트 ---
-        const menuToggle = document.getElementById('menu-toggle');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuToggle && dropdownMenu) {
-            menuToggle.addEventListener('click', (event) => {
-                event.stopPropagation();
-                dropdownMenu.classList.toggle('show');
-            });
-        }
-        document.body.addEventListener('click', () => {
-            if (dropdownMenu?.classList.contains('show')) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-    });
-</script>
-
+<script th:src="@{/js/history.js}"></script>
+<script th:src="@{/js/header.js}"></script>
 </body>
 </html>
+
