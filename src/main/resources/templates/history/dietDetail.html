@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE | 식단 상세 보기</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/history/historyDetail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="detail-main-content">
+        <div class="detail-container" th:if="${detail != null}">
+            <h1 th:text="${detail.dietType}">식단 제목</h1>
+
+            <div class="info-section">
+                <h2>총 칼로리 및 영양 정보</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span>총 칼로리</span>
+                        <strong th:text="${detail.calories.get('total')} + ' kcal'">데이터 없음</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>탄수화물</span>
+                        <strong th:text="${detail.calories.get('carbs')} + 'g'">데이터 없음</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>단백질</span>
+                        <strong th:text="${detail.calories.get('protein')} + 'g'">데이터 없음</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>지방</span>
+                        <strong th:text="${detail.calories.get('fat')} + 'g'">데이터 없음</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="routine-section">
+                <h2>상세 식단</h2>
+                <div th:each="dayPlan : ${detail.mealPlan}" class="day-routine-card">
+                    <h3 th:text="${dayPlan.get('day')}">요일</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>식사</th>
+                            <th>메뉴</th>
+                            <th>칼로리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>아침</td>
+                            <td th:text="${dayPlan.get('breakfast')}"></td>
+                            <td th:text="${dayPlan.get('breakfast_calories')} + ' kcal'"></td>
+                        </tr>
+                        <tr>
+                            <td>점심</td>
+                            <td th:text="${dayPlan.get('lunch')}"></td>
+                            <td th:text="${dayPlan.get('lunch_calories')} + ' kcal'"></td>
+                        </tr>
+                        <tr>
+                            <td>저녁</td>
+                            <td th:text="${dayPlan.get('dinner')}"></td>
+                            <td th:text="${dayPlan.get('dinner_calories')} + ' kcal'"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bottom-links">
+                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
+            </div>
+        </div>
+
+        <div class="detail-container" th:if="${detail == null}">
+            <h1>조회 결과 없음</h1>
+            <p>요청하신 정보를 찾을 수 없거나 접근 권한이 없습니다.</p>
+            <div class="bottom-links">
+                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/header.js}"></script>
+</body>
+</html>

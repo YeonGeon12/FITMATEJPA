@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE | 운동 상세 보기</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/history/historyDetail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="detail-main-content">
+        <!-- Controller에서 받은 detail 객체가 있을 때만 내용을 표시 -->
+        <div class="detail-container" th:if="${detail != null}">
+            <h1 th:text="${detail.title}">운동 루틴 제목</h1>
+
+            <div class="info-section">
+                <h2>요청 정보</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span>운동 목표</span>
+                        <strong th:text="${detail.requestParams.get('goal')}">데이터 없음</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>운동 수준</span>
+                        <strong th:text="${detail.requestParams.get('level')}">데이터 없음</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="routine-section">
+                <h2>상세 루틴</h2>
+                <div th:each="dayRoutine : ${detail.routineDetails}" class="day-routine-card">
+                    <h3 th:text="${dayRoutine.get('day')}">요일</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>루틴명</th>
+                            <th>주요 운동 구성</th>
+                            <th>예상 소모 시간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:text="${dayRoutine.get('routineName')}"></td>
+                            <td th:text="${dayRoutine.get('mainExercises')}"></td>
+                            <td th:text="${dayRoutine.get('estimatedTime')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bottom-links">
+                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
+            </div>
+        </div>
+
+        <!-- detail 객체가 없으면 (본인 기록이 아니거나, 삭제된 경우) -->
+        <div class="detail-container" th:if="${detail == null}">
+            <h1>조회 결과 없음</h1>
+            <p>요청하신 정보를 찾을 수 없거나 접근 권한이 없습니다.</p>
+            <div class="bottom-links">
+                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/header.js}"></script>
+</body>
+</html>
+
