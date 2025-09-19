@@ -18,6 +18,7 @@ body {
     box-sizing: border-box; /* padding과 border를 width, height 계산에 포함 */
 }
 
+/* ------------------ [핵심 수정 영역] ------------------ */
 /* 상단 헤더 스타일 */
 .main-header {
     display: flex; /* 내부 요소들을 flexbox로 배치 */
@@ -30,9 +31,15 @@ body {
     padding: 0 20px; /* 헤더 내부 좌우 여백 추가 */
     border-radius: 12px; /* 헤더의 모서리를 둥글게 처리 */
     margin-top: 20px; /* 헤더 위쪽에 20px의 여백 추가 */
+
+    /* [수정] z-index를 적용하기 위해 position 속성 추가 */
     position: relative;
+
+    /* [수정] z-index 값을 높게 설정하여 다른 요소들 위에 항상 보이도록 함 */
     z-index: 1000;
 }
+/* ---------------------------------------------------- */
+
 
 /* 로고와 텍스트를 감싸는 컨테이너 스타일 */
 .logo-container {
