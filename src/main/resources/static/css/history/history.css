@@ -87,6 +87,11 @@
     border: 1px solid #e5e7eb;
 }
 
+/* 탭 메뉴 밑줄 제거 */
+.history-tabs .tab-item {
+    text-decoration: none; /* 이 코드가 밑줄을 제거합니다. */
+}
+
 /* 날짜와 제목을 감싸는 div */
 .item-info {
     display: flex;
@@ -155,3 +160,103 @@
     text-decoration: underline;
 }
 
+/* 모달 오버레이(배경) 스타일 */
+.modal-overlay {
+    position: fixed; /* 화면 스크롤에 관계없이 항상 같은 위치에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%; /* 화면 전체 너비 */
+    height: 100%; /* 화면 전체 높이 */
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명한 검은색 배경 */
+    display: flex; /* 내부 콘텐츠(모달창)를 중앙 정렬하기 위해 flex 사용 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    z-index: 1000; /* 다른 모든 요소들보다 위에 표시되도록 z-index 설정 */
+
+    /* --- 애니메이션을 위한 초기 상태 (숨김) --- */
+    opacity: 0; /* 완전히 투명하게 */
+    visibility: hidden; /* 화면에서 완전히 사라지게 하여 클릭 등 이벤트 방지 */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* 상태 변경 시 0.3초 동안 부드럽게 전환 */
+}
+
+/* JavaScript에 의해 .show 클래스가 추가될 때의 상태 (보임) */
+.modal-overlay.show {
+    opacity: 1; /* 불투명하게 */
+    visibility: visible; /* 화면에 보이게 */
+}
+
+/* 모달 콘텐츠(실제 창) 스타일 */
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px; /* 모서리를 둥글게 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 입체감을 주는 그림자 효과 */
+    text-align: center; /* 내부 텍스트 중앙 정렬 */
+    max-width: 400px; /* 최대 너비 제한 */
+    width: 90%; /* 화면 너비의 90%를 차지 (모바일 대응) */
+    transform: scale(0.9); /* 나타날 때 약간 작게 시작 (애니메이션 효과) */
+    transition: transform 0.3s ease; /* 크기 변경 시 0.3초 동안 부드럽게 전환 */
+}
+
+/* .show 상태일 때 모달 콘텐츠의 크기를 원래대로 복귀시키는 애니메이션 */
+.modal-overlay.show .modal-content {
+    transform: scale(1);
+}
+
+/* 모달 아이콘 스타일 */
+.modal-icon {
+    font-size: 48px;
+    color: #ffc107; /* 경고를 의미하는 노란색 계열 */
+    margin-bottom: 15px;
+}
+
+/* 모달 제목(h2) 스타일 */
+.modal-content h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+/* 모달 설명(p) 스타일 */
+.modal-content p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* 모달 버튼들을 감싸는 영역 스타일 */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* 버튼 사이의 간격 */
+}
+
+/* 모달 버튼 공통 스타일 */
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s; /* 마우스 호버 시 색상 변경을 부드럽게 */
+}
+
+/* 취소 버튼 스타일 */
+.modal-btn.cancel-btn {
+    background-color: #f0f0f0; /* 밝은 회색 배경 */
+    color: #333;
+}
+
+.modal-btn.cancel-btn:hover {
+    background-color: #e0e0e0; /* 호버 시 약간 더 어둡게 */
+}
+
+/* 삭제 버튼 스타일 */
+.modal-btn.delete-btn {
+    background-color: #dc3545; /* 위험을 의미하는 빨간색 계열 */
+    color: white;
+}
+
+.modal-btn.delete-btn:hover {
+    background-color: #c82333; /* 호버 시 약간 더 어둡게 */
+}
