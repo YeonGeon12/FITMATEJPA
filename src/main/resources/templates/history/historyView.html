@@ -11,7 +11,6 @@
 <body>
 
 <div class="wrapper">
-    <!-- 상단 헤더 -->
     <header class="main-header" th:replace="~{index :: .main-header}"></header>
 
     <main class="history-main-content">
@@ -24,9 +23,9 @@
             </nav>
 
             <div class="tab-content">
-                <!-- ==================== 운동 루틴 ==================== -->
                 <div id="exercise" class="tab-pane active">
                     <div th:if="${#lists.isEmpty(exerciseList)}" class="no-data-message">
+                        <i class="fa-solid fa-folder-open"></i>
                         <p>저장된 운동 루틴이 없습니다.</p>
                     </div>
                     <div th:unless="${#lists.isEmpty(exerciseList)}" class="history-list">
@@ -37,20 +36,19 @@
                             </div>
                             <div class="item-actions">
                                 <a th:href="@{/history/exercise/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
-                                <form th:action="@{/history/exercise/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                <form th:action="@{/history/exercise/delete/{id}(id=${item.id})}" method="post">
+                                    <button type="button" class="action-btn delete-btn js-delete-trigger">삭제</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ==================== 식단 ==================== -->
                 <div id="diet" class="tab-pane">
                     <div th:if="${#lists.isEmpty(dietList)}" class="no-data-message">
+                        <i class="fa-solid fa-folder-open"></i>
                         <p>저장된 식단이 없습니다.</p>
                     </div>
-                    <!-- [수정] th:each="item : ${dietList}" -->
                     <div th:unless="${#lists.isEmpty(dietList)}" class="history-list">
                         <div th:each="item : ${dietList}" class="history-item">
                             <div class="item-info">
@@ -59,30 +57,29 @@
                             </div>
                             <div class="item-actions">
                                 <a th:href="@{/history/diet/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
-                                <form th:action="@{/history/diet/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                <form th:action="@{/history/diet/delete/{id}(id=${item.id})}" method="post">
+                                    <button type="button" class="action-btn delete-btn js-delete-trigger">삭제</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ==================== AI 리포트 ==================== -->
                 <div id="report" class="tab-pane">
                     <div th:if="${#lists.isEmpty(reportList)}" class="no-data-message">
+                        <i class="fa-solid fa-folder-open"></i>
                         <p>저장된 AI 리포트가 없습니다.</p>
                     </div>
-                    <!-- [수정] th:each="item : ${reportList}" -->
                     <div th:unless="${#lists.isEmpty(reportList)}" class="history-list">
                         <div th:each="item : ${reportList}" class="history-item">
                             <div class="item-info">
                                 <span class="item-date" th:text="${item.createdAt}"></span>
-                                <span class="item-title" th:text="'[' + ${item.summary} + ']'"></span>
+                                <span class="item-title" th:text="'[' + ${item.reportSummary} + ']'"></span>
                             </div>
                             <div class="item-actions">
                                 <a th:href="@{/history/report/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
-                                <form th:action="@{/history/report/delete/{id}(id=${item.id})}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                    <button type="submit" class="action-btn delete-btn">삭제</button>
+                                <form th:action="@{/history/report/delete/{id}(id=${item.id})}" method="post">
+                                    <button type="button" class="action-btn delete-btn js-delete-trigger">삭제</button>
                                 </form>
                             </div>
                         </div>
@@ -95,8 +92,24 @@
         </div>
     </main>
 </div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+        <i class="fa-solid fa-triangle-exclamation modal-icon"></i>
+        <h2>기록을 삭제하시겠습니까?</h2>
+        <p>이 작업은 되돌릴 수 없습니다.</p>
+        <div class="modal-actions">
+            <button id="cancelDelete" type="button" class="modal-btn cancel-btn">취소</button>
+            <form id="confirmDeleteForm" method="post" style="display: inline;">
+                <button id="confirmDelete" type="submit" class="modal-btn delete-btn">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast" th:if="${toastMsg != null}" th:attr="data-message=${toastMsg}"></div>
+
 <script th:src="@{/js/history.js}"></script>
 <script th:src="@{/js/header.js}"></script>
 </body>
 </html>
-

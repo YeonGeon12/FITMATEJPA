@@ -50,10 +50,25 @@ public class HistoryService implements IHistoryService {
     @Override
     public List<AiReportHistoryDTO> getAiReportHistory(Long userNo) {
         log.info(this.getClass().getName() + ".getAiReportHistory Start!");
-        return aiReportRepository.findAllByUserIdOrderByCreatedAtDesc(userNo)
-                .stream()
+
+        // 1. DB에서 가져온 원본 데이터(Entity)를 로그로 찍어봅니다.
+        List<AiReportEntity> entityList = aiReportRepository.findAllByUserIdOrderByCreatedAtDesc(userNo);
+        log.info("DB에서 가져온 AI 리포트 원본 데이터 개수: " + entityList.size());
+        entityList.forEach(entity -> {
+            log.info(" -> Entity ID: " + entity.getId() + ", Summary: " + entity.getReportSummary());
+        });
+
+        // 2. DTO로 변환된 후의 데이터를 로그로 찍어봅니다.
+        List<AiReportHistoryDTO> dtoList = entityList.stream()
                 .map(AiReportHistoryDTO::from)
                 .collect(Collectors.toList());
+        log.info("DTO로 변환된 AI 리포트 데이터 개수: " + dtoList.size());
+        dtoList.forEach(dto -> {
+            log.info(" -> DTO ID: " + dto.getId() + ", Summary: " + dto.getReportSummary());
+        });
+
+        log.info(this.getClass().getName() + ".getAiReportHistory End!");
+        return dtoList; // 최종적으로 변환된 dtoList를 반환
     }
 
     // --- [추가] 상세 조회 구현 ---

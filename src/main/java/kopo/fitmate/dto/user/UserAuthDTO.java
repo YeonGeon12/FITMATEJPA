@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -15,7 +16,10 @@ import java.util.Collections;
  */
 @Getter
 @Setter
-public class UserAuthDTO implements UserDetails {
+public class UserAuthDTO implements UserDetails, Serializable {
+
+    // 직렬화/역직렬화 시 버전 관리를 위한 ID
+    private static final long serialVersionUID = 1L;
 
     private Long userNo;
     private String email;

@@ -1,129 +1,112 @@
 package kopo.fitmate.controller.history;
 
-import kopo.fitmate.dto.history.AiReportHistoryDTO;
-import kopo.fitmate.dto.history.DietHistoryDTO;
-import kopo.fitmate.dto.history.ExerciseHistoryDTO;
 import kopo.fitmate.dto.user.UserAuthDTO;
-import kopo.fitmate.repository.mongo.entity.AiReportEntity;
-import kopo.fitmate.repository.mongo.entity.DietInfoEntity;
-import kopo.fitmate.repository.mongo.entity.ExerciseInfoEntity;
 import kopo.fitmate.service.IHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/history")
-@RequiredArgsConstructor
 public class HistoryController {
 
     private final IHistoryService historyService;
 
     /**
-     * 내 기록 보기 페이지로 이동
+     * 내 기록 보기 페이지
+     * [수정] HttpSession 대신 @AuthenticationPrincipal을 사용하여 로그인된 사용자 정보를 직접 주입받습니다.
+     * Spring Security가 자동으로 처리해주므로 세션 유무를 직접 확인할 필요가 없습니다.
      */
     @GetMapping("")
-    public String historyView(@AuthenticationPrincipal UserAuthDTO user, Model model) {
-        log.info(this.getClass().getName() + ".historyView Start!");
+    public String getHistory(@AuthenticationPrincipal UserAuthDTO user, Model model, @ModelAttribute("msg") String msg) {
+        log.info(this.getClass().getName() + ".getHistory Start!");
 
-        Long userNo = user.getUserNo();
+        // 로그인한 사용자의 기록을 조회
+        model.addAttribute("exerciseList", historyService.getExerciseHistory(user.getUserNo()));
+        model.addAttribute("dietList", historyService.getDietHistory(user.getUserNo()));
+        model.addAttribute("reportList", historyService.getAiReportHistory(user.getUserNo()));
 
-        // 각 서비스 메서드를 호출하여 데이터 조회
-        List<ExerciseHistoryDTO> exerciseList = historyService.getExerciseHistory(userNo);
-        List<DietHistoryDTO> dietList = historyService.getDietHistory(userNo);
-        List<AiReportHistoryDTO> reportList = historyService.getAiReportHistory(userNo);
-
-        // 조회된 데이터를 모델에 추가
-        model.addAttribute("exerciseList", exerciseList);
-        model.addAttribute("dietList", dietList);
-        model.addAttribute("reportList", reportList);
-
-        log.info(this.getClass().getName() + ".historyView End!");
-        return "history/historyView"; // templates/history/historyView.html 렌더링
-    }
-
-    // --- [추가] 상세보기 컨트롤러 ---
-
-    @GetMapping("/exercise/{id}")
-    public String exerciseDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
-        ExerciseInfoEntity detail = historyService.getExerciseDetail(id);
-
-        // 보안 체크: 조회한 기록이 현재 로그인한 사용자의 것인지 확인
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            model.addAttribute("detail", detail);
+        // Controller에 전달된 성공 메시지가 있다면, Model에 추가하여 View로 전달
+        if (msg != null && !msg.isEmpty()) {
+            model.addAttribute("toastMsg", msg);
         }
 
-        return "history/exerciseDetail"; // 상세 페이지 HTML로 연결
+        log.info(this.getClass().getName() + ".getHistory End!");
+        return "history/historyView";
+    }
+
+    /* ------------------------------ 상세 보기 ------------------------------ */
+
+    @GetMapping("/exercise/{id}")
+    public String getExerciseDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
+        Optional.ofNullable(historyService.getExerciseDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> model.addAttribute("detail", detail));
+
+        return "history/exerciseDetail";
     }
 
     @GetMapping("/diet/{id}")
-    public String dietDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
-        DietInfoEntity detail = historyService.getDietDetail(id);
-
-        // 보안 체크
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            model.addAttribute("detail", detail);
-        }
+    public String getDietDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
+        Optional.ofNullable(historyService.getDietDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> model.addAttribute("detail", detail));
 
         return "history/dietDetail";
     }
 
     @GetMapping("/report/{id}")
-    public String reportDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
-        AiReportEntity detail = historyService.getAiReportDetail(id);
-
-        // 보안 체크
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            model.addAttribute("detail", detail);
-        }
+    public String getAiReportDetail(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, Model model) {
+        Optional.ofNullable(historyService.getAiReportDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> model.addAttribute("detail", detail));
 
         return "history/aiReportDetail";
     }
 
-    // --- [추가] 삭제 컨트롤러 ---
+    /* ------------------------------ 삭제 처리 ------------------------------ */
 
     @PostMapping("/exercise/delete/{id}")
-    public String deleteExercise(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user) {
-        ExerciseInfoEntity detail = historyService.getExerciseDetail(id);
+    public String deleteExerciseHistory(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, RedirectAttributes redirectAttributes) {
+        Optional.ofNullable(historyService.getExerciseDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> {
+                    historyService.deleteExerciseHistory(id);
+                    redirectAttributes.addFlashAttribute("msg", "운동 기록이 성공적으로 삭제되었습니다.");
+                });
 
-        // 보안 체크: 삭제하려는 기록이 본인 소유인지 한 번 더 확인
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            historyService.deleteExerciseHistory(id);
-        }
-
-        return "redirect:/history"; // 삭제 후 목록 페이지로 이동
+        return "redirect:/history";
     }
 
     @PostMapping("/diet/delete/{id}")
-    public String deleteDiet(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user) {
-        DietInfoEntity detail = historyService.getDietDetail(id);
-
-        // 보안 체크
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            historyService.deleteDietHistory(id);
-        }
+    public String deleteDietHistory(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, RedirectAttributes redirectAttributes) {
+        Optional.ofNullable(historyService.getDietDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> {
+                    historyService.deleteDietHistory(id);
+                    redirectAttributes.addFlashAttribute("msg", "식단 기록이 성공적으로 삭제되었습니다.");
+                });
 
         return "redirect:/history";
     }
 
     @PostMapping("/report/delete/{id}")
-    public String deleteReport(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user) {
-        AiReportEntity detail = historyService.getAiReportDetail(id);
-
-        // 보안 체크
-        if (detail != null && Objects.equals(detail.getUserId(), user.getUserNo())) {
-            historyService.deleteAiReportHistory(id);
-        }
+    public String deleteAiReportHistory(@PathVariable String id, @AuthenticationPrincipal UserAuthDTO user, RedirectAttributes redirectAttributes) {
+        Optional.ofNullable(historyService.getAiReportDetail(id))
+                .filter(detail -> Objects.equals(detail.getUserId(), user.getUserNo()))
+                .ifPresent(detail -> {
+                    historyService.deleteAiReportHistory(id);
+                    redirectAttributes.addFlashAttribute("msg", "AI 리포트가 성공적으로 삭제되었습니다.");
+                });
 
         return "redirect:/history";
     }
