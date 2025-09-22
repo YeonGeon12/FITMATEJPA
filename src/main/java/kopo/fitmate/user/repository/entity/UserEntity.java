@@ -1,4 +1,4 @@
-package kopo.fitmate.repository.maria.entity;
+package kopo.fitmate.user.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

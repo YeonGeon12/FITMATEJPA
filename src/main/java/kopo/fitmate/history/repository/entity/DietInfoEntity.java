@@ -1,4 +1,4 @@
-package kopo.fitmate.repository.mongo.entity;
+package kopo.fitmate.history.repository.entity;
 
 import lombok.Builder;
 import lombok.Getter;

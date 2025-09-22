@@ -1,6 +1,6 @@
 package kopo.fitmate.history.dto;
 
-import kopo.fitmate.repository.mongo.entity.AiReportEntity;
+import kopo.fitmate.history.repository.entity.AiReportEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

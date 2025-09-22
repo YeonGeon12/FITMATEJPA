@@ -1,13 +1,13 @@
 package kopo.fitmate.user.service.impl;
 
 import jakarta.transaction.Transactional;
-import kopo.fitmate.repository.maria.UserProfileRepository;
-import kopo.fitmate.repository.maria.UserRepository;
-import kopo.fitmate.repository.maria.entity.UserEntity;
-import kopo.fitmate.repository.maria.entity.UserProfileEntity;
-import kopo.fitmate.repository.mongo.AiReportRepository;
-import kopo.fitmate.repository.mongo.DietInfoRepository;
-import kopo.fitmate.repository.mongo.ExerciseInfoRepository;
+import kopo.fitmate.user.repository.UserProfileRepository;
+import kopo.fitmate.user.repository.UserRepository;
+import kopo.fitmate.user.repository.entity.UserEntity;
+import kopo.fitmate.user.repository.entity.UserProfileEntity;
+import kopo.fitmate.history.repository.AiReportRepository;
+import kopo.fitmate.history.repository.DietInfoRepository;
+import kopo.fitmate.history.repository.ExerciseInfoRepository;
 import kopo.fitmate.global.config.util.CmmUtil;
 import kopo.fitmate.global.config.util.DateUtil;
 import kopo.fitmate.global.config.util.EncryptUtil;

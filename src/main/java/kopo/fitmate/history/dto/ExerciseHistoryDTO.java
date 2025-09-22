@@ -1,6 +1,6 @@
 package kopo.fitmate.history.dto;
 
-import kopo.fitmate.repository.mongo.entity.ExerciseInfoEntity;
+import kopo.fitmate.history.repository.entity.ExerciseInfoEntity;
 import lombok.Builder;
 import lombok.Getter;
 

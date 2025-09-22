@@ -3,9 +3,9 @@ package kopo.fitmate.history.service;
 import kopo.fitmate.history.dto.AiReportHistoryDTO;
 import kopo.fitmate.history.dto.DietHistoryDTO;
 import kopo.fitmate.history.dto.ExerciseHistoryDTO;
-import kopo.fitmate.repository.mongo.entity.AiReportEntity;
-import kopo.fitmate.repository.mongo.entity.DietInfoEntity;
-import kopo.fitmate.repository.mongo.entity.ExerciseInfoEntity;
+import kopo.fitmate.history.repository.entity.AiReportEntity;
+import kopo.fitmate.history.repository.entity.DietInfoEntity;
+import kopo.fitmate.history.repository.entity.ExerciseInfoEntity;
 
 import java.util.List;
 

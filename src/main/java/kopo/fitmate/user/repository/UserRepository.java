@@ -1,6 +1,6 @@
-package kopo.fitmate.repository.maria;
+package kopo.fitmate.user.repository;
 
-import kopo.fitmate.repository.maria.entity.UserEntity;
+import kopo.fitmate.user.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

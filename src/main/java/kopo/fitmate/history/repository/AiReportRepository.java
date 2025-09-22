@@ -1,6 +1,6 @@
-package kopo.fitmate.repository.mongo;
+package kopo.fitmate.history.repository;
 
-import kopo.fitmate.repository.mongo.entity.AiReportEntity;
+import kopo.fitmate.history.repository.entity.AiReportEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
