@@ -44,6 +44,9 @@ dependencies {
     // ============================= Microservice Communication =============================
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // 선언적 REST 클라이언트, 마이크로서비스 간 통신을 간편하게 구현
 
+    // ============================= API SETTING ============================
+    implementation 'com.google.generativeai:generativeai:0.4.0'                 // Gemini API 사용을 위한 의존성 추가
+
     // ============================= Monitoring =============================
     implementation 'org.springframework.boot:spring-boot-starter-actuator'  // 애플리케이션 모니터링 및 관리를 위한 기능 제공 (헬스 체크, 메트릭 등)
 
