@@ -2,11 +2,15 @@
 
 package kopo.fitmate.exercise.service.impl;
 
-import com.google.generativeai.client.GenerativeModel;
-import com.google.generativeai.client.GenerationConfig;
-import com.google.generativeai.client.HarmCategory;
-import com.google.generativeai.client.SafetySetting;
-import com.google.generativeai.client.java.GenerativeModelFutures;
+// [최종 수정] 필요한 클래스만 정확하게 import 합니다.
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.genai.GenerativeModel;
+import com.google.genai.GenerationConfig;
+import com.google.genai.HarmCategory;
+import com.google.genai.SafetySetting;
+import com.google.genai.responses.GenerateContentResponse;
+import com.google.genai.responses.ResponseHandler;
+
 import kopo.fitmate.exercise.service.IExerciseAiService;
 import kopo.fitmate.exercise.dto.ExerciseRequestDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
 public class ExerciseAiService implements IExerciseAiService {
 
-    // application.yaml에 설정한 API 키 값을 가져옵니다.
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
@@ -31,26 +36,28 @@ public class ExerciseAiService implements IExerciseAiService {
         String result;
 
         try {
-            // 1. AI 모델 설정 (API 키, 모델명 등)
-            GenerativeModelFutures model = createGenerativeModel();
+            // 1. AI 모델 설정
+            GenerativeModel model = createGenerativeModel();
 
-            // 2. AI에게 전달할 프롬프트(요청 메시지) 생성
+            // 2. AI에게 전달할 프롬프트 생성
             String prompt = generatePrompt(pDTO);
             log.info("Generated Prompt: \n" + prompt);
 
+            // 3. AI 모델에 프롬프트를 보내고 응답을 비동기적으로 받음
+            Executor executor = Executors.newSingleThreadExecutor();
+            ListenableFuture<GenerateContentResponse> responseFuture = model.generateContent(prompt, executor);
 
-            // 3. AI 모델에 프롬프트를 보내고 응답을 동기적으로 기다림
-            String response = model.generateContent(prompt).get().getText();
-            log.info("Gemini API Response: \n" + response);
+            // 4. 비동기 응답을 동기적으로 기다린 후, 텍스트만 추출
+            // [최종 수정] ResponseHandler.getText()를 사용하여 매우 간단하게 텍스트를 가져옵니다.
+            String responseText = ResponseHandler.getText(responseFuture.get());
+            log.info("Gemini API Response: \n" + responseText);
 
-
-            // 4. 응답 결과에서 순수한 JSON 부분만 깔끔하게 추출
-            result = extractJson(response);
+            // 5. 응답 결과에서 순수한 JSON 부분만 깔끔하게 추출
+            result = extractJson(responseText);
 
 
         } catch (Exception e) {
-            log.error("Gemini API 호출 중 에러 발생: " + e.getMessage());
-            // 컨트롤러가 에러를 처리할 수 있도록 예외를 다시 던집니다.
+            log.error("Gemini API 호출 중 에러 발생: " + e.getMessage(), e);
             throw new RuntimeException("AI 모델을 호출하는 중에 문제가 발생했습니다.", e);
         }
 
@@ -62,19 +69,21 @@ public class ExerciseAiService implements IExerciseAiService {
     /**
      * Gemini API 요청을 위한 GenerativeModel 객체를 생성하고 설정합니다.
      */
-    private GenerativeModelFutures createGenerativeModel() {
-        return new GenerativeModelFutures(
-                "gemini-pro", // 사용할 모델명
-                geminiApiKey, // API 키
-                GenerationConfig.builder()
-                        .setTemperature(0.7f) // 창의성 (0~1, 낮을수록 정해진 답변)
+    private GenerativeModel createGenerativeModel() {
+        return new GenerativeModel(
+                "gemini-pro",
+                geminiApiKey,
+                GenerationConfig.newBuilder()
+                        .setTemperature(0.7f)
                         .setTopP(1.0f)
                         .setTopK(1)
-                        .setMaxOutputTokens(2048) // 최대 출력 토큰 수
+                        .setMaxOutputTokens(2048)
                         .build(),
-                // 안전 설정 (유해 콘텐츠 차단 레벨을 NONE으로 설정)
                 Collections.singletonList(
-                        new SafetySetting(HarmCategory.HARASSMENT, SafetySetting.HarmBlockThreshold.BLOCK_NONE)
+                        SafetySetting.newBuilder()
+                                .setCategory(HarmCategory.HARASSMENT)
+                                .setThreshold(SafetySetting.HarmBlockThreshold.BLOCK_NONE)
+                                .build()
                 )
         );
     }
@@ -83,6 +92,7 @@ public class ExerciseAiService implements IExerciseAiService {
      * DTO를 기반으로 Gemini API에 전달할 프롬프트를 생성합니다.
      */
     private String generatePrompt(ExerciseRequestDTO pDTO) {
+        // 프롬프트 내용은 이전과 동일하게 유지합니다.
         return "당신은 20년 경력의 베테랑 헬스 트레이너입니다. "
                 + "다음 사용자의 정보에 맞춰 7일간의 운동 루틴을 JSON 형식으로만 추천해주세요. "
                 + "각 운동은 'exerciseName'(운동이름), 'sets'(세트), 'reps'(횟수), 'restTimeInSeconds'(세트간 휴식시간) 키를 반드시 포함해야 합니다. "
@@ -99,7 +109,6 @@ public class ExerciseAiService implements IExerciseAiService {
 
     /**
      * AI 응답 텍스트에서 JSON 부분만 정확히 추출합니다.
-     * AI가 응답 앞뒤에 ```json ``` 같은 마크다운을 붙이는 경우가 있어 제거합니다.
      */
     private String extractJson(String response) {
         int startIndex = response.indexOf("{");
@@ -107,7 +116,6 @@ public class ExerciseAiService implements IExerciseAiService {
         if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
             return response.substring(startIndex, endIndex + 1);
         }
-        // 유효한 JSON을 찾지 못한 경우, 로그를 남기고 빈 JSON 객체를 반환
         log.warn("응답에서 유효한 JSON 객체를 찾을 수 없습니다. Response: " + response);
         return "{}";
     }
