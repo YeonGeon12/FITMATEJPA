@@ -26,4 +26,8 @@ public interface IHistoryService {
     void deleteDietHistory(String id);
     void deleteAiReportHistory(String id);
 
+    // --- 저장 ---
+    void saveExerciseHistory(ExerciseInfoEntity pEntity); // 이 메서드 추가
+
+
 }

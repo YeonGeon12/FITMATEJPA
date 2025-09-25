@@ -112,4 +112,12 @@ public class HistoryService implements IHistoryService {
         log.info(this.getClass().getName() + ".deleteAiReportHistory Start!");
         aiReportRepository.deleteById(id);
     }
+
+    // --- 운동 저장 구현 ---
+    @Override
+    public void saveExerciseHistory(ExerciseInfoEntity pEntity) {
+        log.info(this.getClass().getName() + ".saveExerciseHistory Start!");
+        exerciseInfoRepository.save(pEntity);
+        log.info(this.getClass().getName() + ".saveExerciseHistory End!");
+    }
 }

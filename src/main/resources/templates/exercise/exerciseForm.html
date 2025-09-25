@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE | 운동 추천 받기</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/user/profileForm.css">
+    <style>
+        .radio-group label { display: inline-flex; align-items: center; margin-right: 15px; }
+        .radio-group input { margin-right: 5px; }
+        button.save-btn.loading { background-color: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <main class="profile-main-content">
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('recommendForm');
+
+        form.addEventListener('submit', async function (e) {
+            // ... (데이터 수집 및 fetch 요청 로직은 이전과 동일) ...
+            try {
+                // ... (fetch 요청)
+
+                // 결과를 sessionStorage에 저장
+                sessionStorage.setItem('exerciseResult', resultJsonString);
+                sessionStorage.setItem('requestParams', JSON.stringify(requestData));
+
+                // 결과 페이지로 이동 (경로 수정!)
+                window.location.href = '/exercise/exerciseResult';
+
+            } catch (error) {
+                // ... (에러 처리)
+            }
+        });
+    });
+</script>
+<script th:src="@{/js/header.js}"></script>
+</body>
+</html>
