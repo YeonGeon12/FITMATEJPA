@@ -4,16 +4,71 @@
     <meta charset="UTF-8">
     <title>FITMATE | 운동 추천 받기</title>
     <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/user/profileForm.css">
-    <style>
-        .radio-group label { display: inline-flex; align-items: center; margin-right: 15px; }
-        .radio-group input { margin-right: 5px; }
-        button.save-btn.loading { background-color: #ccc; cursor: not-allowed; }
-    </style>
+    <link rel="stylesheet" href="/css/user/profileForm.css"> <style>
+    /* 라디오/체크박스 그룹 스타일 재정의 */
+    .radio-group {
+        display: flex;
+        flex-direction: row; /* 가로 정렬 */
+        gap: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px;
+        align-items: center;
+        height: 50.5px;
+        box-sizing: border-box;
+    }
+    .radio-group label { margin-bottom: 0; }
+    button.save-btn.loading { background-color: #ccc; cursor: not-allowed; }
+</style>
 </head>
 <body>
 <div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
     <main class="profile-main-content">
+        <div class="profile-container">
+            <h1>운동 정보 입력</h1>
+            <p class="subtitle">AI가 맞춤형 운동을 추천해 드립니다.</p>
+
+            <form id="recommendForm">
+                <div class="input-group full-width">
+                    <label>운동 수준</label>
+                    <div class="radio-group" id="level-group">
+                        <label><input type="radio" name="level" value="초급" checked> 초급</label>
+                        <label><input type="radio" name="level" value="중급"> 중급</label>
+                        <label><input type="radio" name="level" value="고급"> 고급</label>
+                    </div>
+                </div>
+                <div class="input-group full-width">
+                    <label for="targetArea">집중 희망 부위</label>
+                    <select id="targetArea" name="targetArea">
+                        <option value="전신">전신</option>
+                        <option value="상체">상체</option>
+                        <option value="하체">하체</option>
+                        <option value="코어">코어</option>
+                    </select>
+                </div>
+                <div class="input-group full-width">
+                    <label for="goal">운동 목표</label>
+                    <select id="goal" name="goal">
+                        <option value="체중 감량">체중 감량</option>
+                        <option value="근력 증가">근력 증가</option>
+                        <option value="체력 증진">체력 증진</option>
+                    </select>
+                </div>
+                <div class="input-group full-width">
+                    <label>운동 가능 장소</label>
+                    <div class="radio-group" id="location-group">
+                        <label><input type="radio" name="location" value="헬스장" checked> 헬스장</label>
+                        <label><input type="radio" name="location" value="홈트"> 홈트</label>
+                    </div>
+                </div>
+                <button type="submit" class="save-btn">운동 추천 받기</button>
+            </form>
+            <div class="bottom-links">
+                <a th:href="@{/}" class="back-link">← 메인 화면으로 돌아가기</a>
+            </div>
+        </div>
     </main>
 </div>
 
@@ -22,19 +77,45 @@
         const form = document.getElementById('recommendForm');
 
         form.addEventListener('submit', async function (e) {
-            // ... (데이터 수집 및 fetch 요청 로직은 이전과 동일) ...
-            try {
-                // ... (fetch 요청)
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.textContent = 'AI가 분석 중입니다...';
+            btn.classList.add('loading');
+            btn.disabled = true;
 
-                // 결과를 sessionStorage에 저장
+            // [수정] 추가된 폼 항목들의 값을 모두 읽어옵니다.
+            const requestData = {
+                level: form.querySelector('input[name="level"]:checked').value,
+                targetArea: document.getElementById('targetArea').value,
+                goal: document.getElementById('goal').value,
+                location: form.querySelector('input[name="location"]:checked').value
+            };
+
+            try {
+                const response = await fetch('/exercise/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'AI 추천을 받아오는 데 실패했습니다.');
+                }
+
+                const resultJsonString = await response.text();
+
                 sessionStorage.setItem('exerciseResult', resultJsonString);
                 sessionStorage.setItem('requestParams', JSON.stringify(requestData));
 
-                // 결과 페이지로 이동 (경로 수정!)
                 window.location.href = '/exercise/exerciseResult';
 
             } catch (error) {
-                // ... (에러 처리)
+                console.error(error);
+                alert(error.message);
+                btn.textContent = '운동 추천 받기';
+                btn.classList.remove('loading');
+                btn.disabled = false;
             }
         });
     });
