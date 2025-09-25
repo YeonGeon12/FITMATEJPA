@@ -1,84 +1,86 @@
+// build.gradle (Final Version)
+
+// 1. 플러그인 설정
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5' // Spring Boot 버전을 최신 안정 버전으로 수정
+    id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
+// 2. 프로젝트 기본 정보
 group = 'kopo'
 version = '0.0.1-SNAPSHOT'
 description = 'FITMATE'
 
+// 3. Java 설정
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
+// 4. Lombok 설정
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
 }
 
+// 5. 라이브러리 저장소 설정
 repositories {
-    mavenCentral()
+    mavenCentral() // Gemini API 라이브러리는 여기에 정식으로 포함되어 있습니다.
 }
 
-dependencies {
-    // ============================= Web & Template Engine =============================
-    implementation 'org.springframework.boot:spring-boot-starter-web'          // Spring Web MVC, RESTful API 개발을 위한 핵심 의존성 (내장 톰캣 포함)
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'    // 서버 사이드 렌더링을 위한 템플릿 엔진
-
-    // ============================= Database & Data Access =============================
-    // JPA (RDBMS)
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA(Java Persistence API)를 사용한 데이터베이스 접근을 위한 의존성 (하이버네이트 포함)
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                      // MariaDB 데이터베이스 연결을 위한 JDBC 드라이버
-
-    // NoSQL (MongoDB)
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' // MongoDB 데이터베이스 연동을 위한 의존성
-
-    // In-Memory (Redis)
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'   // Redis 데이터베이스 연동을 위한 의존성
-    implementation 'org.springframework.session:spring-session-data-redis'     // Spring Session을 Redis를 통해 관리
-
-    // ============================= Microservice Communication =============================
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // 선언적 REST 클라이언트, 마이크로서비스 간 통신을 간편하게 구현
-
-    // ============================= API SETTING ============================
-    implementation 'com.google.ai.client.generativeai:generative-ai-java:0.4.0'    // Gemini API 사용을 위한 의존성 추가
-
-    // 테스트를 위해 아래 한 줄을 추가해주세요.
-    implementation 'com.google.guava:guava:33.0.0-jre'
-
-    // ============================= Monitoring =============================
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'  // 애플리케이션 모니터링 및 관리를 위한 기능 제공 (헬스 체크, 메트릭 등)
-
-    // ============================= Developer Tools =============================
-    compileOnly 'org.projectlombok:lombok'                                  // Getter, Setter, 생성자 등 반복적인 코드를 어노테이션으로 자동 생성
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'         // 빠른 애플리케이션 재시작, 라이브 리로드 등 개발 편의 기능 제공
-    annotationProcessor 'org.projectlombok:lombok'                          // Lombok 어노테이션을 처리하기 위한 프로세서
-    implementation 'org.springframework.boot:spring-boot-starter-validation' // 데이터 유효성 검사 지원
-    implementation 'org.springframework.boot:spring-boot-starter-security'  // 스프링 시큐리티 의존성 지원
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'  // Thymeleaf가 Spring Security의 인증 정보를 사용할 수 있도록 돕는 라이브러리
-
-    // ============================= Testing =============================
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'   // Spring Boot 애플리케이션 테스트를 위한 핵심 의존성 (JUnit, Mockito 등 포함)
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'            // 테스트 실행을 위한 JUnit 플랫폼 런처
+// 6. 라이브러리 버전 관리용 변수
+ext {
+    // Spring Boot 3.2.x와 가장 잘 호환되는 공식 Spring Cloud 버전입니다.
+    springCloudVersion = "2023.0.1"
 }
 
-// OpenFeign 사용을 위한 dependencyManagement 설정 추가
+// 7. 의존성 버전 관리 (BOM) - [수정됨] 주석 해제 필수!
+// 여러 라이브러리 간 버전 충돌을 막아주는 매우 중요한 부분입니다.
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+// 8. 의존성 라이브러리 목록
+dependencies {
+    // --- Spring Boot Starters ---
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // --- Spring Cloud & Session ---
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // [수정됨] 주석 해제
+    implementation 'org.springframework.session:spring-session-data-redis'
+
+    // --- Thymeleaf & Security Extras ---
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // --- AI (Google Gemini) ---
+    // Google 공식 문서의 정확한 라이브러리 경로입니다.
+    implementation 'com.google.genai:google-genai:0.8.0'
+
+    // --- Developer Tools & Database Driver ---
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // --- Testing ---
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// 'src/main/resources' 폴더의 내용을 처리하는 규칙 정의
-// 중복된 파일이 있을 경우, 기존 파일을 덮어쓰는(포함하는) 전략을 사용
-processResources {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+// 9. 테스트 설정
+tasks.named('test') {
+    useJUnitPlatform()
 }
