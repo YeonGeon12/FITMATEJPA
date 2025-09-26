@@ -35,16 +35,16 @@ public interface IUserService extends UserDetailsService {
     void changeUserPassword(ChangePasswordDTO pDTO, String email) throws Exception;
 
     /**
-     * 사용자 프로필 정보 조회
+     * [수정됨] 사용자 프로필 정보 조회 (userNo 기반)
      * @param userNo 현재 로그인된 사용자의 고유 번호(PK)
-     * @return 프로필 정보가 담긴 DTO (정보가 없으면 Optional.empty() 반환)
+     * @return 프로필 정보가 담긴 DTO (정보가 없으면 빈 DTO 반환)
      */
-    Optional<UserProfileDTO> getUserProfile(Long userNo);
+    UserProfileDTO getUserProfile(Long userNo);
 
     /**
-     * 사용자 프로필 정보 저장 또는 수정
-     * @param pDTO 저장할 프로필 정보가 담긴 DTO
-     * @param userNo 현재 로그인된 사용자의 고유 번호(PK)
+     * 사용자 프로필 정보 저장 또는 업데이트
+     * @param pDTO 저장/업데이트할 프로필 정보
+     * @param userNo 현재 로그인된 사용자의 고유 번호
      */
     void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception;
 
