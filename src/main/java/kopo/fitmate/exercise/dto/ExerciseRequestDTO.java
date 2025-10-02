@@ -2,16 +2,31 @@ package kopo.fitmate.exercise.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
+/**
+ * AI 운동 추천을 요청하기 위해 사용자가 입력한 데이터를 담는 DTO
+ */
 @Getter
 @Setter
 public class ExerciseRequestDTO {
 
-    // HTML의 form 태그에서 전달될 데이터들
-    // name 속성과 변수명이 일치해야 합니다.
-    private String goal;       // 운동 목표 (예: 체중 감량, 근력 증가)
-    private String level;      // 운동 레벨 (예: 초급, 중급, 고급)
-    private String location;   // 운동 장소 (예: 헬스장, 홈트)
-    private String targetArea; // 집중 운동 부위 (예: 등, 가슴, 하체)
+    // 나의 신체 정보
+    private int height;             // 키
+
+    private int weight;             // 체중
+
+    private String gender;          // 성별
+
+    private int age;                // 나이 (더 나은 추천을 위해 추가)
+
+    // 운동 목표 설정
+    private String exerciseLevel;   // 운동 수준
+
+    private String exerciseGoal;    // 운동 목표
+
+    private String workoutLocation; // 운동 장소 (더 나은 추천을 위해 추가)
+
+    private List<String> bodyParts; // 희망 운동 부위 (여러 개 선택 가능)
 
 }
