@@ -1,22 +1,19 @@
 package kopo.fitmate.user.service.impl;
 
 import jakarta.transaction.Transactional;
-import kopo.fitmate.user.repository.UserProfileRepository;
-import kopo.fitmate.user.repository.UserRepository;
-import kopo.fitmate.user.repository.entity.UserEntity;
-import kopo.fitmate.user.repository.entity.UserProfileEntity;
-import kopo.fitmate.history.repository.AiReportRepository;
-import kopo.fitmate.history.repository.DietInfoRepository;
-import kopo.fitmate.history.repository.ExerciseInfoRepository;
 import kopo.fitmate.global.config.util.CmmUtil;
 import kopo.fitmate.global.config.util.DateUtil;
 import kopo.fitmate.global.config.util.EncryptUtil;
 import kopo.fitmate.user.dto.*;
+import kopo.fitmate.user.repository.UserProfileRepository;
+import kopo.fitmate.user.repository.UserRepository;
+import kopo.fitmate.user.repository.entity.UserEntity;
+import kopo.fitmate.user.repository.entity.UserProfileEntity;
 import kopo.fitmate.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails; // 로그인 메서드
-import org.springframework.security.core.userdetails.UsernameNotFoundException; // 예외 처리 메서드
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +31,7 @@ public class UserService implements IUserService {
 
 
     // MongoDB Repositories
-    private final AiReportRepository aiReportRepository;
-    private final DietInfoRepository dietInfoRepository;
-    private final ExerciseInfoRepository exerciseInfoRepository;
+
 
     // #################################################### 회원 가입 메서드 ##############################
 
@@ -153,31 +148,29 @@ public class UserService implements IUserService {
     }
 
     // ############################### 사용자 프로필 생성 및 조회 로직 ################################################
+
+
     /**
-     * 사용자 프로필 정보 조회 로직
+     *  기존에 저장된 정보 불러오기
+     * @param userNo 유저번호
+     * @return 리턴
      */
     @Override
     public Optional<UserProfileDTO> getUserProfile(Long userNo) {
         log.info(this.getClass().getName() + ".getUserProfile Start!");
 
-        // userNo를 기준으로 프로필 정보를 조회
         Optional<UserProfileEntity> profileEntityOptional = userProfileRepository.findByUser_UserNo(userNo);
 
-        // 조회된 엔티티가 존재하면 DTO로 변환하여 반환
-        if (profileEntityOptional.isPresent()) {
-            UserProfileEntity profileEntity = profileEntityOptional.get();
-            UserProfileDTO dto = UserProfileDTO.builder()
-                    .height(profileEntity.getHeight())
-                    .weight(profileEntity.getWeight())
-                    .age(profileEntity.getAge())
-                    .gender(profileEntity.getGender())
-                    .activityLevel(profileEntity.getActivityLevel())
-                    .build();
-            return Optional.of(dto);
-        }
-
-        // 정보가 없으면 빈 Optional 객체 반환
-        return Optional.empty();
+        // Entity가 존재하면 DTO로 변환하여 반환하고, 없으면 빈 Optional을 반환
+        return profileEntityOptional.map(profile ->
+                UserProfileDTO.builder()
+                        .height(profile.getHeight())
+                        .weight(profile.getWeight())
+                        .age(profile.getAge())
+                        .gender(profile.getGender())
+                        .activityLevel(profile.getActivityLevel())
+                        .build()
+        );
     }
 
     /**
@@ -221,6 +214,12 @@ public class UserService implements IUserService {
         log.info(this.getClass().getName() + ".saveOrUpdateUserProfile End!");
     }
 
+    /**
+     * 회원 탈퇴시 데이터 삭제 로직
+     * @param userNo 탈퇴할 사용자의 고유 번호
+     * @param password 비밀번호 확인을 위한 현재 비밀번호
+     * @throws Exception 예외 처리
+     */
     @Override
     @Transactional
     public void deleteUser(Long userNo, String password) throws Exception {
@@ -234,12 +233,6 @@ public class UserService implements IUserService {
         if (!passwordEncoder.matches(password, userEntity.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-
-        // 3. MongoDB에 저장된 모든 관련 데이터 삭제
-        exerciseInfoRepository.deleteAllByUserId(userNo);
-        dietInfoRepository.deleteAllByUserId(userNo);
-        aiReportRepository.deleteAllByUserId(userNo);
-        log.info("MongoDB data deleted for userNo: " + userNo);
 
         // 4. RDBMS에 저장된 사용자 데이터 삭제 (UserProfile은 Cascade 설정으로 자동 삭제)
         userRepository.delete(userEntity);

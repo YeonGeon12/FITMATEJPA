@@ -34,12 +34,7 @@ public interface IUserService extends UserDetailsService {
      */
     void changeUserPassword(ChangePasswordDTO pDTO, String email) throws Exception;
 
-    /**
-     * [수정됨] 사용자 프로필 정보 조회 (userNo 기반)
-     * @param userNo 현재 로그인된 사용자의 고유 번호(PK)
-     * @return 프로필 정보가 담긴 DTO (정보가 없으면 빈 DTO 반환)
-     */
-    UserProfileDTO getUserProfile(Long userNo);
+    Optional<UserProfileDTO> getUserProfile(Long userNo);
 
     /**
      * 사용자 프로필 정보 저장 또는 업데이트
@@ -49,9 +44,9 @@ public interface IUserService extends UserDetailsService {
     void saveOrUpdateUserProfile(UpdateProfileDTO pDTO, Long userNo) throws Exception;
 
     /**
-     * 회원 탈퇴 처리를 위한 메서드 명세
+     * 회원 탈퇴
      * @param userNo 탈퇴할 사용자의 고유 번호
-     * @param password 비밀번호 확인을 위한 현재 비밀번호
+     * @param password 비밀번호 확인
      */
     void deleteUser(Long userNo, String password) throws Exception;
 
