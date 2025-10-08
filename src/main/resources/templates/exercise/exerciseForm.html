@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | AI 운동 추천</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/exercise/exerciseForm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="form-main-content">
+        <div class="form-container">
+            <h1>AI 운동 추천 받기</h1>
+            <p>AI가 당신에게 꼭 맞는 주간 운동 루틴을 추천해 드립니다.</p>
+
+            <form th:action="@{/exercise/getRecommendation}" method="post" th:object="${requestDTO}" class="exercise-form">
+
+                <fieldset>
+                    <legend><i class="fa-solid fa-user"></i> 나의 신체 정보</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="height">키(cm)</label>
+                            <input type="number" id="height" th:field="*{height}" placeholder="예: 175" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">몸무게(kg)</label>
+                            <input type="number" id="weight" th:field="*{weight}" placeholder="예: 70" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age">나이</label>
+                            <input type="number" id="age" th:field="*{age}" placeholder="예: 25" required>
+                        </div>
+                        <div class="form-group gender-group">
+                            <label>성별</label>
+                            <div class="radio-buttons">
+                                <input type="radio" id="male" th:field="*{gender}" value="남성" checked>
+                                <label for="male">남성</label>
+                                <input type="radio" id="female" th:field="*{gender}" value="여성">
+                                <label for="female">여성</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend><i class="fa-solid fa-bullseye"></i> 운동 목표 설정</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="exerciseLevel">운동 수준</label>
+                            <select id="exerciseLevel" th:field="*{exerciseLevel}">
+                                <option value="초급">초급 (헬스를 처음 접해요)</option>
+                                <option value="중급">중급 (운동 경험이 있어요)</option>
+                                <option value="고급">고급 (꾸준히 운동하고 있어요)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exerciseGoal">운동 목표</label>
+                            <select id="exerciseGoal" th:field="*{exerciseGoal}">
+                                <option value="체중 감량">체중 감량</option>
+                                <option value="근력 증가">근력 증가</option>
+                                <option value="지구력 향상">지구력 향상</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="workoutLocation">운동 장소</label>
+                            <select id="workoutLocation" th:field="*{workoutLocation}">
+                                <option value="헬스장">헬스장</option>
+                                <option value="집">집 (홈트레이닝)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>희망 운동 부위 (1개 이상 선택)</label>
+                        <div class="checkbox-buttons">
+                            <input type="checkbox" id="chest" th:field="*{bodyParts}" value="가슴">
+                            <label for="chest">가슴</label>
+                            <input type="checkbox" id="back" th:field="*{bodyParts}" value="등">
+                            <label for="back">등</label>
+                            <input type="checkbox" id="legs" th:field="*{bodyParts}" value="하체">
+                            <label for="legs">하체</label>
+                            <input type="checkbox" id="shoulders" th:field="*{bodyParts}" value="어깨">
+                            <label for="shoulders">어깨</label>
+                            <input type="checkbox" id="arms" th:field="*{bodyParts}" value="팔">
+                            <label for="arms">팔</label>
+                            <input type="checkbox" id="abs" th:field="*{bodyParts}" value="복근">
+                            <label for="abs">복근</label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="submit-btn">AI 운동 추천 받기 <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </main>
+</div>
+<script src="/js/header.js"></script>
+</body>
+</html>
