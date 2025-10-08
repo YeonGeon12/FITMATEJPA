@@ -1,15 +1,15 @@
 package kopo.fitmate.exercise.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 하루치 운동 루틴 정보를 담는 DTO
  * (Service -> Controller -> View)
  */
-@Getter
-@Setter
+@NoArgsConstructor          // ✅ 무인자 생성자
+@Data
 @AllArgsConstructor // 간단한 생성을 위해 모든 필드 생성자 추가
 public class DailyRoutineDTO {
 
