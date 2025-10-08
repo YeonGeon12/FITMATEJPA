@@ -65,6 +65,9 @@ dependencies {
     // --- Thymeleaf & Security Extras ---
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+    // OpenAI 공식 Java SDK (예시 버전 — 실제 최신 버전 확인 필요)
+    implementation 'com.openai:openai-java:4.1.0'
+
 
     // --- Developer Tools & Database Driver ---
     compileOnly 'org.projectlombok:lombok'
