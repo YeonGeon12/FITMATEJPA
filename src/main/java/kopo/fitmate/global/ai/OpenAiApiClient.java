@@ -1,4 +1,4 @@
-package kopo.fitmate.exercise.client;
+package kopo.fitmate.global.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

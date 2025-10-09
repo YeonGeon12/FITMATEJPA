@@ -1,8 +1,7 @@
 package kopo.fitmate.exercise.service.impl;
 
 
-import kopo.fitmate.exercise.client.OpenAiApiClient;
-import kopo.fitmate.exercise.dto.DailyRoutineDTO;
+import kopo.fitmate.global.ai.OpenAiApiClient;
 import kopo.fitmate.exercise.dto.ExerciseRequestDTO;
 import kopo.fitmate.exercise.dto.ExerciseResponseDTO;
 import kopo.fitmate.exercise.repository.ExerciseRepository;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

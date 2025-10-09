@@ -1,7 +1,9 @@
 package kopo.fitmate.diet.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
@@ -9,8 +11,9 @@ import java.util.List;
  * 이 객체는 Service 계층에서 생성되어 Controller를 거쳐 View(화면)로 전달
  * (흐름: Service -> Controller -> View)
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class DietResponseDTO {
 
     private String totalCalories; // 하루 총 추천 칼로리
