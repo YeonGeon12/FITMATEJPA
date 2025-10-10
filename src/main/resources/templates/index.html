@@ -20,7 +20,7 @@
             <ul>
                 <li><a th:href="@{/exercise/exerciseForm}"><i class="fa-solid fa-dumbbell"></i><span>운동 추천 받기</span></a></li>
                 <li><a th:href="@{/history}"><i class="fa-solid fa-file-pen"></i><span>내 기록 보기</span></a></li>
-                <li><a href="#"><i class="fa-solid fa-utensils"></i><span>식단 추천 받기</span></a></li>
+                <li><a th:href="@{/diet/dietForm}"><i class="fa-solid fa-utensils"></i><span>식단 추천 받기</span></a></li>
                 <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i><span>신체 분석</span></a></li>
             </ul>
         </nav>
@@ -50,7 +50,7 @@
                 <h2>운동 추천 받기</h2>
                 <p>AI가 맞춤형 운동 루틴을 추천해 드립니다.</p>
             </a>
-            <a href="#" class="action-card">
+            <a th:href="@{/diet/dietForm}" class="action-card">
                 <h2>식단 추천 받기</h2>
                 <p>목표에 맞는 건강한 식단을 받아보세요.</p>
             </a>
