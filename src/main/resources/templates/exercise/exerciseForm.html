@@ -28,7 +28,7 @@
                             <input type="number" id="height" th:field="*{height}" placeholder="예: 175" required>
                         </div>
                         <div class="form-group">
-                            <label for="weight">몸무게(kg)</label>
+                            <label for="weight">체중(kg)</label>
                             <input type="number" id="weight" th:field="*{weight}" placeholder="예: 70" required>
                         </div>
                     </div>
@@ -37,14 +37,13 @@
                             <label for="age">나이</label>
                             <input type="number" id="age" th:field="*{age}" placeholder="예: 25" required>
                         </div>
-                        <div class="form-group gender-group">
-                            <label>성별</label>
-                            <div class="radio-buttons">
-                                <input type="radio" id="male" th:field="*{gender}" value="남성" checked>
-                                <label for="male">남성</label>
-                                <input type="radio" id="female" th:field="*{gender}" value="여성">
-                                <label for="female">여성</label>
-                            </div>
+                        <div class="form-group">
+                            <label for="gender">성별</label>
+                            <select id="gender" th:field="*{gender}">
+                                <option value="남성">남성</option>
+                                <option value="여성">여성</option>
+                                <option value="기타">기타</option>
+                            </select>
                         </div>
                     </div>
                 </fieldset>
@@ -60,6 +59,8 @@
                                 <option value="고급">고급 (꾸준히 운동하고 있어요)</option>
                             </select>
                         </div>
+
+
                         <div class="form-group">
                             <label for="exerciseGoal">운동 목표</label>
                             <select id="exerciseGoal" th:field="*{exerciseGoal}">
@@ -69,6 +70,8 @@
                             </select>
                         </div>
                     </div>
+
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="workoutLocation">운동 장소</label>
@@ -78,30 +81,62 @@
                             </select>
                         </div>
                     </div>
+
+
                     <div class="form-group checkbox-group">
                         <label>희망 운동 부위 (1개 이상 선택)</label>
                         <div class="checkbox-buttons">
-                            <input type="checkbox" id="chest" th:field="*{bodyParts}" value="가슴">
+                            <input type="checkbox" id="all-parts">
+                            <label for="all-parts" class="all-label"><strong>전체</strong></label>
+
+                            <input type="checkbox" id="chest" th:field="*{bodyParts}" value="가슴" class="body-part">
                             <label for="chest">가슴</label>
-                            <input type="checkbox" id="back" th:field="*{bodyParts}" value="등">
+                            <input type="checkbox" id="back" th:field="*{bodyParts}" value="등" class="body-part">
                             <label for="back">등</label>
-                            <input type="checkbox" id="legs" th:field="*{bodyParts}" value="하체">
+                            <input type="checkbox" id="legs" th:field="*{bodyParts}" value="하체" class="body-part">
                             <label for="legs">하체</label>
-                            <input type="checkbox" id="shoulders" th:field="*{bodyParts}" value="어깨">
+                            <input type="checkbox" id="shoulders" th:field="*{bodyParts}" value="어깨" class="body-part">
                             <label for="shoulders">어깨</label>
-                            <input type="checkbox" id="arms" th:field="*{bodyParts}" value="팔">
+                            <input type="checkbox" id="arms" th:field="*{bodyParts}" value="팔" class="body-part">
                             <label for="arms">팔</label>
-                            <input type="checkbox" id="abs" th:field="*{bodyParts}" value="복근">
+                            <input type="checkbox" id="abs" th:field="*{bodyParts}" value="복근" class="body-part">
                             <label for="abs">복근</label>
                         </div>
                     </div>
                 </fieldset>
 
                 <button type="submit" class="submit-btn">AI 운동 추천 받기 <i class="fa-solid fa-arrow-right"></i></button>
+                <div class="back-link-container">
+                    <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+                </div>
             </form>
         </div>
     </main>
 </div>
 <script src="/js/header.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const allPartsCheckbox = document.getElementById('all-parts');
+        const bodyPartCheckboxes = document.querySelectorAll('.body-part');
+
+        // '전체' 체크박스 클릭 시
+        allPartsCheckbox.addEventListener('change', function () {
+            const isChecked = this.checked;
+            bodyPartCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        // 개별 부위 체크박스 클릭 시
+        bodyPartCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                const allChecked = Array.from(bodyPartCheckboxes).every(c => c.checked);
+                allPartsCheckbox.checked = allChecked;
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
