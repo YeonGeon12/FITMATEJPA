@@ -1,0 +1,104 @@
+/* 폼 페이지의 메인 콘텐츠 영역 */
+.form-main-content {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+/* 폼 전체를 감싸는 흰색 컨테이너 */
+.form-container {
+    width: 100%;
+    max-width: 600px; /* 운동 추천 폼보다 너비를 약간 좁게 설정 */
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 제목(h1) 스타일 */
+.form-container h1 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* 설명 문단(p) 스타일 */
+.form-container p {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #666;
+}
+
+/* 라벨과 입력 필드를 묶는 그룹 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px; /* 버튼과의 간격 */
+}
+
+/* 라벨(label) 스타일 */
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+/* 선택 메뉴(select) 스타일 */
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+/* 선택 메뉴 포커스 시 스타일 */
+.form-group select:focus {
+    border-color: #e53e3e;
+    outline: none;
+}
+
+/* 'AI 추천받기' 버튼 스타일 */
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e53e3e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #c53030;
+}
+
+/* '홈으로 돌아가기' 링크 컨테이너 */
+.back-link-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* '홈으로 돌아가기' 링크 스타일 */
+.back-link {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: #343a40;
+}

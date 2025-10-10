@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | AI 식단 추천</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/diet/dietForm.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="form-main-content">
+        <div class="form-container">
+            <h1>AI 식단 추천 받기</h1>
+            <p>AI가 당신의 목표에 맞는 주간 식단을 추천해 드립니다.</p>
+
+            <form th:action="@{/diet/getRecommendation}" method="post" th:object="${requestDTO}">
+                <div class="form-group">
+                    <label for="dietType">식단 유형 선택</label>
+                    <select id="dietType" th:field="*{dietType}">
+                        <option value="체중 감량">체중 감량</option>
+                        <option value="근력 증가">근력 증가</option>
+                        <option value="균형 잡힌 식단">균형 잡힌 식단</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">AI 식단 추천 받기 </button>
+
+                <div class="back-link-container">
+                    <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+<script src="/js/header.js"></script>
+</body>
+</html>
