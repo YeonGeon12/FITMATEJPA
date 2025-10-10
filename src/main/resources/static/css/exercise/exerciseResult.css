@@ -44,7 +44,7 @@ th, td {
 }
 
 thead {
-    background-color: #007bff;
+    background-color: #e53e3e;
     color: white;
     font-weight: 600;
 }
@@ -60,31 +60,134 @@ tbody tr:hover {
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px; /* 버튼 사이 간격 */
+    margin-top: 30px;
 }
 
-.btn-retry, .btn-home {
-    padding: 12px 25px;
-    text-decoration: none;
+/* 모든 버튼(a, button)에 대한 공통 스타일 */
+.action-buttons a,
+.action-buttons button {
+    /* 모양과 크기 통일 */
+    display: inline-flex;
+    align-items: center;
+    /* ===== 수정된 부분 ===== */
+    padding: 14px 28px; /* 기존 12px 25px -> 버튼 크기 증가 */
+    gap: 10px;          /* 기존 8px -> 아이콘과 텍스트 간격 증가 */
+    /* ===== 수정 끝 ===== */
     border-radius: 8px;
-    font-weight: 600;
-    transition: background-color 0.3s, color 0.3s;
-}
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    text-decoration: none; /* a 태그의 밑줄 제거 */
+    transition: background-color 0.3s, transform 0.2s;
 
-.btn-retry {
-    background-color: #28a745;
+    /* 폰트 색상 */
     color: white;
 }
 
-.btn-retry:hover {
+/* 각 버튼의 배경색 설정 */
+.action-buttons .btn-home {
+    background-color: #6c757d; /* 회색 계열 */
+}
+
+.action-buttons .btn-retry {
+    background-color: #007bff; /* 파란색 계열 */
+}
+
+.action-buttons .btn-save {
+    background-color: #28a745; /* 초록색 계열 */
+}
+
+/* 마우스를 올렸을 때(hover) 효과 */
+.action-buttons a:hover,
+.action-buttons button:hover {
+    transform: translateY(-2px); /* 살짝 위로 이동 */
+}
+
+.action-buttons .btn-home:hover {
+    background-color: #5a6268;
+}
+
+.action-buttons .btn-retry:hover {
+    background-color: #0056b3;
+}
+
+.action-buttons .btn-save:hover {
     background-color: #218838;
 }
 
-.btn-home {
-    background-color: #6c757d;
-    color: white;
+/* ===== 모달 스타일 추가 ===== */
+
+/* 모달 배경 (화면 전체를 덮는 반투명 레이어) */
+.modal-overlay {
+    position: fixed; /* 화면에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검은색 */
+    display: none; /* 평소에는 숨김 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 다른 요소들보다 위에 표시 */
 }
 
-.btn-home:hover {
-    background-color: #5a6268;
+/* 모달 내용이 들어갈 흰색 박스 */
+.modal-content {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    transform: scale(0.9); /* 나타날 때 작은 효과 */
+    animation: zoomIn 0.3s forwards;
 }
+
+/* 모달 등장 애니메이션 */
+@keyframes zoomIn {
+    to {
+        transform: scale(1);
+    }
+}
+
+/* 모달 아이콘 스타일 */
+.modal-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+.modal-icon .fa-circle-check {
+    color: #28a745; /* 성공 아이콘 (초록색) */
+}
+.modal-icon .fa-circle-xmark {
+    color: #dc3545; /* 실패 아이콘 (빨간색) */
+}
+
+/* 모달 메시지 텍스트 */
+.modal-message {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+/* 모달 '확인' 버튼 */
+.modal-button {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.modal-button:hover {
+    background-color: #c53030;
+}
+/* ===== 추가 끝 ===== */
