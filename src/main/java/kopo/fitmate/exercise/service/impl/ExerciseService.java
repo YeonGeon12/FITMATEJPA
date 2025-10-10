@@ -1,6 +1,6 @@
 package kopo.fitmate.exercise.service.impl;
 
-import kopo.fitmate.global.ai.OpenAiApiClient;              // ✅ 공용 클라이언트
+import kopo.fitmate.global.ai.OpenAiApiClient;
 import kopo.fitmate.exercise.dto.ExerciseRequestDTO;
 import kopo.fitmate.exercise.dto.ExerciseResponseDTO;
 import kopo.fitmate.exercise.repository.ExerciseRepository;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ExerciseService implements IExerciseService {
 
     private final ExerciseRepository exerciseRepository;
-    private final OpenAiApiClient openAiApiClient;          // ✅ 소문자 필드
+    private final OpenAiApiClient openAiApiClient;
 
     @Override
     public ExerciseResponseDTO getExerciseRecommendation(ExerciseRequestDTO requestDTO, UserAuthDTO user) throws Exception {
@@ -35,11 +35,10 @@ public class ExerciseService implements IExerciseService {
                 ExerciseResponseDTO.class
         );
 
-        // 2) MongoDB 저장
-        saveExerciseRecommendation(requestDTO, responseDTO, user);
+        // 2) DB 저장 로직 삭제됨
 
         log.info("{}.getExerciseRecommendation End!", getClass().getName());
-        return responseDTO;
+        return responseDTO; // AI가 생성한 결과만 바로 반환
     }
 
     /** 운동 추천 프롬프트 (DTO 스키마에 맞게 JSON만 출력하도록 강제) */
@@ -70,8 +69,13 @@ public class ExerciseService implements IExerciseService {
         );
     }
 
-    /** 추천 결과 저장 */
-    private void saveExerciseRecommendation(ExerciseRequestDTO requestDTO, ExerciseResponseDTO responseDTO, UserAuthDTO user) {
+    /**
+     * 추천 결과 저장 (private -> public 변경 및 @Override 추가)
+     */
+    @Override
+    public void saveExerciseRecommendation(ExerciseRequestDTO requestDTO, ExerciseResponseDTO responseDTO, UserAuthDTO user) {
+        log.info("{}.saveExerciseRecommendation Start!", getClass().getName());
+
         ExerciseInfoEntity entity = new ExerciseInfoEntity();
 
         entity.setUserId(user.getUsername());
@@ -100,5 +104,6 @@ public class ExerciseService implements IExerciseService {
         entity.setWeeklyRoutine(routineToSave);
 
         exerciseRepository.save(entity);
+        log.info("{}.saveExerciseRecommendation End!", getClass().getName());
     }
 }
