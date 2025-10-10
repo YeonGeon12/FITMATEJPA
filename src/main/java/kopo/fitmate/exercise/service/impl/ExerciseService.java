@@ -1,7 +1,6 @@
 package kopo.fitmate.exercise.service.impl;
 
-
-import kopo.fitmate.global.ai.OpenAiApiClient;
+import kopo.fitmate.global.ai.OpenAiApiClient;              // ✅ 공용 클라이언트
 import kopo.fitmate.exercise.dto.ExerciseRequestDTO;
 import kopo.fitmate.exercise.dto.ExerciseResponseDTO;
 import kopo.fitmate.exercise.repository.ExerciseRepository;
@@ -23,32 +22,61 @@ import java.util.stream.Collectors;
 public class ExerciseService implements IExerciseService {
 
     private final ExerciseRepository exerciseRepository;
-    private final OpenAiApiClient OpenAiApiClient; // TODO: 다음 단계에서 만들 AI 클라이언트를 주입받을 위치
+    private final OpenAiApiClient openAiApiClient;          // ✅ 소문자 필드
 
     @Override
     public ExerciseResponseDTO getExerciseRecommendation(ExerciseRequestDTO requestDTO, UserAuthDTO user) throws Exception {
-        log.info(this.getClass().getName() + ".getExerciseRecommendation Start!");
+        log.info("{}.getExerciseRecommendation Start!", getClass().getName());
 
-        // 1. AI 클라이언트를 통해 운동 루틴 추천 받기
-        ExerciseResponseDTO responseDTO = OpenAiApiClient.getRecommendation(requestDTO); // TODO: 실제 AI 연동 시 이 코드를 활성화
+        // 1) OpenAI 호출 (JSON 강제 + DTO 역직렬화)
+        ExerciseResponseDTO responseDTO = openAiApiClient.chatJson(
+                "You are a professional fitness trainer.",
+                buildExercisePrompt(requestDTO),
+                ExerciseResponseDTO.class
+        );
 
-        // 2. MongoDB에 추천 결과 저장
+        // 2) MongoDB 저장
         saveExerciseRecommendation(requestDTO, responseDTO, user);
 
-        log.info(this.getClass().getName() + ".getExerciseRecommendation End!");
+        log.info("{}.getExerciseRecommendation End!", getClass().getName());
         return responseDTO;
     }
 
-    /**
-     * 추천받은 운동 정보를 MongoDB에 저장하는 메서드
-     */
+    /** 운동 추천 프롬프트 (DTO 스키마에 맞게 JSON만 출력하도록 강제) */
+    private String buildExercisePrompt(ExerciseRequestDTO dto) {
+        return String.format("""
+        너는 전문 트레이너다. 아래 정보를 바탕으로 1주(월~일) 운동 루틴을 추천해라.
+        반드시 **JSON만** 출력한다.
+
+        [사용자]
+        - 키:%dcm, 체중:%dkg, 성별:%s, 나이:%d세
+        - 운동 수준:%s, 목표:%s, 운동 장소:%s
+        - 집중 부위:%s
+
+        [출력 스키마 - 정확히 지켜라]
+        {
+          "weeklyRoutine": [
+            { "day":"월", "bodyPart":"가슴", "exerciseName":"푸쉬업",
+              "sets":"4", "reps":"12-15", "restTime":"60초" }
+          ]
+        }
+
+        - 월~일 모두 포함
+        - bodyPart='휴식'인 날은 exerciseName/sets/reps/restTime은 "-"로 채운다.
+        """,
+                dto.getHeight(), dto.getWeight(), dto.getGender(), dto.getAge(),
+                dto.getExerciseLevel(), dto.getExerciseGoal(), dto.getWorkoutLocation(),
+                dto.getBodyParts() != null ? String.join(", ", dto.getBodyParts()) : "-"
+        );
+    }
+
+    /** 추천 결과 저장 */
     private void saveExerciseRecommendation(ExerciseRequestDTO requestDTO, ExerciseResponseDTO responseDTO, UserAuthDTO user) {
-
         ExerciseInfoEntity entity = new ExerciseInfoEntity();
-        entity.setUserId(user.getEmail());
-        entity.setRegDt(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
 
-        // 요청 정보 저장
+        entity.setUserId(user.getUsername());
+        entity.setRegDt(DateUtil.getDateTime());
+
         entity.setHeight(requestDTO.getHeight());
         entity.setWeight(requestDTO.getWeight());
         entity.setGender(requestDTO.getGender());
@@ -58,17 +86,17 @@ public class ExerciseService implements IExerciseService {
         entity.setWorkoutLocation(requestDTO.getWorkoutLocation());
         entity.setBodyParts(requestDTO.getBodyParts());
 
-        // 추천 결과(주간 루틴)를 DTO -> Embeddable Object로 변환하여 저장
-        List<DailyRoutineEmbed> routineToSave = responseDTO.getWeeklyRoutine().stream().map(dto -> {
-            DailyRoutineEmbed embed = new DailyRoutineEmbed();
-            embed.setDay(dto.getDay());
-            embed.setBodyPart(dto.getBodyPart());
-            embed.setExerciseName(dto.getExerciseName());
-            embed.setSets(dto.getSets());
-            embed.setReps(dto.getReps());
-            embed.setRestTime(dto.getRestTime());
-            return embed;
-        }).collect(Collectors.toList());
+        List<DailyRoutineEmbed> routineToSave = responseDTO.getWeeklyRoutine().stream()
+                .map(dto -> {
+                    DailyRoutineEmbed embed = new DailyRoutineEmbed();
+                    embed.setDay(dto.getDay());
+                    embed.setBodyPart(dto.getBodyPart());
+                    embed.setExerciseName(dto.getExerciseName());
+                    embed.setSets(dto.getSets());
+                    embed.setReps(dto.getReps());
+                    embed.setRestTime(dto.getRestTime());
+                    return embed;
+                }).collect(Collectors.toList());
         entity.setWeeklyRoutine(routineToSave);
 
         exerciseRepository.save(entity);
