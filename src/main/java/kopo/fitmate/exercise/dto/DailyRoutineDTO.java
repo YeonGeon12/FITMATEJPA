@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * 하루치 운동 루틴 정보를 담는 DTO
  * (Service -> Controller -> View)
@@ -11,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor          // ✅ 무인자 생성자
 @Data
 @AllArgsConstructor // 간단한 생성을 위해 모든 필드 생성자 추가
-public class DailyRoutineDTO {
+public class DailyRoutineDTO implements Serializable {
 
     private String day;          // 요일 (예: 월)
 

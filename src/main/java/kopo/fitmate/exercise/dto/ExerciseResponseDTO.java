@@ -3,6 +3,8 @@ package kopo.fitmate.exercise.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExerciseResponseDTO {
+public class ExerciseResponseDTO implements Serializable {
 
     private List<DailyRoutineDTO> weeklyRoutine; // 주간 루틴 리스트
 
