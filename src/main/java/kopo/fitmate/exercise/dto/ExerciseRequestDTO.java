@@ -2,6 +2,8 @@ package kopo.fitmate.exercise.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,16 +11,16 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ExerciseRequestDTO {
+public class ExerciseRequestDTO implements Serializable {
 
     // 나의 신체 정보
-    private int height;             // 키
+    private Integer height;             // 키
 
-    private int weight;             // 체중
+    private Integer weight;             // 체중
 
     private String gender;          // 성별
 
-    private int age;                // 나이 (더 나은 추천을 위해 추가)
+    private Integer age;                // 나이 (더 나은 추천을 위해 추가)
 
     // 운동 목표 설정
     private String exerciseLevel;   // 운동 수준
