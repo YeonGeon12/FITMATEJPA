@@ -1,0 +1,109 @@
+/* 결과 페이지 메인 콘텐츠 영역 */
+.result-main-content {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+/* 결과를 감싸는 흰색 컨테이너 */
+.result-container {
+    width: 100%;
+    max-width: 1000px;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.result-container h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.result-container p {
+    margin-bottom: 40px;
+    color: #666;
+}
+
+.table-container {
+    overflow-x: auto; /* 화면이 작을 때 가로 스크롤 생성 */
+}
+
+/* 표(Table) 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    font-size: 1em;
+}
+
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* 표 헤더 스타일 */
+thead th {
+    background-color: #e53e3e; /* 어두운 배경색 */
+    color: white; /* 흰색 글씨 */
+    font-weight: 600;
+}
+
+/* 표 내용 행 스타일 (짝수 번째 행에 배경색 적용) */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 하단 버튼 그룹 */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* 버튼 공통 스타일 */
+.action-buttons a {
+    display: inline-flex;
+    align-items: center;
+
+    /* ===== 수정된 부분: 아이콘과 텍스트 사이 간격 추가 ===== */
+    gap: 10px;
+
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+    color: white;
+}
+
+/* '다시 추천 받기' 버튼 */
+.action-buttons .btn-retry {
+    background-color: #28a745; /* 빨간색 계열 */
+}
+
+.action-buttons .btn-retry:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+/* '홈으로 돌아가기' 버튼 */
+.action-buttons .btn-home {
+    background-color: #6c757d; /* 회색 계열 */
+}
+
+.action-buttons .btn-home:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
