@@ -1,104 +1,126 @@
-/* 폼 페이지의 메인 콘텐츠 영역 */
+/* 폼 페이지의 메인 콘텐츠 영역을 설정합니다. */
 .form-main-content {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    background-color: #f9f9f9;
+    display: flex; /* 내부 요소를 flexbox로 정렬합니다. */
+    justify-content: center; /* 가로 방향으로 중앙에 배치합니다. */
+    padding: 40px 20px; /* 위아래 40px, 좌우 20px의 여백을 줍니다. */
+    background-color: #f9f9f9; /* 배경색을 밝은 회색으로 지정합니다. */
 }
 
-/* 폼 전체를 감싸는 흰색 컨테이너 */
+/* 폼 전체를 감싸는 흰색 컨테이너 스타일입니다. */
 .form-container {
-    width: 100%;
-    max-width: 600px; /* 운동 추천 폼보다 너비를 약간 좁게 설정 */
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%; /* 너비를 100%로 설정합니다. */
+    max-width: 600px; /* 운동 추천 폼보다 너비를 약간 좁게 설정합니다. */
+    background-color: #ffffff; /* 배경색을 흰색으로 지정합니다. */
+    padding: 40px; /* 내부 여백을 40px로 줍니다. */
+    border-radius: 12px; /* 모서리를 12px만큼 둥글게 만듭니다. */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 은은한 그림자 효과를 추가합니다. */
 }
 
-/* 제목(h1) 스타일 */
+/* 폼 컨테이너 내부의 메인 제목(h1) 스타일입니다. */
 .form-container h1 {
-    text-align: center;
-    font-size: 2em;
-    margin-bottom: 10px;
-    color: #333;
+    text-align: center; /* 텍스트를 중앙 정렬합니다. */
+    font-size: 2em; /* 폰트 크기를 기본 크기의 2배로 설정합니다. */
+    margin-bottom: 10px; /* 아래쪽 여백을 10px 줍니다. */
+    color: #333; /* 글자 색상을 진한 회색으로 지정합니다. */
 }
 
-/* 설명 문단(p) 스타일 */
+/* 폼 컨테이너 내부의 설명 문단(p) 스타일입니다. */
 .form-container p {
-    text-align: center;
-    margin-bottom: 40px;
-    color: #666;
+    text-align: center; /* 텍스트를 중앙 정렬합니다. */
+    margin-bottom: 40px; /* 아래쪽 여백을 40px 줍니다. */
+    color: #666; /* 글자 색상을 중간 톤의 회색으로 지정합니다. */
 }
 
-/* 라벨과 입력 필드를 묶는 그룹 */
+/* 라벨과 입력 필드를 묶는 그룹 스타일입니다. */
 .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 30px; /* 버튼과의 간격 */
+    display: flex; /* 내부 요소(라벨, 입력 필드)들을 flexbox로 정렬합니다. */
+    flex-direction: column; /* 요소들을 세로 방향으로 나열합니다. */
+    margin-bottom: 30px; /* 아래쪽 여백을 30px 줍니다. */
 }
 
-/* 라벨(label) 스타일 */
+/* 각 입력 필드의 라벨(label) 스타일입니다. */
 .form-group label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: #555;
+    font-weight: 500; /* 폰트 굵기를 보통으로 설정합니다. */
+    margin-bottom: 15px; /* 아래쪽 여백을 15px로 늘려 버튼 그룹과 간격을 확보합니다. */
+    color: #555; /* 글자 색상을 약간 진한 회색으로 지정합니다. */
 }
 
-/* 선택 메뉴(select) 스타일 */
-.form-group select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1em;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
+/* 라디오 버튼들을 감싸는 그룹 스타일입니다. */
+.radio-button-group {
+    display: grid; /* 내부 요소들을 격자(grid) 형태로 배치합니다. */
+    grid-template-columns: 1fr 1fr; /* 2개의 열을 동일한 너비로 만듭니다. */
+    gap: 15px; /* 버튼들 사이의 간격을 15px로 설정합니다. */
 }
 
-/* 선택 메뉴 포커스 시 스타일 */
-.form-group select:focus {
-    border-color: #e53e3e;
-    outline: none;
+/* 실제 라디오 버튼(<input>)은 화면에 보이지 않게 숨깁니다. */
+.radio-button-group input[type="radio"] {
+    display: none;
 }
 
-/* 'AI 추천받기' 버튼 스타일 */
+/* 라디오 버튼과 연결된 라벨(<label>)을 버튼처럼 꾸밉니다. */
+.radio-button-group label {
+    padding: 15px; /* 내부 여백을 15px 줍니다. */
+    border: 2px solid #e0e0e0; /* 2px 두께의 연한 회색 테두리를 줍니다. */
+    border-radius: 8px; /* 모서리를 8px만큼 둥글게 만듭니다. */
+    text-align: center; /* 텍스트를 중앙 정렬합니다. */
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경합니다. */
+    transition: all 0.3s; /* 모든 속성 변경에 애니메이션 효과를 줍니다. */
+    font-weight: 500; /* 폰트 굵기를 보통으로 설정합니다. */
+    color: #444; /* 글자 색상을 진한 회색으로 지정합니다. */
+}
+
+/* 라디오 버튼이 '선택되었을 때'(checked), 그 바로 뒤에 오는(+) 라벨의 스타일을 변경합니다. */
+.radio-button-group input[type="radio"]:checked + label {
+    border-color: #e53e3e; /* 테두리 색상을 프로젝트 메인 색상(빨강)으로 변경합니다. */
+    color: #e53e3e; /* 글자 색상도 빨간색으로 변경합니다. */
+    font-weight: bold; /* 글자를 굵게 만듭니다. */
+    box-shadow: 0 0 10px rgba(229, 62, 62, 0.2); /* 선택되었을 때 은은한 그림자 효과를 추가합니다. */
+}
+
+/* 라벨에 마우스를 올렸을 때 스타일입니다. */
+.radio-button-group label:hover {
+    border-color: #c53030; /* 테두리 색상을 더 진한 빨간색으로 변경합니다. */
+}
+
+/* 'AI 추천받기' 버튼 스타일입니다. */
 .submit-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #fff;
-    background-color: #e53e3e;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+    width: 100%; /* 너비를 100%로 설정합니다. */
+    padding: 15px; /* 내부 여백을 15px 줍니다. */
+    font-size: 1.1em; /* 폰트 크기를 1.1배로 설정합니다. */
+    font-weight: bold; /* 폰트를 굵게 합니다. */
+    color: #fff; /* 글자 색상을 흰색으로 지정합니다. */
+    background-color: #e53e3e; /* 배경색을 프로젝트 메인 색상(빨강)으로 지정합니다. */
+    border: none; /* 테두리를 제거합니다. */
+    border-radius: 8px; /* 모서리를 8px만큼 둥글게 만듭니다. */
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경합니다. */
+    transition: background-color 0.3s; /* 배경색 변경에 애니메이션 효과를 줍니다. */
+    display: flex; /* 아이콘과 텍스트를 정렬하기 위해 flexbox를 사용합니다. */
+    justify-content: center; /* 가로 방향으로 중앙 정렬합니다. */
+    align-items: center; /* 세로 방향으로 중앙 정렬합니다. */
+    gap: 10px; /* 아이콘과 텍스트 사이의 간격을 10px로 설정합니다. */
 }
 
+/* 'AI 추천받기' 버튼에 마우스를 올렸을 때의 스타일입니다. */
 .submit-btn:hover {
-    background-color: #c53030;
+    background-color: #c53030; /* 배경색을 더 어두운 빨간색으로 변경합니다. */
 }
 
-/* '홈으로 돌아가기' 링크 컨테이너 */
+/* '홈으로 돌아가기' 링크를 감싸는 컨테이너 스타일입니다. */
 .back-link-container {
-    text-align: center;
-    margin-top: 20px;
+    text-align: center; /* 내부 텍스트(링크)를 중앙 정렬합니다. */
+    margin-top: 20px; /* '추천 받기' 버튼과의 세로 간격을 줍니다. */
 }
 
-/* '홈으로 돌아가기' 링크 스타일 */
+/* '홈으로 돌아가기' 링크 자체의 스타일입니다. */
 .back-link {
-    color: #6c757d;
-    text-decoration: none;
-    font-size: 0.95em;
-    transition: color 0.3s;
+    color: #6c757d; /* 차분한 회색 텍스트 색상을 지정합니다. */
+    text-decoration: none; /* 링크의 기본 밑줄을 제거합니다. */
+    font-size: 0.95em; /* 폰트 크기를 약간 작게 조정합니다. */
+    transition: color 0.3s; /* 색상 변경에 애니메이션 효과를 줍니다. */
 }
 
+/* 링크에 마우스를 올렸을 때 스타일입니다. */
 .back-link:hover {
-    text-decoration: underline;
-    color: #343a40;
+    text-decoration: underline; /* 마우스를 올리면 밑줄이 생깁니다. */
+    color: #343a40; /* 글자 색을 더 진하게 변경합니다. */
 }
