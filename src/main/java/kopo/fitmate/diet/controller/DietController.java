@@ -1,11 +1,14 @@
 package kopo.fitmate.diet.controller;
 
+import jakarta.servlet.http.HttpSession;
 import kopo.fitmate.diet.dto.DietRequestDTO;
 import kopo.fitmate.diet.dto.DietResponseDTO;
 import kopo.fitmate.diet.dto.MealDTO;
+import kopo.fitmate.user.dto.UserAuthDTO;
 import kopo.fitmate.diet.service.IDietService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,26 +44,73 @@ public class DietController {
     }
 
     /**
-     * 사용자가 선택한 식단 유형을 받아 AI에게 추천을 요청하고 결과를 보여주는 메서드
-     * POST /diet/getRecommendation
+     * AI에게 추천을 요청하고, 결과를 세션에 저장한 뒤 결과 페이지를 보여주는 메서드
      */
     @PostMapping("/getRecommendation")
-    public String getRecommendation(DietRequestDTO requestDTO, Model model) throws Exception {
+    public String getRecommendation(DietRequestDTO requestDTO, HttpSession session, Model model) throws Exception {
         log.info(this.getClass().getName() + ".getRecommendation Start!");
 
-        // 1. Service를 호출하여 AI로부터 식단 추천 결과를 받음
         DietResponseDTO responseDTO = dietService.getDietRecommendation(requestDTO);
 
-        // ===== 수정된 부분: 데이터를 '요일'별로 그룹화 =====
-        // LinkedHashMap: 순서가 보장되는 Map (월, 화, 수... 순서 유지)
+        // 1. 추천 요청 및 결과 데이터를 세션에 임시 저장
+        session.setAttribute("latestDietRequest", requestDTO);
+        session.setAttribute("latestDietResponse", responseDTO);
+
+        // 2. 표(table)를 그리기 위해 데이터를 '요일'별로 그룹화
         Map<String, List<MealDTO>> dietMap = responseDTO.getWeeklyDiet().stream()
                 .collect(Collectors.groupingBy(MealDTO::getDay, LinkedHashMap::new, Collectors.toList()));
 
-        // 가공된 Map 데이터를 Model에 추가
         model.addAttribute("dietMap", dietMap);
-        // ===== 수정 끝 =====
 
         log.info(this.getClass().getName() + ".getRecommendation End!");
-        return "diet/dietResult"; // templates/diet/dietResult.html 뷰를 반환
+        return "diet/dietResult";
+    }
+
+    /**
+     * 세션에 저장된 식단 추천 결과를 DB에 저장하는 메서드
+     */
+    @PostMapping("/saveRecommendation")
+    public String saveRecommendation(HttpSession session, @AuthenticationPrincipal UserAuthDTO user, Model model) {
+        log.info(this.getClass().getName() + ".saveRecommendation Start!");
+
+        // 1. 세션에서 데이터 가져오기
+        DietRequestDTO requestDTO = (DietRequestDTO) session.getAttribute("latestDietRequest");
+        DietResponseDTO responseDTO = (DietResponseDTO) session.getAttribute("latestDietResponse");
+
+        try {
+            if (requestDTO != null && responseDTO != null) {
+                // 2. Service를 호출하여 DB에 저장
+                dietService.saveDietRecommendation(requestDTO, responseDTO, user);
+
+                // 3. 사용 후 세션 데이터 삭제 (중복 저장 방지)
+                session.removeAttribute("latestDietRequest");
+                session.removeAttribute("latestDietResponse");
+
+                log.info("식단 저장 성공!");
+                // 성공 메시지를 Model에 추가
+                model.addAttribute("successMsg", "식단이 성공적으로 저장되었습니다!");
+
+            } else {
+                log.warn("세션에 저장된 추천 정보가 없습니다.");
+                // 실패 메시지를 Model에 추가
+                model.addAttribute("errorMsg", "세션 정보가 만료되어 저장에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            log.error("식단 저장 중 오류 발생", e);
+            // 에러 메시지를 Model에 추가
+            model.addAttribute("errorMsg", "저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+
+        // 4. 모달창을 띄운 후에도 기존 결과 테이블을 보여주기 위해 Map 데이터 다시 추가
+        if (responseDTO != null) {
+            Map<String, List<MealDTO>> dietMap = responseDTO.getWeeklyDiet().stream()
+                    .collect(Collectors.groupingBy(MealDTO::getDay, LinkedHashMap::new, Collectors.toList()));
+            model.addAttribute("dietMap", dietMap);
+        }
+
+        log.info(this.getClass().getName() + ".saveRecommendation End!");
+
+        // 5. 항상 dietResult 페이지로 이동하여 모달창을 띄움
+        return "diet/dietResult";
     }
 }
