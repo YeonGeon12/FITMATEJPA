@@ -92,11 +92,11 @@ tbody tr:hover {
 }
 
 .action-buttons .btn-retry {
-    background-color: #28a745; /* 파란색 계열 */
+    background-color: #e53e3e; /* 빨간색 계열 */
 }
 
 .action-buttons .btn-save {
-    background-color: #e53e3e; /* 초록색 계열 */
+    background-color: #28a745; /* 초록색 계열 */
 }
 
 /* 마우스를 올렸을 때(hover) 효과 */
@@ -110,11 +110,11 @@ tbody tr:hover {
 }
 
 .action-buttons .btn-retry:hover {
-    background-color: #218838;
+    background-color: #c53030;
 }
 
 .action-buttons .btn-save:hover {
-    background-color: #c53030;
+    background-color: #218838;
 }
 
 /* ===== 모달 스타일 추가 ===== */
