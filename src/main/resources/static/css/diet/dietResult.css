@@ -1,109 +1,202 @@
-/* 결과 페이지 메인 콘텐츠 영역 */
+/* 결과 페이지 메인 콘텐츠 영역 스타일입니다. */
 .result-main-content {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    background-color: #f9f9f9;
+    display: flex; /* 내부 요소를 flexbox로 정렬합니다. */
+    justify-content: center; /* 가로 방향으로 중앙에 배치합니다. */
+    padding: 40px 20px; /* 위아래 40px, 좌우 20px의 여백을 줍니다. */
+    background-color: #f9f9f9; /* 배경색을 밝은 회색으로 지정합니다. */
 }
 
-/* 결과를 감싸는 흰색 컨테이너 */
+/* 결과를 감싸는 흰색 컨테이너 스타일입니다. */
 .result-container {
-    width: 100%;
-    max-width: 1000px;
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    text-align: center;
+    width: 100%; /* 너비를 100%로 설정합니다. */
+    max-width: 1000px; /* 최대 너비를 1000px로 제한합니다. */
+    background-color: #ffffff; /* 배경색을 흰색으로 지정합니다. */
+    padding: 40px; /* 내부 여백을 40px 줍니다. */
+    border-radius: 12px; /* 모서리를 12px만큼 둥글게 만듭니다. */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 은은한 그림자 효과를 추가합니다. */
+    text-align: center; /* 내부 텍스트를 중앙 정렬합니다. */
 }
 
+/* 컨테이너 내부의 메인 제목(h1) 스타일입니다. */
 .result-container h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 2em; /* 폰트 크기를 2배로 설정합니다. */
+    margin-bottom: 10px; /* 아래쪽 여백을 10px 줍니다. */
+    color: #333; /* 글자 색상을 진한 회색으로 지정합니다. */
 }
 
+/* 컨테이너 내부의 설명 문단(p) 스타일입니다. */
 .result-container p {
-    margin-bottom: 40px;
-    color: #666;
+    margin-bottom: 40px; /* 아래쪽 여백을 40px 줍니다. */
+    color: #666; /* 글자 색상을 중간 톤의 회색으로 지정합니다. */
 }
 
+/* 표를 감싸는 컨테이너 스타일입니다. */
 .table-container {
-    overflow-x: auto; /* 화면이 작을 때 가로 스크롤 생성 */
+    overflow-x: auto; /* 화면이 작을 때 가로 스크롤을 생성합니다. */
 }
 
-/* 표(Table) 스타일 */
+/* 표(Table) 기본 스타일입니다. */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 40px;
-    font-size: 1em;
+    width: 100%; /* 너비를 100%로 설정합니다. */
+    border-collapse: collapse; /* 테두리 선을 합칩니다. */
+    margin-bottom: 40px; /* 아래쪽 여백을 40px 줍니다. */
+    font-size: 1em; /* 폰트 크기를 기본 크기로 설정합니다. */
 }
 
+/* 표의 셀(th, td) 공통 스타일입니다. */
 th, td {
-    border: 1px solid #e0e0e0;
-    padding: 12px 15px;
-    text-align: center;
-    vertical-align: middle;
+    border: 1px solid #e0e0e0; /* 1px 두께의 연한 회색 테두리를 줍니다. */
+    padding: 12px 15px; /* 내부 여백을 설정합니다. */
+    text-align: center; /* 텍스트를 중앙 정렬합니다. */
+    vertical-align: middle; /* 세로 방향으로 중앙 정렬합니다. */
 }
 
-/* 표 헤더 스타일 */
+/* 표의 헤더(thead) 스타일입니다. */
 thead th {
-    background-color: #e53e3e; /* 어두운 배경색 */
-    color: white; /* 흰색 글씨 */
-    font-weight: 600;
+    background-color: #e53e3e; /* 배경색을 어두운 색으로 지정합니다. */
+    color: white; /* 글자 색상을 흰색으로 지정합니다. */
+    font-weight: 600; /* 글자를 약간 굵게 합니다. */
 }
 
-/* 표 내용 행 스타일 (짝수 번째 행에 배경색 적용) */
+/* 표의 본문(tbody)에서 짝수 번째 행의 스타일입니다. */
 tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* 배경색을 주어 가독성을 높입니다. */
 }
 
+/* 표의 행에 마우스를 올렸을 때 스타일입니다. */
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f1f1f1; /* 배경색을 살짝 변경합니다. */
 }
 
-/* 하단 버튼 그룹 */
+/* 하단 버튼들을 감싸는 그룹 스타일입니다. */
 .action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 30px;
+    display: flex; /* 내부 요소(버튼)들을 flexbox로 정렬합니다. */
+    justify-content: center; /* 가로 방향으로 중앙에 배치합니다. */
+    gap: 15px; /* 버튼들 사이의 간격을 15px로 설정합니다. */
+    margin-top: 30px; /* 위쪽 여백(표와의 간격)을 30px 줍니다. */
 }
 
-/* 버튼 공통 스타일 */
-.action-buttons a {
-    display: inline-flex;
-    align-items: center;
-
-    /* ===== 수정된 부분: 아이콘과 텍스트 사이 간격 추가 ===== */
-    gap: 10px;
-
-    padding: 14px 28px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s, transform 0.2s;
-    color: white;
+/* 하단 버튼들의 공통 스타일입니다. (a 태그와 button 태그 모두에 적용) */
+.action-buttons a,
+.action-buttons button {
+    display: inline-flex; /* 아이콘과 텍스트 정렬을 위해 flexbox를 사용합니다. */
+    align-items: center; /* 세로 방향으로 중앙 정렬합니다. */
+    gap: 10px; /* 아이콘과 텍스트 사이 간격을 10px 줍니다. */
+    padding: 14px 28px; /* 내부 여백을 설정하여 버튼 크기를 조절합니다. */
+    border-radius: 8px; /* 모서리를 8px만큼 둥글게 만듭니다. */
+    font-size: 16px; /* 폰트 크기를 16px로 설정합니다. */
+    font-weight: bold; /* 폰트를 굵게 합니다. */
+    text-decoration: none; /* 링크의 기본 밑줄을 제거합니다. */
+    color: white; /* 글자 색상을 흰색으로 지정합니다. */
+    border: none; /* 테두리를 제거합니다. */
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경합니다. */
+    transition: background-color 0.3s, transform 0.2s; /* 부드러운 전환 효과를 줍니다. */
 }
 
-/* '다시 추천 받기' 버튼 */
-.action-buttons .btn-retry {
-    background-color: #28a745; /* 빨간색 계열 */
-}
-
-.action-buttons .btn-retry:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-}
-
-/* '홈으로 돌아가기' 버튼 */
+/* '홈으로 돌아가기' 버튼 스타일입니다. */
 .action-buttons .btn-home {
-    background-color: #6c757d; /* 회색 계열 */
+    background-color: #6c757d; /* 배경색을 회색으로 지정합니다. */
 }
 
 .action-buttons .btn-home:hover {
-    background-color: #5a6268;
+    background-color: #5a6268; /* 마우스를 올리면 더 어두운 회색으로 변경됩니다. */
+    transform: translateY(-2px); /* 살짝 위로 이동하는 효과를 줍니다. */
+}
+
+/* '다시 추천 받기' 버튼 스타일입니다. */
+.action-buttons .btn-retry {
+    background-color: #e53e3e; /* 배경색을 빨간색으로 지정합니다. */
+}
+
+.action-buttons .btn-retry:hover {
+    background-color: #c53030; /* 마우스를 올리면 더 어두운 빨간색으로 변경됩니다. */
     transform: translateY(-2px);
+}
+
+/* '식단 저장하기' 버튼 스타일입니다. */
+.action-buttons .btn-save {
+    background-color: #28a745; /* 배경색을 녹색으로 지정합니다. */
+}
+
+.action-buttons .btn-save:hover {
+    background-color: #218838; /* 마우스를 올리면 더 어두운 녹색으로 변경됩니다. */
+    transform: translateY(-2px);
+}
+
+
+/* ===== 모달창 관련 스타일 ===== */
+
+/* 모달 배경 (화면 전체를 덮는 반투명 레이어) 스타일입니다. */
+.modal-overlay {
+    position: fixed; /* 화면 스크롤과 상관없이 고정된 위치에 표시됩니다. */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명한 검은색 배경입니다. */
+    display: none; /* 평소에는 보이지 않도록 숨깁니다. */
+    justify-content: center; /* 가로 방향 중앙 정렬입니다. */
+    align-items: center; /* 세로 방향 중앙 정렬입니다. */
+    z-index: 1000; /* 다른 모든 요소들보다 위에 표시되도록 설정합니다. */
+}
+
+/* 모달 내용이 들어갈 흰색 박스 스타일입니다. */
+.modal-content {
+    background-color: white; /* 배경색을 흰색으로 지정합니다. */
+    padding: 30px 40px; /* 내부 여백을 설정합니다. */
+    border-radius: 12px; /* 모서리를 12px만큼 둥글게 만듭니다. */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* 그림자 효과를 줍니다. */
+    text-align: center; /* 내부 텍스트를 중앙 정렬합니다. */
+    width: 90%; /* 너비를 90%로 설정합니다. */
+    max-width: 400px; /* 최대 너비를 400px로 제한합니다. */
+    transform: scale(0.9); /* 초기 크기를 약간 작게 설정합니다. */
+    animation: zoomIn 0.3s forwards; /* 'zoomIn' 애니메이션을 0.3초 동안 실행합니다. */
+}
+
+/* 모달이 나타날 때의 확대 애니메이션 효과입니다. */
+@keyframes zoomIn {
+    to {
+        transform: scale(1); /* 최종 크기를 100%로 설정합니다. */
+    }
+}
+
+/* 모달 내부 아이콘 스타일입니다. */
+.modal-icon {
+    font-size: 50px; /* 아이콘 크기를 50px로 설정합니다. */
+    margin-bottom: 20px; /* 아래쪽 여백을 20px 줍니다. */
+}
+/* 성공 아이콘(체크)의 색상입니다. */
+.modal-icon .fa-circle-check {
+    color: #28a745; /* 녹색으로 지정합니다. */
+}
+/* 실패 아이콘(엑스)의 색상입니다. */
+.modal-icon .fa-circle-xmark {
+    color: #dc3545; /* 빨간색으로 지정합니다. */
+}
+
+/* 모달 메시지 텍스트 스타일입니다. */
+.modal-message {
+    font-size: 1.1em; /* 폰트 크기를 1.1배로 설정합니다. */
+    color: #333; /* 글자 색상을 진한 회색으로 지정합니다. */
+    margin-bottom: 25px; /* 아래쪽 여백을 25px 줍니다. */
+    line-height: 1.5; /* 줄 간격을 1.5배로 설정하여 가독성을 높입니다. */
+}
+
+/* 모달의 '확인' 버튼 스타일입니다. */
+.modal-button {
+    background-color: #e53e3e; /* 배경색을 파란색으로 지정합니다. */
+    color: white; /* 글자 색상을 흰색으로 지정합니다. */
+    border: none; /* 테두리를 제거합니다. */
+    padding: 12px 30px; /* 내부 여백을 설정합니다. */
+    border-radius: 8px; /* 모서리를 8px만큼 둥글게 만듭니다. */
+    font-size: 16px; /* 폰트 크기를 16px로 설정합니다. */
+    font-weight: bold; /* 폰트를 굵게 합니다. */
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경합니다. */
+    width: 100%; /* 너비를 100%로 설정합니다. */
+    transition: background-color 0.3s; /* 배경색 변경에 애니메이션 효과를 줍니다. */
+}
+
+/* 모달 버튼에 마우스를 올렸을 때 스타일입니다. */
+.modal-button:hover {
+    background-color: #c53030; /* 배경색을 더 어두운 파란색으로 변경합니다. */
 }
