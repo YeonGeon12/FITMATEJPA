@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * 하루의 한 끼 식단 정보를 담는 DTO
  * (예: 아침 식사 정보)
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MealDTO {
+public class MealDTO implements Serializable {
 
     private String day;         // 요일 (예: 월)
 
