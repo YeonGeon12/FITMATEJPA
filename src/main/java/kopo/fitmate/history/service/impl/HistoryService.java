@@ -32,30 +32,30 @@ public class HistoryService implements IHistoryService {
         String userId = user.getUsername();
 
         // 1. 운동 기록 조회 및 DTO로 변환
-        // findByUserIdOrderByRegDtDesc 메서드를 호출하여 해당 사용자의 모든 운동 기록을 최신순으로 가져옵니다.
+        // findByUserIdOrderByRegDtDesc 메서드를 호출하여 해당 사용자의 모든 운동 기록을 최신순으로 가져온다.
         var exerciseList = exerciseRepository.findByUserIdOrderByRegDtDesc(userId).stream()
-                .map(entity -> HistoryItemDTO.builder() // 각 Entity를 HistoryItemDTO로 변환합니다.
+                .map(entity -> HistoryItemDTO.builder() // 각 Entity를 HistoryItemDTO로 변환한다.
                         .id(entity.getId())
                         .type("운동 루틴")
                         .regDt(entity.getRegDt())
-                        .summary(entity.getExerciseGoal()) // 운동 목표를 요약 정보로 사용합니다.
+                        .summary(entity.getExerciseGoal()) // 운동 목표를 요약 정보로 사용
                         .build())
-                .collect(Collectors.toList()); // 변환된 DTO들을 List 형태로 수집합니다.
+                .collect(Collectors.toList()); // 변환된 DTO들을 List 형태로 수집
 
         // 2. 식단 기록 조회 및 DTO로 변환
         // findByUserIdOrderByRegDtDesc 메서드를 호출하여 해당 사용자의 모든 식단 기록을 최신순으로 가져옵니다.
         var dietList = dietRepository.findByUserIdOrderByRegDtDesc(userId).stream()
-                .map(entity -> HistoryItemDTO.builder() // 각 Entity를 HistoryItemDTO로 변환합니다.
+                .map(entity -> HistoryItemDTO.builder() // 각 Entity를 HistoryItemDTO로 변환하기
                         .id(entity.getId())
                         .type("식단")
                         .regDt(entity.getRegDt())
-                        .summary(entity.getDietType()) // 식단 유형을 요약 정보로 사용합니다.
+                        .summary(entity.getDietType()) // 식단 유형을 요약 정보로 사용
                         .build())
-                .collect(Collectors.toList()); // 변환된 DTO들을 List 형태로 수집합니다.
+                .collect(Collectors.toList()); // 변환된 DTO들을 List 형태로 수집하기
 
         log.info("{}.getHistoryList End!", getClass().getName());
 
-        // 3. 두 리스트를 하나의 HistoryViewDTO에 담아 반환합니다.
+        // 3. 두 리스트를 하나의 HistoryViewDTO에 담아 반환하기
         return HistoryViewDTO.builder()
                 .exerciseList(exerciseList)
                 .dietList(dietList)
