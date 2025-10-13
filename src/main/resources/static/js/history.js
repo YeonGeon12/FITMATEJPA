@@ -1,80 +1,91 @@
-// DOMContentLoaded 이벤트는 HTML 문서가 완전히 로드되고 파싱되었을 때 발생합니다.
-// 스크립트가 <head>에 있더라도 body 요소에 접근할 수 있게 해줍니다.
+/**
+ * 상세 페이지에서 삭제 버튼을 눌러 이 페이지로 이동했을 때,
+ * URL에 포함된 파라미터(deleteId, deleteType)를 확인하고
+ * 자동으로 해당 항목의 삭제 모달을 띄우는 함수입니다.
+ * 페이지가 완전히 로드된 후('load') 실행됩니다.
+ */
+window.addEventListener('load', function() {
+    // 현재 페이지의 URL에서 파라미터 정보를 가져옵니다.
+    const urlParams = new URLSearchParams(window.location.search);
+    const deleteId = urlParams.get('deleteId'); // 'deleteId' 파라미터 값을 가져옵니다.
+
+    // deleteId 파라미터가 존재할 경우에만 실행합니다.
+    if (deleteId) {
+        // 해당 ID를 가진 삭제 버튼을 찾습니다.
+        // th:data-action="@{/history/diet/delete/{id}(id=${item.id})}" 와 같이 설정했으므로,
+        // data-action 속성값 안에 deleteId가 포함된 버튼을 찾습니다.
+        const deleteButton = document.querySelector(`.js-delete-trigger[data-action*='${deleteId}']`);
+
+        // 해당 버튼이 존재하면
+        if (deleteButton) {
+            // 사용자가 직접 누른 것처럼 클릭 이벤트를 강제로 발생시킵니다.
+            deleteButton.click();
+        }
+    }
+});
+
+// HTML 문서가 모두 로드된 후, 아래의 모든 코드를 한 번에 실행합니다.
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- 탭 기능 구현 ---
-    const tabItems = document.querySelectorAll('.tab-item'); // 모든 탭 버튼을 가져옴
-    const tabPanes = document.querySelectorAll('.tab-pane'); // 모든 탭 콘텐츠 영역을 가져옴
+    // --- 1. 탭 기능 구현 ---
+    const tabItems = document.querySelectorAll('.tab-item');
+    const tabPanes = document.querySelectorAll('.tab-pane');
 
-    // 각 탭 버튼에 클릭 이벤트 리스너를 추가
     tabItems.forEach(tab => {
         tab.addEventListener('click', function (e) {
-            e.preventDefault(); // a 태그의 기본 동작(페이지 이동)을 막음
-
-            // 1. 모든 탭과 콘텐츠에서 'active' 클래스를 제거하여 비활성화
+            e.preventDefault();
             tabItems.forEach(item => item.classList.remove('active'));
             tabPanes.forEach(pane => pane.classList.remove('active'));
-
-            // 2. 클릭된 탭과 그에 해당하는 콘텐츠에 'active' 클래스를 추가하여 활성화
-            tab.classList.add('active');
-            const targetPaneId = tab.getAttribute('href'); // 클릭된 탭의 href 속성값 (예: '#exercise')을 가져옴
-            document.querySelector(targetPaneId)?.classList.add('active'); // 해당 id를 가진 요소를 찾아 'active' 클래스를 추가
-        });
-    });
-
-    // --- 삭제 확인 모달 기능 구현 ---
-    const modal = document.getElementById('deleteModal'); // 모달창 전체를 감싸는 요소
-    const cancelBtn = document.getElementById('cancelDelete'); // 모달의 '취소' 버튼
-    const confirmDeleteForm = document.getElementById('confirmDeleteForm'); // 모달의 '삭제' 버튼을 감싸는 form
-    const deleteTriggers = document.querySelectorAll('.js-delete-trigger'); // 페이지의 모든 '삭제' 버튼 (모달을 여는 역할)
-
-    // 각 '삭제' 버튼(.js-delete-trigger)에 클릭 이벤트 리스너를 추가
-    deleteTriggers.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault(); // 버튼이 속한 form의 기본 제출 동작을 막음
-
-            // 1. 클릭된 버튼에서 가장 가까운 부모 <form> 요소를 찾음
-            const form = button.closest('form');
-            if (form) {
-                // 2. 찾은 form의 'action' 속성값(삭제할 대상의 URL)을 가져옴
-                const actionUrl = form.getAttribute('action');
-                // 3. 모달창 내부의 확인용 form의 'action' 속성을 위에서 가져온 URL로 설정
-                confirmDeleteForm.setAttribute('action', actionUrl);
-                // 4. 모달창에 'show' 클래스를 추가하여 화면에 표시 (CSS와 연동)
-                modal.classList.add('show');
+            this.classList.add('active');
+            const targetPane = document.querySelector(this.getAttribute('href'));
+            if (targetPane) {
+                targetPane.classList.add('active');
             }
         });
     });
 
-    // 모달의 '취소' 버튼을 클릭했을 때 모달을 숨기는 기능
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            modal.classList.remove('show');
-        });
-    }
+    // --- 2. 삭제 확인 모달 기능 구현 (historyView.html 전용) ---
+    // (이 코드는 상세 페이지가 아닌 목록 페이지의 삭제 버튼을 위한 것입니다.)
+    const deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        const cancelDeleteBtn = document.getElementById('cancelDelete');
+        const confirmDeleteForm = document.getElementById('confirmDeleteForm');
+        const deleteTriggers = document.querySelectorAll('.js-delete-trigger');
 
-    // 모달 창 바깥의 어두운 배경(overlay)을 클릭했을 때 모달을 숨기는 기능
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            // 클릭된 요소가 모달 배경 자체(e.target)일 때만 닫히도록 함
-            if (e.target === modal) {
-                modal.classList.remove('show');
+        deleteTriggers.forEach(button => {
+            button.addEventListener('click', function () {
+                const actionUrl = this.dataset.action;
+                if (actionUrl) {
+                    confirmDeleteForm.setAttribute('action', actionUrl);
+                    deleteModal.classList.add('show');
+                }
+            });
+        });
+
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function () {
+                deleteModal.classList.remove('show');
+            });
+        }
+
+        deleteModal.addEventListener('click', function (event) {
+            if (event.target === deleteModal) {
+                deleteModal.classList.remove('show');
             }
         });
     }
 
-    // --- 토스트 메시지 기능 구현 ---
+    // --- 3. 토스트 메시지 기능 구현 (historyView.html 전용) ---
     const toast = document.getElementById('toast');
     if (toast) {
-        // HTML의 'data-message' 속성에서 표시할 메시지를 가져옴
-        const message = toast.getAttribute('data-message');
-        if (message) {
-            toast.textContent = message; // 토스트 요소에 메시지를 채움
-            toast.classList.add('show'); // 'show' 클래스를 추가하여 화면에 표시
-            // 3초 후에 'show' 클래스를 제거하여 사라지게 함
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+        // 0.1초 후에 'show' 클래스를 추가하여 부드럽게 나타나도록 합니다.
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        // 3.5초(3500ms) 후에 'show' 클래스를 제거하여 사라지도록 합니다.
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3500);
     }
 });
