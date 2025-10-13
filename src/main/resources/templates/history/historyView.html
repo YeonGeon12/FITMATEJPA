@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,17 +29,14 @@
                         <p>저장된 운동 루틴이 없습니다.</p>
                         <span>AI 추천을 받고 루틴을 저장해보세요!</span>
                     </div>
-
                     <div th:unless="${#lists.isEmpty(historyData.exerciseList)}" class="history-list">
                         <div th:each="item : ${historyData.exerciseList}" class="history-item">
                             <div class="item-info">
-                                <span class="item-date" th:text="${item.regDt}">2025.10.12 23:59</span>
-                                <h3 class="item-title" th:text="${item.summary}">운동 목표 (예: 근력 증가)</h3>
+                                <span class="item-date" th:text="${item.regDt}"></span>
+                                <h3 class="item-title" th:text="${item.summary}"></h3>
                             </div>
                             <div class="item-actions">
                                 <a th:href="@{/history/exercise/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
-                                <button type="button" class="action-btn delete-btn js-delete-trigger"
-                                        th:data-action="@{/history/exercise/delete/{id}(id=${item.id})}">삭제</button>
                             </div>
                         </div>
                     </div>
@@ -51,17 +48,14 @@
                         <p>저장된 식단이 없습니다.</p>
                         <span>AI 추천을 받고 식단을 저장해보세요!</span>
                     </div>
-
                     <div th:unless="${#lists.isEmpty(historyData.dietList)}" class="history-list">
                         <div th:each="item : ${historyData.dietList}" class="history-item">
                             <div class="item-info">
-                                <span class="item-date" th:text="${item.regDt}">2025.10.11 16:03</span>
-                                <h3 class="item-title" th:text="${item.summary}">식단 유형 (예: 체중 감량)</h3>
+                                <span class="item-date" th:text="${item.regDt}"></span>
+                                <h3 class="item-title" th:text="${item.summary}"></h3>
                             </div>
                             <div class="item-actions">
                                 <a th:href="@{/history/diet/{id}(id=${item.id})}" class="action-btn detail-btn">상세보기</a>
-                                <button type="button" class="action-btn delete-btn js-delete-trigger"
-                                        th:data-action="@{/history/diet/delete/{id}(id=${item.id})}">삭제</button>
                             </div>
                         </div>
                     </div>
@@ -71,6 +65,7 @@
                     <div class="no-data-message">
                         <i class="fa-solid fa-folder-open"></i>
                         <p>저장된 AI 리포트가 없습니다.</p>
+                        <span>AI 추천을 받고 리포트를 저장해보세요!</span>
                     </div>
                 </div>
             </div>
@@ -80,24 +75,9 @@
         </div>
     </main>
 </div>
+<div id="toast" class="toast" th:if="${toastMsg != null}" th:text="${toastMsg}"></div>
 
-<div id="deleteModal" class="modal-overlay">
-    <div class="modal-content">
-        <i class="fa-solid fa-triangle-exclamation modal-icon"></i>
-        <h2>기록을 삭제하시겠습니까?</h2>
-        <p>이 작업은 되돌릴 수 없습니다.</p>
-        <div class="modal-actions">
-            <button id="cancelDelete" type="button" class="modal-btn cancel-btn">취소</button>
-            <form id="confirmDeleteForm" method="post" style="display: inline;">
-                <button id="confirmDelete" type="submit" class="modal-btn delete-btn">삭제</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div id="toast" class="toast" th:if="${toastMsg != null}" th:attr="data-message=${toastMsg}"></div>
-
-<script th:src="@{/js/history.js}"></script>
 <script th:src="@{/js/header.js}"></script>
+<script th:src="@{/js/history.js}"></script>
 </body>
 </html>
