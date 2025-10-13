@@ -5,6 +5,7 @@
     <title>FITMATE | 운동 상세 보기</title>
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/history/historyDetail.css">
+    <link rel="stylesheet" href="/css/history/history.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
@@ -12,63 +13,120 @@
     <header class="main-header" th:replace="~{index :: .main-header}"></header>
 
     <main class="detail-main-content">
-        <!-- Controller에서 받은 detail 객체가 있을 때만 내용을 표시 -->
-        <div class="detail-container" th:if="${detail != null}">
-            <h1 th:text="${detail.title}">운동 루틴 제목</h1>
+        <div class="detail-container" th:if="${detailData != null}">
+            <h1 th:text="${detailData.exerciseGoal} + ' 루틴'">운동 루틴 제목</h1>
+            <p class="subtitle" th:text="${detailData.regDt} + ' 저장됨'"></p>
 
             <div class="info-section">
-                <h2>요청 정보</h2>
+                <h2>운동 루틴 정보</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <span>운동 목표</span>
-                        <strong th:text="${detail.requestParams.get('goal')}">데이터 없음</strong>
+                        <strong th:text="${detailData.exerciseGoal}">데이터 없음</strong>
                     </div>
                     <div class="info-item">
                         <span>운동 수준</span>
-                        <strong th:text="${detail.requestParams.get('level')}">데이터 없음</strong>
+                        <strong th:text="${detailData.exerciseLevel}">데이터 없음</strong>
+                    </div>
+                    <div class="info-item full-width">
+                        <span>운동 장소</span>
+                        <strong th:text="${detailData.workoutLocation}">데이터 없음</strong>
                     </div>
                 </div>
             </div>
 
             <div class="routine-section">
-                <h2>상세 루틴</h2>
-                <div th:each="dayRoutine : ${detail.routineDetails}" class="day-routine-card">
-                    <h3 th:text="${dayRoutine.get('day')}">요일</h3>
+                <h2><i class="fa-solid fa-calendar-week"></i> 주간 운동 루틴</h2>
+                <div class="day-routine-card">
                     <table>
                         <thead>
                         <tr>
-                            <th>루틴명</th>
-                            <th>주요 운동 구성</th>
-                            <th>예상 소모 시간</th>
+                            <th>요일</th>
+                            <th>운동 부위</th>
+                            <th>운동 이름</th>
+                            <th>세트</th>
+                            <th>횟수</th>
+                            <th>휴식 시간</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td th:text="${dayRoutine.get('routineName')}"></td>
-                            <td th:text="${dayRoutine.get('mainExercises')}"></td>
-                            <td th:text="${dayRoutine.get('estimatedTime')}"></td>
+                        <tr th:each="routine : ${detailData.weeklyRoutine}">
+                            <td th:text="${routine.day}"></td>
+                            <td th:text="${routine.bodyPart}"></td>
+                            <td th:text="${routine.exerciseName}"></td>
+                            <td th:text="${routine.sets}"></td>
+                            <td th:text="${routine.reps}"></td>
+                            <td th:text="${routine.restTime}"></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="bottom-links">
-                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
+            <div class="bottom-actions">
+                <a th:href="@{/history/view}" class="back-link">목록으로 돌아가기</a>
+                <button type="button" class="delete-btn js-delete-trigger">주간 운동 삭제</button>
             </div>
         </div>
 
-        <!-- detail 객체가 없으면 (본인 기록이 아니거나, 삭제된 경우) -->
-        <div class="detail-container" th:if="${detail == null}">
-            <h1>조회 결과 없음</h1>
-            <p>요청하신 정보를 찾을 수 없거나 접근 권한이 없습니다.</p>
-            <div class="bottom-links">
-                <a th:href="@{/history}" class="back-link">← 목록으로 돌아가기</a>
-            </div>
-        </div>
     </main>
 </div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+        <i class="fa-solid fa-triangle-exclamation modal-icon"></i>
+        <h2>기록을 삭제하시겠습니까?</h2>
+        <p>이 작업은 되돌릴 수 없습니다.</p>
+        <div class="modal-actions">
+            <button id="cancelDelete" type="button" class="modal-btn cancel-btn">취소</button>
+            <form id="confirmDeleteForm" method="post" style="display: inline;">
+                <button type="submit" class="modal-btn delete-btn">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/js/header.js}"></script>
+
+<script th:inline="javascript">
+    // HTML 문서가 모두 로드된 후 스크립트를 실행합니다.
+    document.addEventListener('DOMContentLoaded', function () {
+        // 필요한 HTML 요소들을 변수에 저장합니다.
+        const deleteButton = document.querySelector('.js-delete-trigger');
+        const deleteModal = document.getElementById('deleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDelete');
+        const confirmDeleteForm = document.getElementById('confirmDeleteForm');
+
+        // Controller로부터 전달받은 현재 게시물의 고유 ID를 가져옵니다.
+        const detailId = /*[[${detailData?.id}]]*/ null;
+
+        // 삭제 버튼과 ID가 모두 존재할 경우에만 삭제 로직을 활성화합니다.
+        if (deleteButton && detailId) {
+
+            // '리포트 삭제' 버튼을 클릭했을 때의 동작입니다.
+            deleteButton.addEventListener('click', function() {
+                // 삭제를 요청할 URL을 생성합니다. (예: /history/exercise/delete/고유ID)
+                const deleteUrl = '/history/exercise/delete/' + detailId;
+                // 모달창 내부 form의 action 속성에 생성한 URL을 설정합니다.
+                confirmDeleteForm.setAttribute('action', deleteUrl);
+                // 모달에 'show' 클래스를 추가하여 화면에 표시합니다.
+                deleteModal.classList.add('show');
+            });
+
+            // 모달창의 '취소' 버튼을 클릭했을 때의 동작입니다.
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.classList.remove('show');
+            });
+
+            // 모달창 바깥의 어두운 영역을 클릭했을 때의 동작입니다.
+            deleteModal.addEventListener('click', function(event) {
+                if (event.target === deleteModal) {
+                    deleteModal.classList.remove('show');
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 </html>
-
