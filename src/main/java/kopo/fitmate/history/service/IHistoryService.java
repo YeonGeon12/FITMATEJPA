@@ -1,5 +1,7 @@
 package kopo.fitmate.history.service;
 
+import kopo.fitmate.history.dto.DietDetailDTO;
+import kopo.fitmate.history.dto.ExerciseDetailDTO;
 import kopo.fitmate.history.dto.HistoryViewDTO;
 import kopo.fitmate.user.dto.UserAuthDTO;
 
@@ -15,5 +17,37 @@ public interface IHistoryService {
      * @return 운동 기록 리스트와 식단 기록 리스트가 담긴 HistoryViewDTO
      */
     HistoryViewDTO getHistoryList(UserAuthDTO user);
+
+    /**
+     * ID를 기준으로 저장된 운동 루틴의 상세 정보를 가져옵니다.
+     * @param id 조회할 운동 루틴의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 운동 루틴 상세 정보 DTO
+     */
+    ExerciseDetailDTO getExerciseDetail(String id, UserAuthDTO user);
+
+    /**
+     * ID를 기준으로 저장된 식단의 상세 정보를 가져옵니다.
+     * @param id 조회할 식단의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 식단 상세 정보 DTO
+     */
+    DietDetailDTO getDietDetail(String id, UserAuthDTO user);
+
+    /**
+     * ID를 기준으로 저장된 운동 루틴을 삭제합니다.
+     * @param id 삭제할 운동 루틴의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 삭제 성공 시 true, 실패 시 false
+     */
+    boolean deleteExerciseHistory(String id, UserAuthDTO user);
+
+    /**
+     * ID를 기준으로 저장된 식단을 삭제합니다.
+     * @param id 삭제할 식단의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 삭제 성공 시 true, 실패 시 false
+     */
+    boolean deleteDietHistory(String id, UserAuthDTO user);
 
 }

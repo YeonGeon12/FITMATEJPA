@@ -2,6 +2,8 @@ package kopo.fitmate.history.service.impl;
 
 import kopo.fitmate.diet.repository.DietRepository;
 import kopo.fitmate.exercise.repository.ExerciseRepository;
+import kopo.fitmate.history.dto.DietDetailDTO;
+import kopo.fitmate.history.dto.ExerciseDetailDTO;
 import kopo.fitmate.history.dto.HistoryViewDTO;
 import kopo.fitmate.history.dto.HistoryItemDTO;
 import kopo.fitmate.history.service.IHistoryService;
@@ -61,4 +63,79 @@ public class HistoryService implements IHistoryService {
                 .dietList(dietList)
                 .build();
     }
+
+    @Override
+    public ExerciseDetailDTO getExerciseDetail(String id, UserAuthDTO user) {
+        log.info("{}.getExerciseDetail Start!", getClass().getName());
+
+        // 1. ID로 DB에서 운동 기록을 찾습니다. 없으면 null을 반환합니다.
+        return exerciseRepository.findById(id)
+                // 2. 찾은 기록의 소유자(userId)가 현재 로그인한 사용자와 일치하는지 확인합니다.
+                .filter(entity -> entity.getUserId().equals(user.getUsername()))
+                // 3. 일치한다면, Entity를 ExerciseDetailDTO로 변환합니다.
+                .map(entity -> ExerciseDetailDTO.builder()
+                        .id(entity.getId())
+                        .regDt(entity.getRegDt())
+                        .exerciseGoal(entity.getExerciseGoal())
+                        .exerciseLevel(entity.getExerciseLevel())
+                        .workoutLocation(entity.getWorkoutLocation())
+                        .weeklyRoutine(entity.getWeeklyRoutine())
+                        .build())
+                // 4. 소유자가 아니거나 기록이 없으면 null을 반환합니다.
+                .orElse(null);
+    }
+
+    @Override
+    public DietDetailDTO getDietDetail(String id, UserAuthDTO user) {
+        log.info("{}.getDietDetail Start!", getClass().getName());
+
+        return dietRepository.findById(id)
+                .filter(entity -> entity.getUserId().equals(user.getUsername()))
+                .map(entity -> DietDetailDTO.builder()
+                        .id(entity.getId())
+                        .regDt(entity.getRegDt())
+                        .dietType(entity.getDietType())
+                        .weeklyDiet(entity.getWeeklyDiet())
+                        .build())
+                .orElse(null);
+    }
+
+    @Override
+    public boolean deleteExerciseHistory(String id, UserAuthDTO user) {
+        log.info("{}.deleteExerciseHistory Start!", getClass().getName());
+
+        // 1. ID로 DB에서 운동 기록을 찾습니다.
+        var entityOptional = exerciseRepository.findById(id);
+
+        // 2. 기록이 존재하고, 소유자가 현재 로그인한 사용자와 일치하는지 확인합니다.
+        if (entityOptional.isPresent() && entityOptional.get().getUserId().equals(user.getUsername())) {
+            // 3. 조건이 모두 맞으면, 해당 기록을 삭제합니다.
+            exerciseRepository.deleteById(id);
+            log.info("Exercise history deleted successfully. ID: {}", id);
+            return true; // 삭제 성공
+        }
+
+        log.warn("Failed to delete exercise history. ID: {} not found or permission denied.", id);
+        return false; // 삭제 실패
+    }
+
+    @Override
+    public boolean deleteDietHistory(String id, UserAuthDTO user) {
+        log.info("{}.deleteDietHistory Start!", getClass().getName());
+
+        // 1. ID로 DB에서 식단 기록을 찾습니다.
+        var entityOptional = dietRepository.findById(id);
+
+        // 2. 기록이 존재하고, 소유자가 현재 로그인한 사용자와 일치하는지 확인합니다.
+        if (entityOptional.isPresent() && entityOptional.get().getUserId().equals(user.getUsername())) {
+            // 3. 조건이 모두 맞으면, 해당 기록을 삭제합니다.
+            dietRepository.deleteById(id);
+            log.info("Diet history deleted successfully. ID: {}", id);
+            return true; // 삭제 성공
+        }
+
+        log.warn("Failed to delete diet history. ID: {} not found or permission denied.", id);
+        return false; // 삭제 실패
+    }
+
 }
