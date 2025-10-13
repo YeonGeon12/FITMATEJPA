@@ -1,0 +1,140 @@
+/* 결과 페이지 메인 콘텐츠 영역 */
+.result-main-content {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+/* 결과를 감싸는 흰색 컨테이너 */
+.result-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.result-container h1 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.result-container p {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #666;
+}
+
+/* 각 섹션(요약, 지표, 조언)의 공통 스타일 */
+.report-section {
+    margin-bottom: 40px;
+}
+
+.report-section h2 {
+    font-size: 1.3em;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 1. 종합 분석 요약 섹션 */
+.summary-section p {
+    text-align: left;
+    line-height: 1.7;
+    font-size: 1.05em;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* 2. 핵심 지표 섹션 */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.metric-item {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.metric-item span {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.metric-item strong {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #e53e3e;
+}
+
+/* 3. AI 조언 섹션 */
+.advice-box {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.advice-box h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.advice-box p {
+    text-align: left;
+    margin: 0;
+    line-height: 1.8;
+    color: #333;
+}
+
+/* 하단 버튼 그룹 (dietResult.css와 동일) */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.action-buttons a,
+.action-buttons button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.action-buttons .btn-home { background-color: #6c757d; }
+.action-buttons .btn-home:hover { background-color: #5a6268; transform: translateY(-2px); }
+
+.action-buttons .btn-retry { background-color: #e53e3e; }
+.action-buttons .btn-retry:hover { background-color: #c53030; transform: translateY(-2px); }
+
+.action-buttons .btn-save { background-color: #28a745; }
+.action-buttons .btn-save:hover { background-color: #218838; transform: translateY(-2px); }

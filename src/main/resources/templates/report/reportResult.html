@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | AI 신체 분석 리포트</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/report/reportResult.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="result-main-content">
+        <div class="result-container">
+            <h1>AI 신체 분석 리포트</h1>
+            <p>당신의 신체 데이터를 기반으로 생성된 종합 분석 결과입니다.</p>
+
+            <div class="report-section summary-section">
+                <h2><i class="fa-solid fa-clipboard-list"></i> AI 종합 분석 요약</h2>
+                <p th:text="${responseDTO.summary}">AI가 생성한 종합 분석 요약이 여기에 표시됩니다.</p>
+            </div>
+
+            <div class="report-section metrics-section">
+                <h2><i class="fa-solid fa-chart-pie"></i> 핵심 지표</h2>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span>BMI (체질량지수)</span>
+                        <strong th:text="${responseDTO.bmi}">22.5</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>기초대사량 (BMR)</span>
+                        <strong th:text="${responseDTO.bmr}">1750 kcal</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>활동대사량 (TDEE)</span>
+                        <strong th:text="${responseDTO.tdee}">2400 kcal</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-section advice-section">
+                <h2><i class="fa-solid fa-comment-dots"></i> AI 조언</h2>
+                <div class="advice-box exercise-advice">
+                    <h3><i class="fa-solid fa-dumbbell"></i> 운동 조언</h3>
+                    <p th:text="${responseDTO.exerciseAdvice}">AI가 생성한 운동 조언이 여기에 표시됩니다.</p>
+                </div>
+                <div class="advice-box diet-advice">
+                    <h3><i class="fa-solid fa-utensils"></i> 식단 조언</h3>
+                    <p th:text="${responseDTO.dietAdvice}">AI가 생성한 식단 조언이 여기에 표시됩니다.</p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a th:href="@{/index}" class="btn-home"><i class="fa-solid fa-house"></i> 홈으로 돌아가기</a>
+                <a th:href="@{/report/reportForm}" class="btn-retry"><i class="fa-solid fa-rotate-right"></i> 다시 분석 받기</a>
+                <form action="#" method="post" style="display: inline;">
+                    <button type="submit" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> 리포트 저장하기</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="/js/header.js"></script>
+</body>
+</html>
