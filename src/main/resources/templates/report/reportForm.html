@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | AI 신체 분석</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/report/reportForm.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="form-main-content">
+        <div class="form-container">
+            <h1>AI 신체 분석 리포트 받기</h1>
+            <p>AI가 당신의 신체 데이터를 종합적으로 분석해 드립니다.</p>
+
+            <form th:action="@{/report/getReport}" method="post" th:object="${requestDTO}" class="report-form">
+                <fieldset>
+                    <legend><i class="fa-solid fa-user"></i> 기본 신체 정보</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="height">키(cm)</label>
+                            <input type="number" id="height" th:field="*{height}" placeholder="예: 175" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">체중(kg)</label>
+                            <input type="number" id="weight" th:field="*{weight}" placeholder="예: 70" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age">나이(세)</label>
+                            <input type="number" id="age" th:field="*{age}" placeholder="예: 25" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">성별</label>
+                            <select id="gender" th:field="*{gender}">
+                                <option value="남성">남성</option>
+                                <option value="여성">여성</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend><i class="fa-solid fa-person-running"></i> 활동량 정보</legend>
+                    <div class="form-group full-width">
+                        <label for="activityLevel">평소 활동 수준</label>
+                        <select id="activityLevel" th:field="*{activityLevel}">
+                            <option value="거의 운동 안함 (좌식 생활)">거의 운동 안함 (좌식 생활)</option>
+                            <option value="주 1~2회 가벼운 활동">주 1~2회 가벼운 활동 (걷기, 스트레칭)</option>
+                            <option value="주 3~5회 보통 활동">주 3~5회 보통 활동 (조깅, 헬스)</option>
+                            <option value="주 6~7회 격렬한 활동">주 6~7회 격렬한 활동 (고강도 운동)</option>
+                            <option value="매일 매우 격렬한 활동 또는 육체 노동">매일 매우 격렬한 활동 또는 육체 노동</option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="submit-btn">AI 신체 분석 리포트 받기</button>
+                <div class="back-link-container">
+                    <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+<script src="/js/header.js"></script>
+</body>
+</html>
