@@ -1,5 +1,6 @@
 package kopo.fitmate.user.service.impl;
 
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import kopo.fitmate.global.config.util.CmmUtil;
 import kopo.fitmate.global.config.util.DateUtil;
@@ -14,8 +15,10 @@ import kopo.fitmate.user.repository.entity.UserProfileEntity;
 import kopo.fitmate.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +42,9 @@ public class UserService implements IUserService {
     // Email Sender
     private final JavaMailSender mailSender;
 
+    // 2. application.yaml에 있는 spring.mail.username 값을 주입받을 변수를 선언합니다.
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
 
     // ################################# 회원 가입 메서드 ##############################
@@ -151,18 +157,37 @@ public class UserService implements IUserService {
      */
     @Override
     public void sendPasswordResetEmail(String email, String token) throws Exception {
-        // 사용자가 클릭할 재설정 URL 생성 (포트 번호 등은 실제 환경에 맞게 조정 필요)
+        // 사용자가 클릭할 재설정 URL 생성
         String resetUrl = "http://localhost:11000/user/resetPassword?token=" + token;
 
-        SimpleMailMessage emailMessage = new SimpleMailMessage();
-        emailMessage.setTo(email);
-        emailMessage.setSubject("[FITMATE] 비밀번호 재설정 요청");
-        emailMessage.setText("안녕하세요, FITMATE입니다.\n\n"
-                + "비밀번호를 재설정하려면 아래 링크를 클릭하세요. (링크는 15분간 유효합니다.)\n\n"
-                + resetUrl);
+        // SimpleMailMessage 대신 MimeMessage를 생성
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-        mailSender.send(emailMessage);
-        log.info("비밀번호 재설정 이메일 발송 완료. 수신자: {}", email);
+        try {
+            // MimeMessageHelper를 사용하여 메일 내용을 구성합니다.
+            //    'true' 파라미터는 이 메일이 HTML 형식임을 나타냅니다.
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(email);
+            helper.setSubject("[FITMATE] 비밀번호 재설정 요청");
+
+            // 5. HTML 태그를 사용하여 이메일 본문을 작성합니다.
+            //    <a> 태그를 사용해 클릭 가능한 링크를 만듭니다.
+            String htmlContent = "<h2>안녕하세요, FITMATE입니다.</h2>"
+                    + "<p>비밀번호를 재설정하려면 아래 링크를 클릭하세요. (링크는 15분간 유효합니다.)</p>"
+                    + "<a href='" + resetUrl + "' style='font-size: 16px; color: blue;'>비밀번호 재설정하기</a>";
+
+            helper.setText(htmlContent, true); // setText의 두 번째 인자를 true로 설정해야 HTML로 인식됩니다.
+
+            // 6. 수정된 MimeMessage를 발송합니다.
+            mailSender.send(mimeMessage);
+            log.info("비밀번호 재설정 이메일(HTML) 발송 완료. 수신자: {}", email);
+
+        } catch (Exception e) {
+            log.error("HTML 이메일 발송 중 오류 발생", e);
+            throw new Exception("메일 발송에 실패했습니다.");
+        }
     }
 
     /**
