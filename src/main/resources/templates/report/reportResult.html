@@ -102,7 +102,8 @@
 
                 // 저장에 성공했을 경우에만 홈으로 이동
                 if (successMsg) {
-                    window.location.href = '/';
+                    //window.location.href = '/';  // 인덱스로 리다이렉트
+                    window.location.href = '/history/view'; // 저장한 기록을 보는 history/view로 리다이렉트 시키는 수정된 코드
                 }
             });
         }
