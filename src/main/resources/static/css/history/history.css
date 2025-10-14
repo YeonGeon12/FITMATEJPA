@@ -260,3 +260,34 @@
 .modal-btn.delete-btn:hover {
     background-color: #c82333; /* 호버 시 약간 더 어둡게 */
 }
+
+/* [수정] 화면 정중앙에 나타나는 토스트 메시지 스타일 */
+.toast {
+    visibility: hidden; /* 평소에는 숨김 */
+    min-width: 250px;
+    background-color: #28a745; /* 기본 성공 색상 (초록색) */
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed; /* 화면에 고정 */
+    z-index: 1000;
+
+    /* --- 핵심 수정: 중앙 정렬 --- */
+    left: 50%;
+    top: 50%;
+    /* transform을 사용하여 자신의 크기만큼 왼쪽과 위로 이동하여 완벽한 중앙 정렬 */
+    transform: translate(-50%, -50%);
+    /* --- 수정 끝 --- */
+
+    font-size: 16px;
+    opacity: 0; /* 처음엔 투명 */
+    transition: all 0.5s; /* 부드러운 등장/사라짐 효과 */
+}
+
+/* JavaScript에 의해 .show 클래스가 추가되면 토스트를 보이게 함 */
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    /* 중앙에서 나타나므로 bottom 속성 제거 */
+}
