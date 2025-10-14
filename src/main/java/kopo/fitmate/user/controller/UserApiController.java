@@ -15,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * 사용자 관련 비동기(AJAX) 요청을 처리하는 API 컨트롤러.
  * JoinController와 같은 패키지에 위치합니다.
@@ -229,6 +231,66 @@ public class UserApiController {
             response.setResult(-1);
             response.setMsg("오류가 발생했습니다. 다시 시도해주세요.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * 비밀번호 찾기 요청(이메일 발송) 처리 API
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MsgDTO> handleForgotPassword(@RequestBody Map<String, String> payload) {
+        log.info(this.getClass().getName() + ".handleForgotPassword API Start!");
+        MsgDTO response = new MsgDTO();
+        String email = payload.get("email");
+
+        try {
+            // 1. 토큰 생성 및 DB 저장
+            String token = userService.createPasswordResetTokenForUser(email);
+            // 2. 이메일 발송
+            userService.sendPasswordResetEmail(email, token);
+
+        } catch (Exception e) {
+            // 사용자를 찾지 못했더라도, 보안을 위해 계정 존재 여부를 알려주지 않음
+            // 동일한 성공 메시지를 보내서 이메일 주소 추측 공격을 방지
+            log.warn("비밀번호 찾기 요청 처리 중 예외 발생 (사용자가 없거나 기타 오류): " + e.getMessage());
+        }
+
+        // 어떤 경우든 사용자에게는 동일한 성공 메시지를 보여줌
+        response.setResult(1);
+        response.setMsg("입력하신 이메일 주소로 비밀번호 재설정 안내 메일을 발송했습니다.");
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 새 비밀번호 설정 처리 API
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<MsgDTO> handleResetPassword(@RequestBody Map<String, String> payload) {
+        log.info(this.getClass().getName() + ".handleResetPassword API Start!");
+        MsgDTO response = new MsgDTO();
+
+        try {
+            String token = payload.get("token");
+            String newPassword = payload.get("newPassword");
+            String newPasswordCheck = payload.get("newPasswordCheck");
+
+            // 1. 새 비밀번호와 확인 값이 일치하는지 서버에서도 검증
+            if (!newPassword.equals(newPasswordCheck)) {
+                throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+            }
+
+            // 2. 서비스 로직 호출
+            userService.resetPassword(token, newPassword);
+
+            response.setResult(1);
+            response.setMsg("비밀번호가 성공적으로 변경되었습니다. 로그인 페이지로 이동합니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("비밀번호 재설정 처리 중 오류 발생", e);
+            response.setResult(0);
+            response.setMsg(e.getMessage()); // 서비스에서 발생한 오류 메시지를 그대로 전달
+            return ResponseEntity.badRequest().body(response);
         }
     }
 }
