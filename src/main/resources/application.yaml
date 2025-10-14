@@ -1,36 +1,30 @@
-# application.yml 중요 정보 제거 상태
+# application.yml
 
-## Server Setting
+## Server Setting(서버 포트 세팅)
 server:
   port: 11000
 
-# Spring Setting
+# Spring Setting(스프링 설정 세팅)
 spring:
   application:
     name: FITMATE
 
-  # MariaDB Setting
+  # MariaDB Setting(데이터베이스 세팅)
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://:3306/
     username:
     password:
 
-  # MongoDB와 Redis 설정을 하나의 'data' 키로 통합
+  # MongoDB Setting
   data:
-    # MongoDB Setting
     mongodb:
-      host:
-      port: 27017
-      database:
-      username:
-      password:
+      uri:
 
     # Redis Setting
     redis:
       host:
       port: 6379
-
 
   # Session Setting (별도의 최상위 키로 분리)
   session:
@@ -62,7 +56,7 @@ spring:
   mail:
     host: smtp.naver.com
     port: 465
-    username:   # 여기에 이메일 주소 입력
+    username: @naver.com  # 여기에 이메일 주소 입력
     password:          # 여기에 비밀번호 입력
     default-encoding: UTF-8
     properties:
@@ -72,3 +66,9 @@ spring:
           ssl:
             enable: true
             trust: smtp.naver.com
+
+# OpenAI (ChatGPT) API Key 설정
+openai:
+  api:
+    key: "${OPENAI_API_KEY}"
+    url: "https://api.openai.com/v1/chat/completions"

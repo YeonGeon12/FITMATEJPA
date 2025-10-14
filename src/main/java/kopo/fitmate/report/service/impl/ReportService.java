@@ -3,7 +3,10 @@ package kopo.fitmate.report.service.impl;
 import kopo.fitmate.global.ai.OpenAiApiClient;
 import kopo.fitmate.report.dto.ReportRequestDTO;
 import kopo.fitmate.report.dto.ReportResponseDTO;
+import kopo.fitmate.report.repository.ReportRepository;
+import kopo.fitmate.report.repository.entity.ReportInfoEntity;
 import kopo.fitmate.report.service.IReportService;
+import kopo.fitmate.user.dto.UserAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReportService implements IReportService {
 
-    private final OpenAiApiClient openAiApiClient;
+    private final OpenAiApiClient openAiApiClient; // AI를 불러오기 위한 의존성 주입
+    private final ReportRepository reportRepository; // DB에 저장하기 위한 의존성 주입
 
     @Override
     public ReportResponseDTO getReport(ReportRequestDTO requestDTO) throws Exception {
@@ -60,5 +64,29 @@ public class ReportService implements IReportService {
         """,
                 dto.getHeight(), dto.getWeight(), dto.getAge(), dto.getGender(), dto.getActivityLevel()
         );
+    }
+
+    /**
+     * 생성된 AI 신체 분석 리포트를 MongoDB에 저장하는 메서드
+     */
+    @Override
+    public void saveReport(ReportRequestDTO requestDTO, ReportResponseDTO responseDTO, UserAuthDTO user) {
+        log.info("{}.saveReport Start!", getClass().getName());
+
+        // 1. DB에 저장할 Entity 객체 생성
+        ReportInfoEntity entity = new ReportInfoEntity();
+
+        // 2. 기본 정보 설정 (사용자 ID, 저장 시간)
+        entity.setUserId(user.getUsername());
+        entity.setRegDt(kopo.fitmate.global.config.util.DateUtil.getDateTime());
+
+        // 3. 분석 요청 시 사용자가 입력했던 원본 데이터와 AI 결과 데이터 저장
+        entity.setRequestData(requestDTO);
+        entity.setResponseData(responseDTO);
+
+        // 4. Repository를 통해 DB에 최종 저장
+        reportRepository.save(entity);
+
+        log.info("{}.saveReport End!", getClass().getName());
     }
 }
