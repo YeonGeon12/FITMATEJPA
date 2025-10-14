@@ -1,5 +1,6 @@
 package kopo.fitmate.report.controller;
 
+import jakarta.validation.Valid;
 import kopo.fitmate.report.dto.ReportRequestDTO;
 import kopo.fitmate.report.dto.ReportResponseDTO;
 import kopo.fitmate.report.service.IReportService;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,19 +36,23 @@ public class ReportController {
     }
 
     /**
-     * 사용자가 입력한 신체 정보를 받아 AI 분석을 요청하고 결과를 보여주는 메서드
+     * 사용자가 입력한 신체 정보를 '유효성 검사'한 후, AI 분석을 요청하고 결과를 보여주는 메서드
      */
     @PostMapping("/getReport")
-    public String getReport(ReportRequestDTO requestDTO, Model model) throws Exception {
+    public String getReport(@Valid ReportRequestDTO requestDTO, BindingResult bindingResult, Model model) throws Exception {
         log.info("{}.getReport Start!", getClass().getName());
 
-        // 1. Service를 호출하여 AI로부터 신체 분석 리포트 결과를 받음
-        ReportResponseDTO responseDTO = reportService.getReport(requestDTO);
+        // 1. 유효성 검사 결과, 오류가 있다면 폼 페이지로 다시 돌아감
+        if (bindingResult.hasErrors()) {
+            log.info("Form validation errors found.");
+            return "report/reportForm"; // 오류 메시지와 함께 reportForm.html을 다시 보여줌
+        }
 
-        // 2. 결과를 Model에 담아서 View(HTML)로 전달
+        // 2. 오류가 없다면, 기존 로직 수행
+        ReportResponseDTO responseDTO = reportService.getReport(requestDTO);
         model.addAttribute("responseDTO", responseDTO);
 
         log.info("{}.getReport End!", getClass().getName());
-        return "report/reportResult"; // templates/report/reportResult.html
+        return "report/reportResult";
     }
 }
