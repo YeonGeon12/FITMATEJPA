@@ -5,19 +5,25 @@ import kopo.fitmate.global.config.util.CmmUtil;
 import kopo.fitmate.global.config.util.DateUtil;
 import kopo.fitmate.global.config.util.EncryptUtil;
 import kopo.fitmate.user.dto.*;
+import kopo.fitmate.user.repository.PasswordResetTokenRepository;
 import kopo.fitmate.user.repository.UserProfileRepository;
 import kopo.fitmate.user.repository.UserRepository;
+import kopo.fitmate.user.repository.entity.PasswordResetTokenEntity;
 import kopo.fitmate.user.repository.entity.UserEntity;
 import kopo.fitmate.user.repository.entity.UserProfileEntity;
 import kopo.fitmate.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,12 +34,14 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserProfileRepository userProfileRepository;
+    private final PasswordResetTokenRepository tokenRepository;
+
+    // Email Sender
+    private final JavaMailSender mailSender;
 
 
-    // MongoDB Repositories
 
-
-    // #################################################### 회원 가입 메서드 ##############################
+    // ################################# 회원 가입 메서드 ##############################
 
     /**
      * 회원가입 로직을 수행하는 메서드
@@ -91,7 +99,7 @@ public class UserService implements IUserService {
     }
 
 
-    //############################# 여기는 로그인 메서드 #############################################
+    //############################# 여기는 로그인 메서드 #################################
 
 
     /**
@@ -114,8 +122,92 @@ public class UserService implements IUserService {
         return new UserAuthDTO(userEntity);
     }
 
+    // ######################## 비밀번호 찾기 매서드 ###############################
 
-    // ######################### 비밀번호 비밀번호 변경 매서드 ##########################################
+    /**
+     * 비밀번호 재설정 토큰 생성 로직
+     */
+    @Override
+    @Transactional
+    public String createPasswordResetTokenForUser(String email) throws Exception {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("해당 이메일로 가입된 사용자를 찾을 수 없습니다."));
+
+        String token = UUID.randomUUID().toString(); // 고유한 랜덤 토큰 생성
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15); // 토큰 만료 시간: 15분
+
+        PasswordResetTokenEntity myToken = PasswordResetTokenEntity.builder()
+                .user(userEntity)
+                .token(token)
+                .expiryDate(expiryDate)
+                .build();
+
+        tokenRepository.save(myToken); // 생성된 토큰을 DB에 저장
+        return token;
+    }
+
+    /**
+     * 비밀번호 재설정 이메일 발송 로직
+     */
+    @Override
+    public void sendPasswordResetEmail(String email, String token) throws Exception {
+        // 사용자가 클릭할 재설정 URL 생성 (포트 번호 등은 실제 환경에 맞게 조정 필요)
+        String resetUrl = "http://localhost:11000/user/resetPassword?token=" + token;
+
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(email);
+        emailMessage.setSubject("[FITMATE] 비밀번호 재설정 요청");
+        emailMessage.setText("안녕하세요, FITMATE입니다.\n\n"
+                + "비밀번호를 재설정하려면 아래 링크를 클릭하세요. (링크는 15분간 유효합니다.)\n\n"
+                + resetUrl);
+
+        mailSender.send(emailMessage);
+        log.info("비밀번호 재설정 이메일 발송 완료. 수신자: {}", email);
+    }
+
+    /**
+     * 토큰 유효성 검증 로직
+     */
+    @Override
+    public boolean validatePasswordResetToken(String token) {
+        return tokenRepository.findByToken(token)
+                // 토큰이 존재하고(map), 만료 시간이 현재 시간보다 이전이 아닌지(!isBefore) 확인
+                .map(t -> !t.getExpiryDate().isBefore(LocalDateTime.now()))
+                // 토큰이 존재하지 않으면 false 반환
+                .orElse(false);
+    }
+
+    /**
+     * 비밀번호 재설정 처리 로직
+     */
+    @Override
+    @Transactional
+    public void resetPassword(String token, String newPassword) throws Exception {
+        // 1. 토큰으로 토큰 엔티티를 찾음
+        PasswordResetTokenEntity resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new Exception("유효하지 않은 토큰입니다."));
+
+        // 2. 토큰이 만료되었는지 다시 한번 확인
+        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            tokenRepository.delete(resetToken); // 만료된 토큰은 DB에서 삭제
+            throw new Exception("만료된 토큰입니다. 다시 요청해주세요.");
+        }
+
+        // 3. 토큰과 연결된 사용자 정보를 가져옴
+        UserEntity user = resetToken.getUser();
+
+        // 4. 새 비밀번호를 암호화하여 사용자 엔티티에 설정
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        // 5. 변경된 사용자 정보를 DB에 저장 (JPA의 Dirty Checking에 의해 자동 update)
+
+        // 6. 사용이 끝난 토큰은 DB에서 즉시 삭제
+        tokenRepository.delete(resetToken);
+
+        log.info("사용자 {}의 비밀번호가 성공적으로 재설정되었습니다.", user.getEmail());
+    }
+
+    // ######################### 비밀번호 비밀번호 변경 매서드 #############################
 
     /**
      * 비밀번호 변경 로직을 수행하는 메서드
