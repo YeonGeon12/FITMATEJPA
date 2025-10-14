@@ -50,9 +50,11 @@
     text-align: left;
     line-height: 1.7;
     font-size: 1.05em;
-    background-color: #f8f9fa;
+    background-color: #eef2ff;
+    color: #374151;
     padding: 20px;
     border-radius: 8px;
+    border-left: 5px solid #4338ca;
 }
 
 /* 2. 핵심 지표 섹션 */
@@ -80,8 +82,56 @@
 .metric-item strong {
     font-size: 1.5em;
     font-weight: 700;
-    color: #e53e3e;
+    color: #333;
 }
+
+/* ===== 수정된 부분: BMI 항목 관련 스타일 ===== */
+
+/* BMI 항목 내부 요소들을 세로로 정렬합니다. */
+.metric-item.bmi-item {
+    display: flex;
+    flex-direction: column;
+    /* grid-column: 1 / -1; 속성을 제거하여 한 칸만 차지하도록 합니다. */
+}
+
+/* BMI 그래프 전체 컨테이너 */
+.bmi-graph {
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+}
+
+/* 그래프 배경 막대 */
+.bmi-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #60a5fa, #34d399, #facc15, #f87171);
+}
+
+/* 현재 위치를 나타내는 포인터(삼각형) */
+.bmi-indicator {
+    position: absolute;
+    top: -10px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid #333;
+}
+
+/* 그래프 하단 라벨 (저체중, 정상 등) */
+.bmi-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 8px;
+    padding: 0 5px;
+}
+
+/* ===== 수정 끝 ===== */
 
 /* 3. AI 조언 섹션 */
 .advice-box {
@@ -106,7 +156,7 @@
     color: #333;
 }
 
-/* 하단 버튼 그룹 (dietResult.css와 동일) */
+/* 하단 버튼 그룹 */
 .action-buttons {
     display: flex;
     justify-content: center;

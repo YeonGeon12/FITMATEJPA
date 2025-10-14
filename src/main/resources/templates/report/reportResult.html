@@ -26,9 +26,18 @@
             <div class="report-section metrics-section">
                 <h2><i class="fa-solid fa-chart-pie"></i> 핵심 지표</h2>
                 <div class="metrics-grid">
-                    <div class="metric-item">
+                    <div class="metric-item bmi-item">
                         <span>BMI (체질량지수)</span>
-                        <strong th:text="${responseDTO.bmi}">22.5</strong>
+                        <strong th:text="${responseDTO.bmi}">22.5 (정상)</strong>
+                        <div class="bmi-graph">
+                            <div class="bmi-bar"></div>
+                            <div class="bmi-indicator" style="left: 50%;"></div>
+                        </div>
+                        <div class="bmi-labels">
+                            <span>저체중</span>
+                            <span>정상</span>
+                            <span>과체중</span>
+                        </div>
                     </div>
                     <div class="metric-item">
                         <span>기초대사량 (BMR)</span>
