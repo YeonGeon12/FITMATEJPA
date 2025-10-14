@@ -3,7 +3,6 @@ package kopo.fitmate.user.controller;
 import kopo.fitmate.user.dto.ChangePasswordDTO;
 import kopo.fitmate.user.dto.UserAuthDTO;
 import kopo.fitmate.user.dto.UserInfoDTO;
-import kopo.fitmate.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
