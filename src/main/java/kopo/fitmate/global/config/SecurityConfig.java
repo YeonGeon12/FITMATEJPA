@@ -93,7 +93,7 @@ public class SecurityConfig {
                         "/user/joinForm",   // 회원가입 페이지 보기
                         "/user/join",       // 회원가입 처리 (Thymeleaf 폼 제출)
                         "/user/forgotPasswordForm", // 비밀번호 찾기 페이지 이동
-                        "/user/resetPasswordForm", // 비밀번호 재설정 페이지 이동
+                        "/user/resetPassword", // 비밀번호 재설정 페이지 이동
                         "/api/user/**",     // 모든 사용자 관련 API (이메일 중복 체크, API 방식 회원가입)
                         "/css/**",          // CSS 파일
                         "/js/**",           // JavaScript 파일
