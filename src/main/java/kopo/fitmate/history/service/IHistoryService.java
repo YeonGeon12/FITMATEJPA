@@ -3,6 +3,7 @@ package kopo.fitmate.history.service;
 import kopo.fitmate.history.dto.DietDetailDTO;
 import kopo.fitmate.history.dto.ExerciseDetailDTO;
 import kopo.fitmate.history.dto.HistoryViewDTO;
+import kopo.fitmate.report.repository.entity.ReportInfoEntity;
 import kopo.fitmate.user.dto.UserAuthDTO;
 
 /**
@@ -35,6 +36,14 @@ public interface IHistoryService {
     DietDetailDTO getDietDetail(String id, UserAuthDTO user);
 
     /**
+     * ID를 기준으로 저장된 AI 리포트의 상세 정보를 가져옵니다.
+     * @param id 조회할 리포트의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 리포트 상세 정보가 담긴 Entity
+     */
+    ReportInfoEntity getReportDetail(String id, UserAuthDTO user);
+
+    /**
      * ID를 기준으로 저장된 운동 루틴을 삭제합니다.
      * @param id 삭제할 운동 루틴의 고유 ID
      * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
@@ -49,5 +58,13 @@ public interface IHistoryService {
      * @return 삭제 성공 시 true, 실패 시 false
      */
     boolean deleteDietHistory(String id, UserAuthDTO user);
+
+    /**
+     * ID를 기준으로 저장된 AI 리포트를 삭제합니다.
+     * @param id 삭제할 리포트의 고유 ID
+     * @param user 현재 로그인한 사용자 정보 (소유권 확인용)
+     * @return 삭제 성공 시 true, 실패 시 false
+     */
+    boolean deleteReportHistory(String id, UserAuthDTO user);
 
 }

@@ -25,4 +25,11 @@ public class HistoryViewDTO {
      */
     private List<HistoryItemDTO> dietList;
 
+    /**
+     *
+     * 저장된 모든 'AI 신체 분석 리포트' 기록의 요약 정보 리스트입니다.
+     * HistoryItemDTO 객체들이 이 리스트에 담깁니다.
+     */
+    private List<HistoryItemDTO> reportList;
+
 }
