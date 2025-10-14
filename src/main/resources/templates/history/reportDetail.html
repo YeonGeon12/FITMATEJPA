@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FITMATE | AI 리포트 상세 보기</title>
+    <link rel="stylesheet" href="/css/report/reportResult.css">
+    <link rel="stylesheet" href="/css/history/history.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="result-main-content">
+        <div class="result-container" th:if="${detailData != null}">
+            <h1>AI 신체 분석 리포트</h1>
+            <p th:text="${detailData.regDt} + '에 저장된 기록입니다.'"></p>
+
+            <div class="report-section summary-section">
+                <h2><i class="fa-solid fa-clipboard-list"></i> AI 종합 분석 요약</h2>
+                <p th:text="${detailData.responseData.summary}"></p>
+            </div>
+            <div class="report-section metrics-section">
+                <h2><i class="fa-solid fa-chart-pie"></i> 핵심 지표</h2>
+                <div class="metrics-grid">
+                    <div class="metric-item bmi-item">
+                        <span>BMI (체질량지수)</span>
+                        <strong id="bmiValue" th:text="${detailData.responseData.bmi}"></strong>
+                        <div class="bmi-graph">
+                            <div class="bmi-bar"></div>
+                            <div id="bmiIndicator" class="bmi-indicator"></div>
+                        </div>
+                        <div class="bmi-labels">
+                            <span>저체중</span>
+                            <span>정상</span>
+                            <span>과체중</span>
+                            <span>비만</span>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <span>기초대사량 (BMR)</span>
+                        <strong th:text="${detailData.responseData.bmr}"></strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>활동대사량 (TDEE)</span>
+                        <strong th:text="${detailData.responseData.tdee}"></strong>
+                    </div>
+                </div>
+            </div>
+            <div class="report-section advice-section">
+                <h2><i class="fa-solid fa-comment-dots"></i> AI 조언</h2>
+                <div class="advice-box exercise-advice">
+                    <h3><i class="fa-solid fa-dumbbell"></i> 운동 조언</h3>
+                    <p th:text="${detailData.responseData.exerciseAdvice}"></p>
+                </div>
+                <div class="advice-box diet-advice">
+                    <h3><i class="fa-solid fa-utensils"></i> 식단 조언</h3>
+                    <p th:text="${detailData.responseData.dietAdvice}"></p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a th:href="@{/history/view}" class="btn-home"><i class="fa-solid fa-list"></i> 목록으로 돌아가기</a>
+                <button type="button" class="btn-delete js-delete-trigger"><i class="fa-solid fa-trash"></i> 리포트 삭제하기</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/header.js}"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButton = document.querySelector('.js-delete-trigger');
+        const deleteModal = document.getElementById('deleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDelete');
+        const confirmDeleteForm = document.getElementById('confirmDeleteForm');
+
+        const detailId = /*[[${detailData?.id}]]*/ null;
+
+        if (deleteButton && detailId) {
+            deleteButton.addEventListener('click', function() {
+                const deleteUrl = '/history/report/delete/' + detailId;
+                confirmDeleteForm.setAttribute('action', deleteUrl);
+                deleteModal.classList.add('show');
+            });
+            cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.remove('show'));
+            deleteModal.addEventListener('click', e => {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.remove('show');
+                }
+            });
+        }
+
+        // BMI 그래프 스크립트는 그대로 유지
+        const bmiValueElement = document.getElementById('bmiValue');
+        const bmiIndicator = document.getElementById('bmiIndicator');
+        if (bmiValueElement && bmiIndicator) {
+            const bmiText = bmiValueElement.textContent;
+            const bmiValue = parseFloat(bmiText);
+            if (!isNaN(bmiValue)) {
+                const minBmi = 15;
+                const maxBmi = 35;
+                let percent = ((bmiValue - minBmi) / (maxBmi - minBmi)) * 100;
+                percent = Math.max(0, Math.min(100, percent));
+                bmiIndicator.style.left = percent + '%';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
