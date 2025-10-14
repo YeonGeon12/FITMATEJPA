@@ -50,22 +50,29 @@ public class ReportController {
      * 사용자가 입력한 신체 정보를 '유효성 검사'한 후, AI 분석을 요청하고 결과를 보여주는 메서드
      */
     @PostMapping("/getReport")
-    public String getReport(@Valid ReportRequestDTO requestDTO, BindingResult bindingResult, Model model) throws Exception {
+    // 1. getReport 메서드에 HttpSession 파라미터를 추가합니다.
+    public String getReport(@Valid ReportRequestDTO requestDTO, BindingResult bindingResult,
+                            HttpSession session, Model model) throws Exception {
         log.info("{}.getReport Start!", getClass().getName());
 
-        // 1. 유효성 검사 결과, 오류가 있다면 폼 페이지로 다시 돌아감
         if (bindingResult.hasErrors()) {
             log.info("Form validation errors found.");
-            return "report/reportForm"; // 오류 메시지와 함께 reportForm.html을 다시 보여줌
+            return "report/reportForm";
         }
 
-        // 2. 오류가 없다면, 기존 로직 수행
         ReportResponseDTO responseDTO = reportService.getReport(requestDTO);
+
+        // 2. AI로부터 받은 결과(responseDTO)와 사용자가 입력한 원본 값(requestDTO)을 세션에 저장합니다.
+        //    이 데이터는 사용자가 '저장하기' 버튼을 누를 때까지 세션에 임시로 보관됩니다.
+        session.setAttribute("latestReportRequest", requestDTO);
+        session.setAttribute("latestReportResponse", responseDTO);
+
         model.addAttribute("responseDTO", responseDTO);
 
         log.info("{}.getReport End!", getClass().getName());
         return "report/reportResult";
     }
+
 
     /**
      * 세션에 저장된 AI 신체 분석 리포트를 DB에 저장하는 메서드
