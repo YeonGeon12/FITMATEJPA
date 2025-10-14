@@ -18,23 +18,41 @@
             <h1>AI 신체 분석 리포트 받기</h1>
             <p>AI가 당신의 신체 데이터를 종합적으로 분석해 드립니다.</p>
 
-            <form th:action="@{/report/getReport}" method="post" th:object="${requestDTO}" class="report-form">
+            <form th:action="@{/report/getReport}" method="post" th:object="${requestDTO}" class="report-form" id="reportForm">
                 <fieldset>
                     <legend><i class="fa-solid fa-user"></i> 기본 신체 정보</legend>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="height">키(cm)</label>
-                            <input type="number" id="height" th:field="*{height}" placeholder="예: 175" required>
+                            <input type="number" id="height" class="validate-input" th:field="*{height}" placeholder="예: 175"
+                                   data-min="100" data-max="250" required
+                                   th:classappend="${#fields.hasErrors('height')} ? 'input-error' : ''">
+                            <div class="message-container">
+                                <span class="error-message" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></span>
+                                <span class="realtime-message"></span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="weight">체중(kg)</label>
-                            <input type="number" id="weight" th:field="*{weight}" placeholder="예: 70" required>
+                            <input type="number" id="weight" class="validate-input" th:field="*{weight}" placeholder="예: 70"
+                                   data-min="30" data-max="300" required
+                                   th:classappend="${#fields.hasErrors('weight')} ? 'input-error' : ''">
+                            <div class="message-container">
+                                <span class="error-message" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></span>
+                                <span class="realtime-message"></span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="age">나이(세)</label>
-                            <input type="number" id="age" th:field="*{age}" placeholder="예: 25" required>
+                            <input type="number" id="age" class="validate-input" th:field="*{age}" placeholder="예: 25"
+                                   data-min="1" data-max="120" required
+                                   th:classappend="${#fields.hasErrors('age')} ? 'input-error' : ''">
+                            <div class="message-container">
+                                <span class="error-message" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></span>
+                                <span class="realtime-message"></span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="gender">성별</label>
@@ -61,14 +79,92 @@
                     </div>
                 </fieldset>
 
-                <button type="submit" class="submit-btn">AI 신체 분석 리포트 받기</button>
+                <button type="submit" class="submit-btn">AI 신체 분석 리포트 받기 <i class="fa-solid fa-arrow-right"></i></button>
                 <div class="back-link-container">
-                    <a th:href="@{/index}" class="back-link">← 홈으로 돌아가기</a>
+                    <a th:href="@{/}" class="back-link">← 홈으로 돌아가기</a>
                 </div>
             </form>
         </div>
     </main>
 </div>
 <script src="/js/header.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('reportForm');
+        const inputs = document.querySelectorAll('.validate-input');
+
+        // 입력창에 값이 입력될 때마다 실시간으로 유효성 검사 실행
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                validateInput(this);
+            });
+        });
+
+        // '제출' 버튼을 눌렀을 때의 동작
+        form.addEventListener('submit', function(event) {
+            let isFormValid = true;
+            inputs.forEach(input => {
+                // 모든 입력창에 대해 유효성 검사를 다시 실행
+                if (!validateInput(input)) {
+                    isFormValid = false; // 하나라도 유효하지 않으면 false로 변경
+                }
+            });
+
+            // 폼이 유효하지 않으면 제출을 막고 알림창을 띄움
+            if (!isFormValid) {
+                event.preventDefault();
+                alert('입력값을 다시 확인해주세요.');
+            }
+        });
+
+        // 개별 입력창의 유효성을 검사하고 결과를 boolean으로 반환하는 함수
+        function validateInput(input) {
+            const value = input.value.trim();
+            const min = Number(input.dataset.min);
+            const max = Number(input.dataset.max);
+            const parentGroup = input.closest('.form-group');
+            const messageElement = parentGroup.querySelector('.realtime-message');
+            const serverErrorMessage = parentGroup.querySelector('.error-message');
+
+            // 서버에서 온 오류 메시지는 일단 숨김
+            if (serverErrorMessage) serverErrorMessage.style.display = 'none';
+
+            if (!value) {
+                updateStatus(input, messageElement, 'error', '필수 입력 항목입니다.');
+                return false;
+            }
+            if (isNaN(value) || value.includes('.')) {
+                updateStatus(input, messageElement, 'error', '정확한 숫자 값을 입력해주세요.');
+                return false;
+            }
+            const numValue = Number(value);
+            if (numValue < min || numValue > max) {
+                updateStatus(input, messageElement, 'error', `${min} ~ ${max} 사이의 값을 입력해주세요.`);
+                return false;
+            }
+
+            updateStatus(input, messageElement, 'success', '올바른 값입니다.');
+            return true;
+        }
+
+        // 입력창의 상태(성공/실패)와 메시지를 화면에 업데이트하는 함수
+        function updateStatus(input, messageElement, status, message) {
+            input.classList.remove('input-success', 'input-error');
+            messageElement.classList.remove('success-message', 'error-message');
+
+            if (status === 'success') {
+                input.classList.add('input-success');
+                messageElement.classList.add('success-message');
+            } else {
+                input.classList.add('input-error');
+                messageElement.classList.add('error-message');
+            }
+            messageElement.textContent = message;
+            messageElement.style.display = 'block';
+        }
+    });
+</script>
+
 </body>
 </html>
