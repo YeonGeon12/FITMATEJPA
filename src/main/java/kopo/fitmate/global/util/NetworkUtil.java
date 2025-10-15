@@ -1,4 +1,4 @@
-package kopo.fitmate.global.config.util;
+package kopo.fitmate.global.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Slf4j
@@ -78,15 +79,19 @@ public class NetworkUtil {
             con.setRequestMethod("POST");
 
             // 전송할 헤더 값이 존재하면, 해더 값 추가하기
-            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
-                con.setRequestProperty(header.getKey(), header.getValue());
+            if (requestHeaders != null) { // [수정] null 체크 추가 (안전성 강화)
+                for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
+                    con.setRequestProperty(header.getKey(), header.getValue());
+                }
             }
 
-            // POST 방식으로 전송할때, 전송할 파라미터 정보 넣기(GET 방식은 필요없음)
+
+            // [핵심 수정] POST 파라미터를 UTF-8 형식으로 정확하게 전송하도록 변경
             con.setDoOutput(true);
-            try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-                wr.write(postParams.getBytes());
-                wr.flush();
+            try (OutputStream os = con.getOutputStream();
+                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
+                writer.write(postParams);
+                writer.flush();
             }
 
             // API 호출 후, 결과 받기
@@ -107,6 +112,7 @@ public class NetworkUtil {
             con.disconnect();
         }
     }
+
 
     /**
      * OpenAPI URL에 접속하기
