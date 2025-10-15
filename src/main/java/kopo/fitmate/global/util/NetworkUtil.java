@@ -86,7 +86,7 @@ public class NetworkUtil {
             }
 
 
-            // [핵심 수정] POST 파라미터를 UTF-8 형식으로 정확하게 전송하도록 변경
+            // [수정] POST 파라미터를 반드시 UTF-8 형식으로 전송하도록 변경
             con.setDoOutput(true);
             try (OutputStream os = con.getOutputStream();
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
@@ -94,16 +94,11 @@ public class NetworkUtil {
                 writer.flush();
             }
 
-            // API 호출 후, 결과 받기
             int responseCode = con.getResponseCode();
-
-            // API 호출이 성공하면..
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                return readBody(con.getInputStream()); // 성공 결과 값을 문자열로 변환하기
-
-            } else { // 에러 발생
-                return readBody(con.getErrorStream()); // 실패 결과 값을 문자열로 변환하기
-
+                return readBody(con.getInputStream());
+            } else {
+                return readBody(con.getErrorStream());
             }
 
         } catch (IOException e) {
@@ -112,6 +107,7 @@ public class NetworkUtil {
             con.disconnect();
         }
     }
+
 
 
     /**

@@ -9,7 +9,7 @@ import kopo.fitmate.dictionary.dto.ExerciseDTO;
 import kopo.fitmate.dictionary.dto.TranslatedExerciseDTO;
 import kopo.fitmate.dictionary.dto.YoutubeDTO;
 import kopo.fitmate.dictionary.service.IDictionaryService;
-import kopo.fitmate.global.config.util.NetworkUtil; // NetworkUtil 임포트
+import kopo.fitmate.global.util.NetworkUtil; // NetworkUtil 임포트
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value; // Value 임포트
@@ -113,7 +113,7 @@ public class DictionaryService implements IDictionaryService {
     }
 
     /**
-     * Papago API를 호출하여 텍스트를 번역하는 private 메서드
+     * [수정] Papago API를 호출하고 응답을 안전하게 처리하는 메서드
      */
     private String translateWithPapago(String text, String sourceLang, String targetLang) {
         if (text == null || text.isBlank()) {
@@ -121,25 +121,40 @@ public class DictionaryService implements IDictionaryService {
         }
         try {
             String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
+
+            // [확인] API URL이 'n2mt'로 끝나는 최신 버전인지 확인합니다.
             String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
 
             Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("X-Naver-Client-Id", papagoClientId);
             requestHeaders.put("X-Naver-Client-Secret", papagoClientSecret);
-            // [수정] 아래 Content-Type 헤더를 반드시 추가해야 합니다!
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             String postParams = "source=" + sourceLang + "&target=" + targetLang + "&text=" + encodedText;
 
             String responseBody = NetworkUtil.post(apiURL, requestHeaders, postParams);
+            log.info("Papago API Response: {}", responseBody); // 응답 로그 확인
 
-            // Papago API의 JSON 응답에서 번역된 텍스트만 추출
             JsonNode rootNode = objectMapper.readTree(responseBody);
-            return rootNode.path("message").path("result").path("translatedText").asText();
+
+            // API 에러가 있는지 먼저 확인
+            if (rootNode.has("errorMessage")) {
+                log.error("Papago API Error: {}", rootNode.get("errorMessage").asText());
+                return text; // 에러 시 원본 텍스트 반환
+            }
+
+            // 정상 응답 구조에서 번역된 텍스트 추출
+            JsonNode translatedTextNode = rootNode.path("message").path("result").path("translatedText");
+            if (translatedTextNode.isMissingNode()) {
+                log.error("Papago 응답에서 'translatedText'를 찾을 수 없습니다. 응답 전문: {}", responseBody);
+                return text; // 구조 이상 시 원본 텍스트 반환
+            }
+
+            return translatedTextNode.asText();
 
         } catch (Exception e) {
-            log.error("Papago 번역 중 오류 발생", e);
-            return text; // 번역 실패 시 원본 텍스트 반환
+            log.error("Papago 번역 중 예상치 못한 Exception 발생", e);
+            return text; // 예외 발생 시 원본 텍스트 반환
         }
     }
 
