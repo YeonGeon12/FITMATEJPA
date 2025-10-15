@@ -15,4 +15,7 @@ public interface DietRepository extends MongoRepository<DietInfoEntity, String> 
     // 사용자 ID를 기준으로 모든 운동 기록을 'regDt' 필드의 내림차순(최신순)으로 조회
     List<DietInfoEntity> findByUserIdOrderByRegDtDesc(String userId);
 
+    // [추가된 코드] 사용자 ID를 기준으로 모든 운동 기록을 삭제
+    void deleteAllByUserId(String userId);
+
 }

@@ -2,9 +2,12 @@ package kopo.fitmate.user.service.impl;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import kopo.fitmate.diet.repository.DietRepository;
+import kopo.fitmate.exercise.repository.ExerciseRepository;
 import kopo.fitmate.global.config.util.CmmUtil;
 import kopo.fitmate.global.config.util.DateUtil;
 import kopo.fitmate.global.config.util.EncryptUtil;
+import kopo.fitmate.report.repository.ReportRepository;
 import kopo.fitmate.user.dto.*;
 import kopo.fitmate.user.repository.PasswordResetTokenRepository;
 import kopo.fitmate.user.repository.UserProfileRepository;
@@ -16,7 +19,6 @@ import kopo.fitmate.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,6 +43,12 @@ public class UserService implements IUserService {
 
     // Email Sender
     private final JavaMailSender mailSender;
+
+    // [수정] MongoDB Repositories 추가
+    private final ExerciseRepository exerciseRepository;
+    private final DietRepository dietRepository;
+    private final ReportRepository reportRepository;
+
 
     // 2. application.yaml에 있는 spring.mail.username 값을 주입받을 변수를 선언합니다.
     @Value("${spring.mail.username}")
@@ -268,7 +276,7 @@ public class UserService implements IUserService {
 
 
     /**
-     *  기존에 저장된 정보 불러오기
+     * 기존에 저장된 정보 불러오기
      * @param userNo 유저번호
      * @return 리턴
      */
@@ -350,6 +358,14 @@ public class UserService implements IUserService {
         if (!passwordEncoder.matches(password, userEntity.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+
+        // [수정된 부분] MongoDB 데이터 삭제
+        String userId = userEntity.getEmail(); // MongoDB의 userId는 이메일
+        log.info("Deleting MongoDB data for userId: {}", userId);
+        exerciseRepository.deleteAllByUserId(userId);
+        dietRepository.deleteAllByUserId(userId);
+        reportRepository.deleteAllByUserId(userId);
+        log.info("MongoDB data deleted for userId: {}", userId);
 
         // 4. RDBMS에 저장된 사용자 데이터 삭제 (UserProfile은 Cascade 설정으로 자동 삭제)
         userRepository.delete(userEntity);
