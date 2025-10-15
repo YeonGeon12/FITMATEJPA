@@ -12,7 +12,7 @@ spring:
   # MariaDB Setting(데이터베이스 세팅)
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://:3306/
+    url:
     username:
     password:
 
@@ -55,7 +55,7 @@ spring:
   # Mail 설정
   mail:
     host: smtp.naver.com
-    port: 465
+    port: 587
     username: @naver.com  # 여기에 이메일 주소 입력
     password:          # 여기에 비밀번호 입력
     default-encoding: UTF-8
@@ -63,9 +63,11 @@ spring:
       mail:
         smtp:
           auth: true
-          ssl:
+          starttls:
             enable: true
+          ssl:
             trust: smtp.naver.com
+            protocol: TLSv1.2
 
 # OpenAI (ChatGPT) API Key 설정
 openai:
