@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -30,7 +31,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class DictionaryService implements IDictionaryService {
 
-    // [최종 수정] GPT 클라이언트 의존성 제거
     private final ApiNinjasClient apiNinjasClient;
     private final YoutubeClient youtubeClient;
     private final ObjectMapper objectMapper;
@@ -135,10 +135,29 @@ public class DictionaryService implements IDictionaryService {
     }
 
 
+    /**
+     * 유튜브 영상 검색 및 제목 디코딩
+     */
     @Override
     public YoutubeDTO searchYoutube(String query) {
         log.info("YouTube 영상 검색 시작: {}", query);
         String searchQuery = query + " 운동 자세";
-        return youtubeClient.searchVideos("snippet", searchQuery, "video", 4);
+
+        // 1. 평소처럼 YouTube API를 호출합니다.
+        YoutubeDTO youtubeDTO = youtubeClient.searchVideos("snippet", searchQuery, "video", 4);
+
+        // 2. [핵심 수정] API 응답 결과가 정상이면, 각 영상의 제목을 디코딩합니다.
+        if (youtubeDTO != null && youtubeDTO.getItems() != null) {
+            youtubeDTO.getItems().forEach(item -> {
+                if (item.getSnippet() != null && item.getSnippet().getTitle() != null) {
+                    // HtmlUtils.htmlUnescape를 사용하여 '&#39;' 같은 문자열을 "'"로 변환
+                    String decodedTitle = HtmlUtils.htmlUnescape(item.getSnippet().getTitle());
+                    item.getSnippet().setTitle(decodedTitle);
+                }
+            });
+        }
+
+        // 3. 디코딩된 제목이 담긴 DTO를 반환합니다.
+        return youtubeDTO;
     }
 }
