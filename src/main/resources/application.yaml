@@ -81,3 +81,8 @@ api:
     key: "${API_NINJAS_KEY}"
   youtube:
     key: "${YOUTUBE_API_KEY}"
+  papago:
+    id: "${PAPAGO_API_ID}"
+    secret: "${PAPAGO_API_SECRET}"
+
+
