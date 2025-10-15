@@ -32,8 +32,7 @@
                 </button>
                 <div id="dropdown-menu" class="dropdown-menu">
                     <a th:href="@{/user/mypage}"><i class="fa-solid fa-user"></i> 마이페이지</a>
-                    <a href="#"><i class="fa-solid fa-book-open"></i> 운동 사전</a>
-                    <a href="#"><i class="fa-solid fa-apple-whole"></i> 영양 사전</a>
+                    <a th:href="@{/dictionary/search}"><i class="fa-solid fa-book-open"></i> 운동 사전</a>
                     <form th:action="@{/user/logout}" method="post" style="margin: 0;">
                         <button type="submit" class="logout-btn">
                             <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
