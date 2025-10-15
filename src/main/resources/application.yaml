@@ -74,3 +74,10 @@ openai:
   api:
     key: "${OPENAI_API_KEY}"
     url: "https://api.openai.com/v1/chat/completions"
+
+# API KEYS
+api:
+  ninjas:
+    key: "${API_NINJAS_KEY}"
+  youtube:
+    key: "${YOUTUBE_API_KEY}"
