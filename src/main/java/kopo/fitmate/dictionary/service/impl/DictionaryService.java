@@ -126,6 +126,8 @@ public class DictionaryService implements IDictionaryService {
             Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("X-Naver-Client-Id", papagoClientId);
             requestHeaders.put("X-Naver-Client-Secret", papagoClientSecret);
+            // [수정] 아래 Content-Type 헤더를 반드시 추가해야 합니다!
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             String postParams = "source=" + sourceLang + "&target=" + targetLang + "&text=" + encodedText;
 
@@ -146,6 +148,6 @@ public class DictionaryService implements IDictionaryService {
     public YoutubeDTO searchYoutube(String query) {
         log.info("YouTube 영상 검색 시작: {}", query);
         String searchQuery = query + " 운동 자세";
-        return youtubeClient.searchVideos("snippet", searchQuery, "video", 6);
+        return youtubeClient.searchVideos("snippet", searchQuery, "video", 4);
     }
 }
