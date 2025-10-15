@@ -39,7 +39,7 @@ public class DictionaryController {
         try {
             // 이름이나 부위로 검색어가 들어온 경우에만 서비스 호출
             if ((name != null && !name.isEmpty()) || (muscle != null && !muscle.isEmpty())) {
-                List<ExerciseDTO> exercises = dictionaryService.searchExercises(name, muscle);
+                List<TranslatedExerciseDTO> exercises = dictionaryService.searchExercises(name, muscle);
                 model.addAttribute("exercises", exercises);
                 log.info("검색된 운동 개수: {}", exercises.size());
             }

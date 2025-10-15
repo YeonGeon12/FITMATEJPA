@@ -31,11 +31,14 @@
             </div>
 
             <div th:if="${exercises != null and not #lists.isEmpty(exercises)}" class="results-grid">
-                <a th:each="ex : ${exercises}" th:href="@{/dictionary/detail(name=${ex.name})}" class="exercise-card">
-                    <div class="card-title" th:text="${ex.name}">스쿼트</div>
+
+                <a th:each="ex : ${exercises}" th:href="@{/dictionary/detail(name=${ex.original.name})}" class="exercise-card">
+
+                    <div class="card-title" th:text="${ex.translatedName}">스쿼트</div>
+
                     <div class="card-info">
                         <span>운동 분류</span>
-                        <p th:switch="${ex.type}">
+                        <p th:switch="${ex.original.type}">
                             <span th:case="'strength'">근력</span>
                             <span th:case="'plyometrics'">플라이오메트릭</span>
                             <span th:case="'cardio'">유산소</span>
@@ -43,10 +46,12 @@
                             <span th:case="'powerlifting'">파워리프팅</span>
                             <span th:case="'strongman'">스트롱맨</span>
                             <span th:case="'olympic_weightlifting'">역도</span>
-                            <span th:case="*">[<span th:text="${ex.type}"></span>]</span> </p>
+                            <span th:case="*">[<span th:text="${ex.original.type}"></span>]</span>
+                        </p>
                     </div>
+
                     <div class="card-tags">
-            <span class="tag" th:switch="${ex.muscle}">
+            <span class="tag" th:switch="${ex.original.muscle}">
                 <span th:case="'abdominals'">#복근</span>
                 <span th:case="'abductors'">#외전근</span>
                 <span th:case="'adductors'">#내전근</span>
@@ -64,7 +69,7 @@
                 <span th:case="'shoulders'">#어깨</span>
                 <span th:case="'traps'">#승모근</span>
                 <span th:case="'triceps'">#삼두근</span>
-                <span th:case="*">#[<span th:text="${ex.muscle}"></span>]</span>
+                <span th:case="*">#[<span th:text="${ex.original.muscle}"></span>]</span>
             </span>
                     </div>
                 </a>

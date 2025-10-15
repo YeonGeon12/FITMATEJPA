@@ -17,7 +17,7 @@ public interface IDictionaryService {
      * @param muscle 검색할 근육 부위 (선택 사항)
      * @return 검색된 운동 정보 리스트
      */
-    List<ExerciseDTO> searchExercises(String name, String muscle);
+    List<TranslatedExerciseDTO> searchExercises(String name, String muscle);
 
     /**
      * 특정 운동 이름으로 상세 정보를 조회합니다.
