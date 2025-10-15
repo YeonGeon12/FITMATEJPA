@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FITMATE | 운동 사전</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/dictionary/dictionarySearch.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <header class="main-header" th:replace="~{index :: .main-header}"></header>
+
+    <main class="dict-main-content">
+        <div class="dict-container">
+            <h1>운동 사전</h1>
+            <form th:action="@{/dictionary/search}" method="get" class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="name" placeholder="찾아보고 싶은 운동을 검색해 보세요 (예: 스쿼트)" th:value="${searchName}">
+                <button type="submit">검색</button>
+            </form>
+
+            <div class="muscle-tags">
+                <a th:href="@{/dictionary/search}" th:classappend="${selectedMuscle == null} ? 'active'">전체</a>
+                <a th:href="@{/dictionary/search(muscle='chest')}" th:classappend="${selectedMuscle == 'chest'} ? 'active'">가슴</a>
+                <a th:href="@{/dictionary/search(muscle='lats')}" th:classappend="${selectedMuscle == 'lats'} ? 'active'">등</a>
+                <a th:href="@{/dictionary/search(muscle='quadriceps')}" th:classappend="${selectedMuscle == 'quadriceps'} ? 'active'">하체</a>
+                <a th:href="@{/dictionary/search(muscle='shoulders')}" th:classappend="${selectedMuscle == 'shoulders'} ? 'active'">어깨</a>
+                <a th:href="@{/dictionary/search(muscle='biceps')}" th:classappend="${selectedMuscle == 'biceps'} ? 'active'">팔</a>
+                <a th:href="@{/dictionary/search(muscle='abdominals')}" th:classappend="${selectedMuscle == 'abdominals'} ? 'active'">복근</a>
+            </div>
+
+            <div th:if="${exercises != null and not #lists.isEmpty(exercises)}" class="results-grid">
+                <a th:each="ex : ${exercises}" th:href="@{/dictionary/detail(name=${ex.name})}" class="exercise-card">
+                    <div class="card-title" th:text="${ex.name}">스쿼트</div>
+                    <div class="card-info">
+                        <span>운동 분류</span>
+                        <p th:switch="${ex.type}">
+                            <span th:case="'strength'">근력</span>
+                            <span th:case="'plyometrics'">플라이오메트릭</span>
+                            <span th:case="'cardio'">유산소</span>
+                            <span th:case="'stretching'">스트레칭</span>
+                            <span th:case="'powerlifting'">파워리프팅</span>
+                            <span th:case="'strongman'">스트롱맨</span>
+                            <span th:case="'olympic_weightlifting'">역도</span>
+                            <span th:case="*">[<span th:text="${ex.type}"></span>]</span> </p>
+                    </div>
+                    <div class="card-tags">
+            <span class="tag" th:switch="${ex.muscle}">
+                <span th:case="'abdominals'">#복근</span>
+                <span th:case="'abductors'">#외전근</span>
+                <span th:case="'adductors'">#내전근</span>
+                <span th:case="'biceps'">#이두근</span>
+                <span th:case="'calves'">#종아리</span>
+                <span th:case="'chest'">#가슴</span>
+                <span th:case="'forearms'">#전완근</span>
+                <span th:case="'glutes'">#둔근</span>
+                <span th:case="'hamstrings'">#햄스트링</span>
+                <span th:case="'lats'">#광배근</span>
+                <span th:case="'lower_back'">#허리</span>
+                <span th:case="'middle_back'">#등중부</span>
+                <span th:case="'neck'">#목</span>
+                <span th:case="'quadriceps'">#대퇴사두근</span>
+                <span th:case="'shoulders'">#어깨</span>
+                <span th:case="'traps'">#승모근</span>
+                <span th:case="'triceps'">#삼두근</span>
+                <span th:case="*">#[<span th:text="${ex.muscle}"></span>]</span>
+            </span>
+                    </div>
+                </a>
+            </div>
+
+            <div th:if="${exercises != null and #lists.isEmpty(exercises)}" class="no-results">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <h2>죄송합니다. 요청하신 운동에 대한 정보를 찾을 수 없습니다.</h2>
+                <div class="tips">
+                    <p><i class="fa-solid fa-lightbulb"></i> 다음 팁을 확인해 보세요</p>
+                    <ul>
+                        <li>운동명 철자를 확인해주세요.</li>
+                        <li>운동 카테고리를 이용해서 검색해 보세요.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="/js/header.js"></script>
+</body>
+</html>
