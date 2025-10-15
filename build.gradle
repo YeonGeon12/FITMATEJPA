@@ -41,6 +41,12 @@ ext {
 // 여러 라이브러리 간 버전 충돌을 막아주는 매우 중요한 부분입니다.
 dependencyManagement {
     imports {
+        // 1. Spring Cloud AWS의 버전을 관리하는 BOM (io.awspring.cloud)
+        // io.awspring.cloud:spring-cloud-aws-starter-parameter-store 등의 버전을 관리합니다.
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1"
+
+        // 2. OpenFeign 등 핵심 Spring Cloud 모듈의 버전을 관리하는 BOM (org.springframework.cloud)
+        // spring-cloud-starter-openfeign 등의 버전을 관리합니다.
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
@@ -69,6 +75,7 @@ dependencies {
     // ---MSA & 외부 API 통신 ☁️ ---
     implementation 'com.openai:openai-java:4.1.0' // OpenAI의 API를 JAVA환경에서 쉽게 다룰 수 있게 지원
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // 다른 마이크로서비스의 REST API 사용지원
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
 
     // --- VIEW 템플릿 엔진 ---
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 서버 데이터를 HTML에 결합해 동적인 웹페이지 지원
