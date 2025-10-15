@@ -1,107 +1,101 @@
-// src/main/java/kopo/fitmate/dictionary/service/impl/DictionaryService.java
 package kopo.fitmate.dictionary.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import kopo.fitmate.dictionary.client.ApiNinjasClient;
 import kopo.fitmate.dictionary.client.YoutubeClient;
 import kopo.fitmate.dictionary.dto.ExerciseDTO;
 import kopo.fitmate.dictionary.dto.TranslatedExerciseDTO;
 import kopo.fitmate.dictionary.dto.YoutubeDTO;
 import kopo.fitmate.dictionary.service.IDictionaryService;
-import kopo.fitmate.global.util.NetworkUtil; // NetworkUtil 임포트
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value; // Value 임포트
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DictionaryService implements IDictionaryService {
 
-    // 의존성 주입
+    // [최종 수정] GPT 클라이언트 의존성 제거
     private final ApiNinjasClient apiNinjasClient;
     private final YoutubeClient youtubeClient;
-    private final ObjectMapper objectMapper; // JSON 파싱을 위해 사용
+    private final ObjectMapper objectMapper;
 
-    // Papago API 키를 application.yaml에서 주입받습니다.
     @Value("${api.papago.id}")
     private String papagoClientId;
 
     @Value("${api.papago.secret}")
     private String papagoClientSecret;
 
-    /**
-     * OpenAI -> Papago API를 사용하여 번역하도록 전체 로직 변경
-     */
+    @PostConstruct
+    void verifyPapagoKeys() {
+        if (papagoClientId.isBlank() || papagoClientSecret.isBlank()) {
+            throw new IllegalStateException("Papago Client ID/Secret 미설정");
+        }
+    }
+
+
     @Override
     public List<TranslatedExerciseDTO> searchExercises(String name, String muscle) {
-        log.info("운동 정보 목록 검색 시작. 이름: {}, 부위: {}", name, muscle);
-
+        log.info("NCP Papago 기반 운동 목록 검색 시작. 이름: {}, 부위: {}", name, muscle);
         String searchNameInEnglish = name;
 
-        // 한글 검색어가 들어온 경우, 영어로 먼저 번역
+        // 1. [최종 수정] 한글 검색어를 GPT 대신 Papago를 이용해 영어로 번역
         if (name != null && !name.isEmpty() && name.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
-            searchNameInEnglish = translateWithPapago(name, "ko", "en");
-            log.info("Papago 번역 (한->영): '{}' -> '{}'", name, searchNameInEnglish);
-        }
-
-        // API Ninjas로부터 영어 결과 목록을 받음
-        List<ExerciseDTO> englishResults = apiNinjasClient.getExercises(searchNameInEnglish, muscle);
-
-        if (englishResults == null || englishResults.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 결과가 너무 많으면 성능 저하 방지를 위해 일부만 번역 (예: 최대 10개)
-        List<ExerciseDTO> sublistToTranslate = englishResults.size() > 10 ? englishResults.subList(0, 10) : englishResults;
-
-        List<TranslatedExerciseDTO> finalResults = new ArrayList<>();
-        for (ExerciseDTO dto : sublistToTranslate) {
-            String translatedName = translateWithPapago(dto.getName(), "en", "ko");
-            finalResults.add(TranslatedExerciseDTO.builder()
-                    .original(dto)
-                    .translatedName(translatedName)
-                    .build());
-        }
-
-        // 번역하지 않은 나머지 리스트가 있다면 추가 (이름만 영어로 표시)
-        if (englishResults.size() > 10) {
-            for (int i = 10; i < englishResults.size(); i++) {
-                ExerciseDTO dto = englishResults.get(i);
-                finalResults.add(TranslatedExerciseDTO.builder()
-                        .original(dto)
-                        .translatedName(dto.getName()) // 번역 없이 원본 이름 사용
-                        .build());
+            try {
+                searchNameInEnglish = translateWithPapago(name, "ko", "en");
+                log.info("Papago 번역 (한->영): '{}' -> '{}'", name, searchNameInEnglish);
+            } catch (Exception e) {
+                log.error("Papago 검색어 번역 실패", e);
+                return Collections.emptyList();
             }
         }
 
-        return finalResults;
+        List<ExerciseDTO> englishExercises = apiNinjasClient.getExercises(searchNameInEnglish, muscle);
+        if (englishExercises == null || englishExercises.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String textToTranslate = englishExercises.stream().map(ExerciseDTO::getName).collect(Collectors.joining("\n"));
+            String translatedText = translateWithPapago(textToTranslate, "en", "ko");
+            String[] translatedNames = translatedText.split("\n");
+
+            return IntStream.range(0, englishExercises.size())
+                    .mapToObj(i -> TranslatedExerciseDTO.builder()
+                            .original(englishExercises.get(i))
+                            .translatedName((i < translatedNames.length) ? translatedNames[i].trim() : englishExercises.get(i).getName())
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Papago API 목록 번역 과정에서 오류 발생", e);
+            return englishExercises.stream()
+                    .map(dto -> TranslatedExerciseDTO.builder().original(dto).translatedName(dto.getName()).build())
+                    .collect(Collectors.toList());
+        }
     }
 
-    /**
-     * OpenAI -> Papago API를 사용하여 번역하도록 변경
-     */
     @Override
     public TranslatedExerciseDTO getExerciseDetail(String name) throws Exception {
-        log.info("운동 상세 정보 검색 시작: {}", name);
+        log.info("상세 정보 검색 시작 (영어 이름): {}", name);
         List<ExerciseDTO> results = apiNinjasClient.getExercises(name, null);
+        if (results == null || results.isEmpty()) return null;
 
-        if (results == null || results.isEmpty()) {
-            return null;
-        }
         ExerciseDTO originalExercise = results.get(0);
-
-        // Papago API를 호출하여 이름과 설명을 번역합니다.
         String translatedName = translateWithPapago(originalExercise.getName(), "en", "ko");
         String translatedInstructions = translateWithPapago(originalExercise.getInstructions(), "en", "ko");
 
@@ -112,53 +106,35 @@ public class DictionaryService implements IDictionaryService {
                 .build();
     }
 
-    /**
-     * [수정] Papago API를 호출하고 응답을 안전하게 처리하는 메서드
-     */
-    private String translateWithPapago(String text, String sourceLang, String targetLang) {
-        if (text == null || text.isBlank()) {
-            return "";
+    private String translateWithPapago(String text, String sourceLang, String targetLang) throws Exception {
+        if (text == null || text.isBlank()) return text;
+
+        // 공식 엔드포인트: /nmt/v1/translation
+        // (문서 샘플에 명시)
+        final String apiUrl = "https://papago.apigw.ntruss.com/nmt/v1/translation";
+
+        String form = "source=" + URLEncoder.encode(sourceLang, StandardCharsets.UTF_8)
+                + "&target=" + URLEncoder.encode(targetLang, StandardCharsets.UTF_8)
+                + "&text="   + URLEncoder.encode(text,       StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                .header("X-NCP-APIGW-API-KEY-ID", papagoClientId)
+                .header("X-NCP-APIGW-API-KEY", papagoClientSecret)
+                .POST(HttpRequest.BodyPublishers.ofString(form))
+                .build();
+
+        HttpResponse<String> resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() != 200) {
+            log.error("Papago error: status={}, body={}", resp.statusCode(), resp.body());
+            return text; // 실패 시 원문 유지(UX 보전)
         }
-        try {
-            String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
-
-            // [확인] API URL이 'n2mt'로 끝나는 최신 버전인지 확인합니다.
-            String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
-
-            Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("X-Naver-Client-Id", papagoClientId);
-            requestHeaders.put("X-Naver-Client-Secret", papagoClientSecret);
-            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-
-            String postParams = "source=" + sourceLang + "&target=" + targetLang + "&text=" + encodedText;
-
-            String responseBody = NetworkUtil.post(apiURL, requestHeaders, postParams);
-            log.info("Papago API Response: {}", responseBody); // 응답 로그 확인
-
-            JsonNode rootNode = objectMapper.readTree(responseBody);
-
-            // API 에러가 있는지 먼저 확인
-            if (rootNode.has("errorMessage")) {
-                log.error("Papago API Error: {}", rootNode.get("errorMessage").asText());
-                return text; // 에러 시 원본 텍스트 반환
-            }
-
-            // 정상 응답 구조에서 번역된 텍스트 추출
-            JsonNode translatedTextNode = rootNode.path("message").path("result").path("translatedText");
-            if (translatedTextNode.isMissingNode()) {
-                log.error("Papago 응답에서 'translatedText'를 찾을 수 없습니다. 응답 전문: {}", responseBody);
-                return text; // 구조 이상 시 원본 텍스트 반환
-            }
-
-            return translatedTextNode.asText();
-
-        } catch (Exception e) {
-            log.error("Papago 번역 중 예상치 못한 Exception 발생", e);
-            return text; // 예외 발생 시 원본 텍스트 반환
-        }
+        JsonNode root = objectMapper.readTree(resp.body());
+        return root.path("message").path("result").path("translatedText").asText(text);
     }
 
-    // 유튜브 검색 기능
+
     @Override
     public YoutubeDTO searchYoutube(String query) {
         log.info("YouTube 영상 검색 시작: {}", query);
